@@ -4,15 +4,12 @@ services:
     env: node
     region: oregon
     plan: free
-    rootDir: server
-    buildCommand: npm install
-    startCommand: node server.js
+    buildCommand: cd server && npm install
+    startCommand: node server/server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        generateValue: false
       - key: GEMINI_API_KEY
         sync: false
       - key: FIREBASE_API_KEY
