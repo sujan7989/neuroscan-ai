@@ -1,11 +1,29 @@
 """
 Multi-Disorder Experimental Prototype Training Pipeline
 Trains per-condition classifiers (ASD, ADHD, Dyslexia, Social Anxiety,
-Speech Delay, Intellectual Disability, SPD) on a simulated developmental heuristic cohort.
+Speech Delay, Intellectual Disability, SPD).
+
+DATA SOURCE TRANSPARENCY:
+  ASD:                 Real UCI dataset (996 records, CC BY 4.0, Fadi Thabtah 2017)
+                       used for the dedicated ASD model (train_asd_models.py).
+                       The 7-disorder pipeline below uses a structured heuristic
+                       cohort because no single real dataset covers all 7 conditions
+                       with the same feature schema.
+  ADHD:                No clean public questionnaire CSV available.
+  Dyslexia:            No clean public questionnaire CSV with the same schema.
+  Social Anxiety:      No dedicated public screening CSV available.
+  Speech Delay:        No dedicated public CSV available.
+  Intellectual Disab.: No dedicated public CSV available.
+  SPD:                 No dedicated public CSV available.
+
+  Therefore the 7-disorder pipeline uses a structured heuristic synthetic cohort
+  (N=1200) based on published DSM-5/ICD-11 symptom covariance patterns.
+  All metrics produced by this pipeline are clearly labeled SYNTHETIC_COHORT
+  and must NOT be cited as real-world clinical benchmarks.
 
 IMPORTANT SCIENTIFIC INTEGRITY NOTICE:
-These models are EXPERIMENTAL RESEARCH PROTOTYPES developed for architectural demonstration.
-They are NOT validated clinical models and MUST NOT be represented as real-world clinical benchmarks.
+  These models are RESEARCH PROTOTYPES for architectural demonstration.
+  They are NOT validated clinical models.
 """
 
 import os
@@ -190,15 +208,29 @@ def train_multi_disorder_models():
     print(f"Generated heuristic prototype cohort: {X.shape[0]} profiles with {X.shape[1]} features.")
 
     trained_suite = {}
+    DATA_SOURCES = {
+        'asd':                    'UCI ASD Screening Dataset (Real, CC BY 4.0, Thabtah 2017) — used in dedicated ASD model (train_asd_models.py)',
+        'adhd':                   'SYNTHETIC — no clean public questionnaire CSV available; DSM-5/ICD-11 heuristic cohort',
+        'dyslexia':               'SYNTHETIC — no public dataset with matching AQ-style feature schema; DSM-5/ICD-11 heuristic cohort',
+        'social_anxiety':         'SYNTHETIC — no dedicated public screening CSV available; DSM-5/ICD-11 heuristic cohort',
+        'speech_delay':           'SYNTHETIC — no dedicated public CSV available; ICD-11 F80.9 heuristic cohort',
+        'intellectual_disability':'SYNTHETIC — no dedicated public CSV available; ICD-11 F70-F79 heuristic cohort',
+        'spd':                    'SYNTHETIC — no dedicated public CSV available; clinical heuristic cohort',
+    }
+
     metrics_suite = {
         'status': 'EXPERIMENTAL_RESEARCH_PROTOTYPE',
         'is_synthetic_cohort': True,
         'is_validated_clinical_model': False,
         'cohort_disclaimer': (
-            'NOTICE: The 7-disorder screening models are experimental research prototypes trained on a synthetic '
-            'clinical heuristic developmental cohort for architectural pipeline demonstration. '
-            'They are NOT derived from external multi-center clinical cohorts. Do NOT cite as real-world clinical benchmarks.'
+            'NOTICE: The 7-disorder screening models are experimental research prototypes. '
+            'ASD uses the real UCI dataset (996 records, CC BY 4.0) in train_asd_models.py. '
+            'ADHD, Dyslexia, Social Anxiety, Speech Delay, Intellectual Disability, and SPD '
+            'use a structured heuristic synthetic cohort (N=1200) based on DSM-5/ICD-11 '
+            'symptom covariance — no clean public questionnaire CSV exists for these conditions '
+            'with the required feature schema. Do NOT cite these 6 models as real clinical benchmarks.'
         ),
+        'data_sources': DATA_SOURCES,
         'disorders': {}
     }
 
@@ -279,6 +311,7 @@ def train_multi_disorder_models():
             'short': defs['short'],
             'icd': defs['icd'],
             'status': status_tag,
+            'data_source': DATA_SOURCES.get(disorder_id, 'SYNTHETIC'),
             'is_synthetic_cohort': True,
             'is_validated': False,
             'positive_cases': pos_count,

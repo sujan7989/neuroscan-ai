@@ -1,12 +1,16 @@
 """
-ASD ML Model Training Pipeline & Rigorous Validation Engine
-Performs strict leakage-free evaluation:
-  1. Strict 25% Stratified Holdout Test Split (completely untouched)
-  2. 5-Fold Stratified Cross-Validation on the training split with per-fold metrics (Fold 1-5, Mean, Std)
-  3. Preprocessing (StandardScaler) strictly encapsulated in sklearn.pipeline.Pipeline per fold
-  4. Bootstrap 95% Confidence Intervals for small sample statistical reporting
-  5. Discrimination vs Calibration separation (ROC-AUC, PR-AUC, Brier Score, Expected Calibration Error)
-  6. Integration with shap.TreeExplainer for exact Shapley feature attributions
+NeuroScan AI — ASD Model Training Pipeline (Real UCI Dataset)
+=============================================================
+Dataset: UCI ASD Screening (Adults + Children combined, CC BY 4.0)
+         996 real clinical records (704 adults + 292 children)
+
+Evaluation:
+  1. Strict 25% Stratified Holdout Test Split
+  2. 5-Fold Stratified Cross-Validation (training split only)
+  3. Age-Group Stratified Evaluation (child / adult)
+  4. Sex-Stratified Evaluation (male / female)
+  5. Bootstrap 95% Confidence Intervals
+  6. Discrimination vs Calibration separation
 """
 
 import os
@@ -21,14 +25,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score, f1_score,
-    roc_auc_score, average_precision_score, brier_score_loss,
-    confusion_matrix, balanced_accuracy_score
+    accuracy_score, f1_score, roc_auc_score, average_precision_score,
+    brier_score_loss, confusion_matrix, balanced_accuracy_score
 )
 
-# Add project root to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from ml.preprocessing.pipeline import batch_transform, MODEL_FEATURE_NAMES
+from ml.data.extract_dataset import export_dataset, get_dataset_stats
+
 
 def calculate_sha256(filepath):
     h = hashlib.sha256()
@@ -37,383 +41,326 @@ def calculate_sha256(filepath):
             h.update(chunk)
     return h.hexdigest()
 
-def compute_ece(y_true, y_prob, n_bins=5):
-    """Computes Expected Calibration Error (ECE)."""
+
+def compute_ece(y_true, y_prob, n_bins=10):
     bin_boundaries = np.linspace(0, 1, n_bins + 1)
     ece = 0.0
     for i in range(n_bins):
-        bin_lower = bin_boundaries[i]
-        bin_upper = bin_boundaries[i + 1]
-        in_bin = (y_prob > bin_lower) & (y_prob <= bin_upper)
-        prop_in_bin = np.mean(in_bin)
-        if prop_in_bin > 0:
-            acc_in_bin = np.mean(y_true[in_bin])
-            conf_in_bin = np.mean(y_prob[in_bin])
-            ece += np.abs(acc_in_bin - conf_in_bin) * prop_in_bin
+        in_bin = (y_prob > bin_boundaries[i]) & (y_prob <= bin_boundaries[i + 1])
+        prop = np.mean(in_bin)
+        if prop > 0:
+            ece += np.abs(np.mean(y_true[in_bin]) - np.mean(y_prob[in_bin])) * prop
     return float(ece)
 
+
 def bootstrap_ci(y_true, y_prob, y_pred, n_bootstraps=500, seed=42):
-    """Computes 95% bootstrap confidence intervals for small N evaluation."""
     rng = np.random.RandomState(seed)
     n = len(y_true)
-    accs, senss, specs, aucs, praucs, briers = [], [], [], [], [], []
-
+    accs, aucs, praucs, briers = [], [], [], []
     for _ in range(n_bootstraps):
         idx = rng.choice(n, size=n, replace=True)
         if len(np.unique(y_true[idx])) < 2:
             continue
-        y_t_b = y_true[idx]
-        y_p_b = y_pred[idx]
-        y_pr_b = y_prob[idx]
+        accs.append(accuracy_score(y_true[idx], y_pred[idx]))
+        aucs.append(roc_auc_score(y_true[idx], y_prob[idx]))
+        praucs.append(average_precision_score(y_true[idx], y_prob[idx]))
+        briers.append(brier_score_loss(y_true[idx], y_prob[idx]))
 
-        tn, fp, fn, tp = confusion_matrix(y_t_b, y_p_b, labels=[0, 1]).ravel()
-        sens = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
-
-        accs.append(accuracy_score(y_t_b, y_p_b))
-        senss.append(sens)
-        specs.append(spec)
-        aucs.append(roc_auc_score(y_t_b, y_pr_b))
-        praucs.append(average_precision_score(y_t_b, y_pr_b))
-        briers.append(brier_score_loss(y_t_b, y_pr_b))
-
-    def ci_range(arr):
+    def ci(arr):
         if not arr:
             return {'ci_lower_95': 0.0, 'ci_upper_95': 0.0}
         return {
             'ci_lower_95': round(float(np.percentile(arr, 2.5)), 4),
             'ci_upper_95': round(float(np.percentile(arr, 97.5)), 4)
         }
-
     return {
-        'accuracy_95ci': ci_range(accs),
-        'sensitivity_95ci': ci_range(senss),
-        'specificity_95ci': ci_range(specs),
-        'roc_auc_95ci': ci_range(aucs),
-        'pr_auc_95ci': ci_range(praucs),
-        'brier_score_95ci': ci_range(briers)
+        'accuracy_95ci': ci(accs),
+        'roc_auc_95ci': ci(aucs),
+        'pr_auc_95ci': ci(praucs),
+        'brier_score_95ci': ci(briers)
     }
+
+
+def subgroup_metrics(model, X, y, records, feature_names, label):
+    """Compute metrics on a subgroup of the test set."""
+    if len(y) < 5 or len(np.unique(y)) < 2:
+        return None
+    y_pred = model.predict(X)
+    y_prob = model.predict_proba(X)[:, 1]
+    tn, fp, fn, tp = confusion_matrix(y, y_pred, labels=[0, 1]).ravel()
+    return {
+        'subgroup': label,
+        'n': int(len(y)),
+        'positive_rate': round(float(np.mean(y)), 4),
+        'accuracy': round(float(accuracy_score(y, y_pred)), 4),
+        'sensitivity': round(float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0, 4),
+        'specificity': round(float(tn / (tn + fp)) if (tn + fp) > 0 else 0.0, 4),
+        'roc_auc': round(float(roc_auc_score(y, y_prob)), 4),
+        'f1_score': round(float(f1_score(y, y_pred, zero_division=0)), 4),
+    }
+
 
 def train_and_evaluate():
     print("=" * 70)
-    print("NeuroScan AI — Rigorous ASD Model Training & Validation Engine")
+    print("NeuroScan AI — ASD Model Training (Real UCI Dataset)")
     print("=" * 70)
 
-    # 1. Load Data
-    data_path = os.path.join(os.path.dirname(__file__), '../data/asd_kaggle_data.json')
-    if not os.path.exists(data_path):
-        from ml.data.extract_dataset import export_dataset
-        export_dataset()
+    # ── 1. Load real UCI combined dataset ────────────────────────────────
+    records, csv_path, json_path = export_dataset()
+    dataset_stats = get_dataset_stats(records)
+    dataset_hash = calculate_sha256(json_path)
 
-    with open(data_path, 'r', encoding='utf-8') as f:
-        records = json.load(f)
+    print(f"\nDataset: {len(records)} real clinical records")
+    print(f"  Positive ASD=1: {dataset_stats['positive']} ({dataset_stats['positive_rate']*100:.1f}%)")
+    print(f"  Negative ASD=0: {dataset_stats['negative']}")
+    print(f"  Age groups: {dataset_stats['age_groups']}")
+    print(f"  Sex (M/F): {dataset_stats['sex_asd_positive']['m']}/{dataset_stats['sex_asd_positive']['f']} ASD+ | {dataset_stats['sex_asd_negative']['m']}/{dataset_stats['sex_asd_negative']['f']} ASD-")
+    print(f"  SHA-256: {dataset_hash}")
 
-    # Augment Kaggle subset with clinically calibrated cohort covering all AQ-10 scores (0 to 10)
-    # This prevents small-sample collinearity artifacts (like negative coefficients on diagnostic items)
-    rng = np.random.RandomState(42)
-    augmented_records = list(records)
-    for _ in range(450):
-        # Evenly distribute target AQ score across 0 to 10
-        target_sum = rng.randint(0, 11)
+    # ── 2. Feature extraction ──────────────────────────────────────────────
+    X, y, feature_names = batch_transform(records)
+    print(f"\nFeature matrix: {X.shape}, Target: {y.shape}")
+    print(f"Features: {feature_names}")
 
-        # BUG-7 FIX: rng.choice(10, size=target_sum, replace=False, p=item_probs)
-        # raises a NumPy float-precision ValueError when target_sum==10 because
-        # replace=False with probability weights requires exact normalisation that
-        # floating-point arithmetic cannot guarantee. Two special cases are now
-        # guarded explicitly: target_sum==0 (nothing to pick) and target_sum==10
-        # (all items must be selected, no sampling needed). Only the range [1, 9]
-        # uses the weighted choice API where it is safe and meaningful.
-        item_probs = np.array([0.12, 0.08, 0.09, 0.08, 0.11, 0.08, 0.12, 0.09, 0.11, 0.12])
-        item_probs /= item_probs.sum()  # ensure exact sum=1.0
-
-        scores = [0] * 10
-        if target_sum == 0:
-            # Nothing to pick — all items remain 0
-            chosen_indices = []
-        elif target_sum == 10:
-            # All items must be 1; bypass weighted sampling entirely to avoid
-            # NumPy float-precision ValueError with replace=False + p=
-            chosen_indices = list(range(10))
-        else:
-            # 1 <= target_sum <= 9: safe to use p= with replace=False
-            chosen_indices = rng.choice(10, size=target_sum, replace=False, p=item_probs)
-
-        for idx in chosen_indices:
-            scores[idx] = 1
-
-        age = int(rng.choice([rng.randint(3, 16), rng.randint(17, 55)], p=[0.45, 0.55]))
-        gender = 'm' if rng.rand() < 0.65 else 'f'
-        jaundice = 'yes' if rng.rand() < 0.18 else 'no'
-        austim = 'yes' if rng.rand() < 0.22 else 'no'
-
-        # Clinical consensus threshold for AQ-10 is >= 6
-        if target_sum >= 6:
-            label = 1 if rng.rand() < 0.94 else 0
-        elif target_sum == 5:
-            label = 1 if (rng.rand() < 0.35 or austim == 'yes') else 0
-        else:
-            label = 1 if (target_sum == 4 and austim == 'yes' and rng.rand() < 0.15) else 0
-
-        syn_record = {
-            'age': age,
-            'gender': gender,
-            'ethnicity': rng.choice(['White-European', 'Asian', 'Black', 'Hispanic', 'Middle Eastern']),
-            'jaundice': jaundice,
-            'austim': austim,
-            'country': 'United States',
-            'used_app_before': 'no',
-            'result': target_sum,
-            'relation': 'Self' if age >= 18 else 'Parent',
-            'Class_ASD': label
-        }
-        for i in range(10):
-            syn_record[f"A{i+1}_Score"] = scores[i]
-
-        augmented_records.append(syn_record)
-
-    dataset_hash = calculate_sha256(data_path)
-    print(f"Loaded {len(records)} Kaggle records + {len(augmented_records) - len(records)} calibrated clinical records (Total N={len(augmented_records)}).")
-    print(f"Dataset SHA-256: {dataset_hash}")
-
-    # 2. Extract Features (14 clean features, strictly excluding target derivatives)
-    X, y, feature_names = batch_transform(augmented_records)
-    print(f"Feature matrix shape: {X.shape}, Target vector shape: {y.shape}")
-    print(f"Features ({len(feature_names)}): {feature_names}")
-    print(f"Class distribution: Positive ASD=1: {int(np.sum(y == 1))}, Negative ASD=0: {int(np.sum(y == 0))}")
+    # Keep age_group per record for subgroup analysis
+    age_groups_all = np.array([r.get('age_group', 'adult') for r in records])
+    genders_all    = np.array([r.get('gender', 'm') for r in records])
 
     artifacts_dir = os.path.join(os.path.dirname(__file__), '../artifacts')
     os.makedirs(artifacts_dir, exist_ok=True)
 
-    # 3. Strict Holdout Test Set Split (25% held out, stratified)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, stratify=y, random_state=42
+    # ── 3. Train/test split ───────────────────────────────────────────────
+    X_train, X_test, y_train, y_test, ag_train, ag_test, gen_train, gen_test = train_test_split(
+        X, y, age_groups_all, genders_all,
+        test_size=0.25, stratify=y, random_state=42
     )
+    print(f"\nTrain: N={len(y_train)} (Pos={int(sum(y_train==1))}, Neg={int(sum(y_train==0))})")
+    print(f"Test:  N={len(y_test)}  (Pos={int(sum(y_test==1))}, Neg={int(sum(y_test==0))})")
 
-    print(f"\n[DATA SPLIT] Training Set: N={len(y_train)} (Pos={int(sum(y_train==1))}, Neg={int(sum(y_train==0))})")
-    print(f"[DATA SPLIT] Untouched Test Set: N={len(y_test)} (Pos={int(sum(y_test==1))}, Neg={int(sum(y_test==0))})")
-
-    # 4. Define Model Architectures with Leakage-Free Pipelines
+    # ── 4. Model definitions ──────────────────────────────────────────────
     model_factories = {
         'logistic_regression': lambda: Pipeline([
             ('scaler', StandardScaler()),
-            ('clf', LogisticRegression(C=0.5, solver='lbfgs', max_iter=1000, random_state=42))
+            ('clf', LogisticRegression(C=0.5, solver='lbfgs', max_iter=1000, class_weight='balanced', random_state=42))
         ]),
         'random_forest': lambda: RandomForestClassifier(
-            n_estimators=100, max_depth=4, min_samples_split=4, min_samples_leaf=2,
-            max_features='sqrt', random_state=42
+            n_estimators=200, max_depth=6, min_samples_split=4, min_samples_leaf=2,
+            max_features='sqrt', class_weight='balanced', random_state=42
         ),
         'gradient_boosting': lambda: GradientBoostingClassifier(
-            n_estimators=60, learning_rate=0.05, max_depth=2, subsample=0.8,
+            n_estimators=100, learning_rate=0.05, max_depth=3, subsample=0.8,
             random_state=42
         )
     }
 
-    # Optional XGBoost
     try:
         from xgboost import XGBClassifier
         model_factories['xgboost'] = lambda: XGBClassifier(
-            n_estimators=60, learning_rate=0.05, max_depth=2, subsample=0.8,
+            n_estimators=100, learning_rate=0.05, max_depth=3, subsample=0.8,
+            scale_pos_weight=float(sum(y_train==0)) / max(1, sum(y_train==1)),
             eval_metric='logloss', random_state=42
         )
     except Exception as e:
-        print(f"Note: Standard XGBoost fallback ({e})")
+        print(f"XGBoost not available: {e}")
 
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     evaluation_results = {}
 
     print("\n" + "-" * 70)
-    print("5-FOLD STRATIFIED CROSS-VALIDATION (Within Training Set N=59)")
+    print("5-FOLD STRATIFIED CROSS-VALIDATION")
     print("-" * 70)
 
     for name, factory in model_factories.items():
+        cv_acc, cv_sens, cv_spec, cv_f1, cv_bal, cv_auc, cv_prauc, cv_brier, cv_ece = [], [], [], [], [], [], [], [], []
         fold_records = {}
-        cv_acc, cv_sens, cv_spec, cv_prec, cv_f1, cv_bal_acc, cv_auc, cv_prauc, cv_brier, cv_ece = [], [], [], [], [], [], [], [], [], []
 
         for fold, (tr_idx, val_idx) in enumerate(skf.split(X_train, y_train), 1):
-            X_tr, X_val = X_train[tr_idx], X_train[val_idx]
-            y_tr, y_val = y_train[tr_idx], y_train[val_idx]
+            Xtr, Xval = X_train[tr_idx], X_train[val_idx]
+            ytr, yval = y_train[tr_idx], y_train[val_idx]
 
-            fold_model = factory()
-            fold_model.fit(X_tr, y_tr)
+            m = factory()
+            m.fit(Xtr, ytr)
+            yp = m.predict(Xval)
+            ypr = m.predict_proba(Xval)[:, 1]
 
-            y_val_pred = fold_model.predict(X_val)
-            y_val_prob = fold_model.predict_proba(X_val)[:, 1]
-
-            tn, fp, fn, tp = confusion_matrix(y_val, y_val_pred, labels=[0, 1]).ravel()
+            tn, fp, fn, tp = confusion_matrix(yval, yp, labels=[0, 1]).ravel()
             sens = float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0
             spec = float(tn / (tn + fp)) if (tn + fp) > 0 else 0.0
-            prec = float(tp / (tp + fp)) if (tp + fp) > 0 else 0.0
-            acc = float(accuracy_score(y_val, y_val_pred))
-            f1 = float(f1_score(y_val, y_val_pred, zero_division=0))
-            bal_acc = float(balanced_accuracy_score(y_val, y_val_pred))
-            auc = float(roc_auc_score(y_val, y_val_prob))
-            prauc = float(average_precision_score(y_val, y_val_prob))
-            brier = float(brier_score_loss(y_val, y_val_prob))
-            ece = float(compute_ece(y_val, y_val_prob))
+            acc  = float(accuracy_score(yval, yp))
+            f1   = float(f1_score(yval, yp, zero_division=0))
+            bal  = float(balanced_accuracy_score(yval, yp))
+            auc  = float(roc_auc_score(yval, ypr))
+            prauc= float(average_precision_score(yval, ypr))
+            brier= float(brier_score_loss(yval, ypr))
+            ece  = float(compute_ece(yval, ypr))
 
-            cv_acc.append(acc)
-            cv_sens.append(sens)
-            cv_spec.append(spec)
-            cv_prec.append(prec)
-            cv_f1.append(f1)
-            cv_bal_acc.append(bal_acc)
-            cv_auc.append(auc)
-            cv_prauc.append(prauc)
-            cv_brier.append(brier)
-            cv_ece.append(ece)
+            cv_acc.append(acc); cv_sens.append(sens); cv_spec.append(spec)
+            cv_f1.append(f1);   cv_bal.append(bal);   cv_auc.append(auc)
+            cv_prauc.append(prauc); cv_brier.append(brier); cv_ece.append(ece)
 
             fold_records[f"fold_{fold}"] = {
-                'validation_sample_size': len(y_val),
-                'accuracy': round(acc, 4),
-                'sensitivity': round(sens, 4),
-                'specificity': round(spec, 4),
-                'precision': round(prec, 4),
-                'f1_score': round(f1, 4),
-                'balanced_accuracy': round(bal_acc, 4),
-                'roc_auc': round(auc, 4),
-                'pr_auc': round(prauc, 4),
-                'brier_score': round(brier, 4),
-                'expected_calibration_error': round(ece, 4),
+                'n': len(yval),
+                'accuracy': round(acc, 4), 'sensitivity': round(sens, 4),
+                'specificity': round(spec, 4), 'f1_score': round(f1, 4),
+                'balanced_accuracy': round(bal, 4), 'roc_auc': round(auc, 4),
+                'pr_auc': round(prauc, 4), 'brier_score': round(brier, 4),
                 'confusion_matrix': {'TN': int(tn), 'FP': int(fp), 'FN': int(fn), 'TP': int(tp)}
             }
 
-        # Train final model on entire training set (N=59)
+        # Train final model on full training set
         final_model = factory()
         final_model.fit(X_train, y_train)
 
-        # Evaluate on UNTOUCHED Holdout Test Set (N=20)
-        y_test_pred = final_model.predict(X_test)
-        y_test_prob = final_model.predict_proba(X_test)[:, 1]
+        # ── Holdout test set evaluation ────────────────────────────────
+        ytp = final_model.predict(X_test)
+        ytpr = final_model.predict_proba(X_test)[:, 1]
+        ttn, tfp, tfn, ttp = confusion_matrix(y_test, ytp, labels=[0, 1]).ravel()
 
-        t_tn, t_fp, t_fn, t_tp = confusion_matrix(y_test, y_test_pred, labels=[0, 1]).ravel()
-        test_acc = float(accuracy_score(y_test, y_test_pred))
-        test_sens = float(t_tp / (t_tp + t_fn)) if (t_tp + t_fn) > 0 else 0.0
-        test_spec = float(t_tn / (t_tn + t_fp)) if (t_tn + t_fp) > 0 else 0.0
-        test_prec = float(t_tp / (t_tp + t_fp)) if (t_tp + t_fp) > 0 else 0.0
-        test_f1 = float(f1_score(y_test, y_test_pred, zero_division=0))
-        test_bal_acc = float(balanced_accuracy_score(y_test, y_test_pred))
-        test_auc = float(roc_auc_score(y_test, y_test_prob))
-        test_prauc = float(average_precision_score(y_test, y_test_prob))
-        test_brier = float(brier_score_loss(y_test, y_test_prob))
-        test_ece = float(compute_ece(y_test, y_test_prob))
+        test_metrics = {
+            'n': int(len(y_test)),
+            'accuracy':          round(float(accuracy_score(y_test, ytp)), 4),
+            'sensitivity':       round(float(ttp / (ttp + tfn)) if (ttp + tfn) > 0 else 0.0, 4),
+            'specificity':       round(float(ttn / (ttn + tfp)) if (ttn + tfp) > 0 else 0.0, 4),
+            'f1_score':          round(float(f1_score(y_test, ytp, zero_division=0)), 4),
+            'balanced_accuracy': round(float(balanced_accuracy_score(y_test, ytp)), 4),
+            'roc_auc':           round(float(roc_auc_score(y_test, ytpr)), 4),
+            'pr_auc':            round(float(average_precision_score(y_test, ytpr)), 4),
+            'brier_score':       round(float(brier_score_loss(y_test, ytpr)), 4),
+            'ece':               round(float(compute_ece(y_test, ytpr)), 4),
+            'confusion_matrix': {'TN': int(ttn), 'FP': int(tfp), 'FN': int(tfn), 'TP': int(ttp)},
+            'bootstrap_95ci':    bootstrap_ci(y_test, ytpr, ytp),
+        }
 
-        # Bootstrap Confidence Intervals
-        bootstrap_metrics = bootstrap_ci(y_test, y_test_prob, y_test_pred, n_bootstraps=500, seed=42)
+        # ── Age-group stratified evaluation ───────────────────────────
+        age_stratified = {}
+        for grp in ['child', 'adult']:
+            mask = (ag_test == grp)
+            if mask.sum() >= 5:
+                sm = subgroup_metrics(final_model, X_test[mask], y_test[mask], None, feature_names, grp)
+                if sm:
+                    age_stratified[grp] = sm
 
-        print(f"\n[{name.upper()}]")
-        print(f"  5-Fold CV Mean Acc:    {np.mean(cv_acc)*100:.1f}% (±{np.std(cv_acc)*100:.1f}%)")
-        print(f"  5-Fold CV Sens/Spec:   Sens {np.mean(cv_sens)*100:.1f}% | Spec {np.mean(cv_spec)*100:.1f}%")
-        print(f"  5-Fold CV ROC/PR-AUC:  ROC-AUC {np.mean(cv_auc):.3f} | PR-AUC {np.mean(cv_prauc):.3f}")
-        print(f"  --- Untouched Test Set Evaluation (N={len(y_test)}) ---")
-        print(f"  Test Accuracy:         {test_acc*100:.1f}%")
-        print(f"  Test Sens/Spec:        Sens {test_sens*100:.1f}% | Spec {test_spec*100:.1f}%")
-        print(f"  Test Discrimination:   ROC-AUC {test_auc:.3f} | PR-AUC {test_prauc:.3f}")
-        print(f"  Test Calibration:      Brier {test_brier:.4f} | ECE {test_ece:.4f}")
-        print(f"  Test Confusion Matrix: TN={t_tn}, FP={t_fp}, FN={t_fn}, TP={t_tp}")
+        # ── Sex-stratified evaluation ──────────────────────────────────
+        sex_stratified = {}
+        for sex in ['m', 'f']:
+            mask = (gen_test == sex)
+            if mask.sum() >= 5:
+                sm = subgroup_metrics(final_model, X_test[mask], y_test[mask], None, feature_names, sex)
+                if sm:
+                    sex_stratified[sex] = sm
 
-        # Feature importance / coefficients
-        feat_importance = {}
-        clf_estimator = final_model.named_steps['clf'] if hasattr(final_model, 'named_steps') else final_model
-        if hasattr(clf_estimator, 'feature_importances_'):
-            for feat, imp in zip(feature_names, clf_estimator.feature_importances_):
-                feat_importance[feat] = round(float(imp), 4)
-        elif hasattr(clf_estimator, 'coef_'):
-            for feat, coef in zip(feature_names, clf_estimator.coef_[0]):
-                feat_importance[feat] = round(float(coef), 4)
+        # ── Feature importances ────────────────────────────────────────
+        feat_imp = {}
+        clf = final_model.named_steps['clf'] if hasattr(final_model, 'named_steps') else final_model
+        if hasattr(clf, 'feature_importances_'):
+            for fn_name, imp in zip(feature_names, clf.feature_importances_):
+                feat_imp[fn_name] = round(float(imp), 4)
+        elif hasattr(clf, 'coef_'):
+            for fn_name, coef in zip(feature_names, clf.coef_[0]):
+                feat_imp[fn_name] = round(float(coef), 4)
 
-        # Save model artifact
-        artifact_file = os.path.join(artifacts_dir, f"{name}.joblib")
-        joblib.dump(final_model, artifact_file)
+        # Save
+        artifact_path = os.path.join(artifacts_dir, f"{name}.joblib")
+        joblib.dump(final_model, artifact_path)
 
         evaluation_results[name] = {
             'model_name': name,
             'cross_validation_folds': fold_records,
             'cv_metrics_summary': {
-                'mean_accuracy': round(float(np.mean(cv_acc)), 4),
-                'std_accuracy': round(float(np.std(cv_acc)), 4),
-                'mean_sensitivity': round(float(np.mean(cv_sens)), 4),
-                'mean_specificity': round(float(np.mean(cv_spec)), 4),
-                'mean_precision': round(float(np.mean(cv_prec)), 4),
-                'mean_f1_score': round(float(np.mean(cv_f1)), 4),
-                'mean_balanced_accuracy': round(float(np.mean(cv_bal_acc)), 4),
-                'mean_roc_auc': round(float(np.mean(cv_auc)), 4),
-                'mean_pr_auc': round(float(np.mean(cv_prauc)), 4),
-                'mean_brier_score': round(float(np.mean(cv_brier)), 4),
-                'mean_ece': round(float(np.mean(cv_ece)), 4)
+                'mean_accuracy':          round(float(np.mean(cv_acc)), 4),
+                'std_accuracy':           round(float(np.std(cv_acc)), 4),
+                'mean_sensitivity':       round(float(np.mean(cv_sens)), 4),
+                'mean_specificity':       round(float(np.mean(cv_spec)), 4),
+                'mean_f1_score':          round(float(np.mean(cv_f1)), 4),
+                'mean_balanced_accuracy': round(float(np.mean(cv_bal)), 4),
+                'mean_roc_auc':           round(float(np.mean(cv_auc)), 4),
+                'mean_pr_auc':            round(float(np.mean(cv_prauc)), 4),
+                'mean_brier_score':       round(float(np.mean(cv_brier)), 4),
+                'mean_ece':               round(float(np.mean(cv_ece)), 4),
             },
-            'test_metrics': {
-                'sample_size': int(len(y_test)),
-                'accuracy': round(test_acc, 4),
-                'sensitivity': round(test_sens, 4),
-                'specificity': round(test_spec, 4),
-                'precision': round(test_prec, 4),
-                'f1_score': round(test_f1, 4),
-                'balanced_accuracy': round(test_bal_acc, 4),
-                'roc_auc': round(test_auc, 4),
-                'pr_auc': round(test_prauc, 4),
-                'brier_score': round(test_brier, 4),
-                'expected_calibration_error': round(test_ece, 4),
-                'confusion_matrix': {
-                    'true_negative': int(t_tn),
-                    'false_positive': int(t_fp),
-                    'false_negative': int(t_fn),
-                    'true_positive': int(t_tp)
-                },
-                'bootstrap_95ci': bootstrap_metrics
-            },
-            'feature_importance': feat_importance,
-            'artifact_path': artifact_file
+            'test_metrics': test_metrics,
+            'age_stratified_metrics': age_stratified,
+            'sex_stratified_metrics': sex_stratified,
+            'feature_importance': feat_imp,
+            'artifact_path': artifact_path,
         }
 
-    # 5. Fit Scaler for linear reference
+        print(f"\n[{name.upper()}]")
+        print(f"  CV  Acc={np.mean(cv_acc)*100:.1f}% Sens={np.mean(cv_sens)*100:.1f}% Spec={np.mean(cv_spec)*100:.1f}% AUC={np.mean(cv_auc):.3f}")
+        print(f"  TEST Acc={test_metrics['accuracy']*100:.1f}% Sens={test_metrics['sensitivity']*100:.1f}% Spec={test_metrics['specificity']*100:.1f}% AUC={test_metrics['roc_auc']:.3f} Brier={test_metrics['brier_score']:.4f}")
+        if age_stratified:
+            for g, sm in age_stratified.items():
+                print(f"  AGE-{g.upper():<12} n={sm['n']:3d} AUC={sm['roc_auc']:.3f} Sens={sm['sensitivity']*100:.1f}% Spec={sm['specificity']*100:.1f}%")
+        if sex_stratified:
+            for s, sm in sex_stratified.items():
+                label = 'MALE' if s == 'm' else 'FEMALE'
+                print(f"  SEX-{label:<12} n={sm['n']:3d} AUC={sm['roc_auc']:.3f} Sens={sm['sensitivity']*100:.1f}% Spec={sm['specificity']*100:.1f}%")
+
+    # ── 5. Scaler + SHAP ──────────────────────────────────────────────────
     scaler = StandardScaler()
     scaler.fit(X_train)
     joblib.dump(scaler, os.path.join(artifacts_dir, "scaler.joblib"))
 
-    # 6. Fit and serialize authentic SHAP TreeExplainer for Random Forest
     try:
         import shap
         rf_final = joblib.load(os.path.join(artifacts_dir, "random_forest.joblib"))
         explainer = shap.TreeExplainer(rf_final)
-        explainer_path = os.path.join(artifacts_dir, "rf_shap_explainer.joblib")
-        joblib.dump(explainer, explainer_path)
-        print("\nSHAP TreeExplainer successfully fitted and serialized to rf_shap_explainer.joblib")
+        joblib.dump(explainer, os.path.join(artifacts_dir, "rf_shap_explainer.joblib"))
+        print("\nSHAP TreeExplainer serialized.")
     except Exception as e:
-        print(f"Note: SHAP TreeExplainer build note: {e}")
+        print(f"SHAP note: {e}")
 
-    # 7. Model Metadata & Rigorous Scientific Documentation
+    # ── 6. Save metadata ──────────────────────────────────────────────────
     metadata = {
         'model_suite': 'NeuroScan AI ASD Screening ML Suite',
         'status': 'RESEARCH_PROTOTYPE',
         'is_experimental': True,
         'is_validated_clinical_model': False,
         'dataset_info': {
-            'dataset_name': 'Kaggle ML Olympiad - Autism Prediction (Curated Sample)',
+            'dataset_name': 'UCI ASD Screening Dataset (Adults + Children combined)',
+            'sources': [
+                {
+                    'name': 'Autism Screening Adult',
+                    'uci_id': 426,
+                    'records': 704,
+                    'doi': 'https://doi.org/10.24432/C5F019',
+                    'license': 'CC BY 4.0'
+                },
+                {
+                    'name': 'Autistic Spectrum Disorder Screening Data for Children',
+                    'uci_id': 419,
+                    'records': 292,
+                    'doi': 'https://doi.org/10.24432/C5659W',
+                    'license': 'CC BY 4.0'
+                }
+            ],
+            'citation': 'Thabtah, F. (2017). UCI ML Repository. CC BY 4.0.',
             'dataset_sha256': dataset_hash,
-            'total_records': int(len(records)),
+            'total_real_records': dataset_stats['total'],
+            'total_records': dataset_stats['total'],
+            'positive_asd': dataset_stats['positive'],
+            'negative_asd': dataset_stats['negative'],
+            'positive_rate': dataset_stats['positive_rate'],
+            'age_groups': dataset_stats['age_groups'],
+            'sex_distribution': {
+                'asd_positive': dataset_stats['sex_asd_positive'],
+                'asd_negative': dataset_stats['sex_asd_negative'],
+            },
+            'age_range': dataset_stats['age_range'],
             'training_records': int(len(y_train)),
             'test_records': int(len(y_test)),
+            'train_test_split': '75% train / 25% test (stratified)',
             'features': list(feature_names),
-            'target_variable': 'Class_ASD'
+            'target_variable': 'Class_ASD',
+            'augmentation_note': 'NO synthetic augmentation — model trained on real UCI data only',
         },
-        'methodological_investigation': {
-            'target_derivation_type': 'QUESTIONNAIRE-SCORE REPLICATION / SCREENING SCORE PREDICTION',
-            'findings_summary': (
-                'Rigorous investigation reveals that the 80-record curated sample exhibits complete separation '
-                'primarily due to features A1_Score and A10_Score being 1 in all positive records and 0 in all controls. '
-                'All target-derived variables (aq10_sum, result) were strictly purged from feature matrices to prevent '
-                'target leakage. Preprocessing was enclosed in leakage-free pipelines. '
-                'While models achieve 100% separation on this 80-record proof-of-concept subset, this performance '
-                'is an artifact of the sample curation and does NOT represent generalizable clinical accuracy.'
-            ),
-            'leakage_prevention_measures': [
-                'Target-derived cumulative scores (aq10_sum, result) purged from feature matrix.',
-                'StandardScaler fit strictly inside training folds of 5-fold CV to eliminate preprocessing leakage.',
-                'Strict 25% Stratified Holdout Test Set isolated prior to model fitting.',
-                'Per-fold CV reporting (Fold 1-5, Mean, Std) and 95% bootstrap confidence intervals provided.',
-                'Discrimination metrics (ROC-AUC, PR-AUC) explicitly separated from Calibration metrics (Brier, ECE).'
-            ]
-        },
+        'leakage_prevention': [
+            'result column (AQ-10 raw sum) excluded from feature matrix',
+            'aq10_sum excluded from feature matrix',
+            'Class_ASD label excluded from feature matrix',
+            'StandardScaler fit strictly within CV training folds',
+            'Holdout test set isolated before any model fitting',
+        ],
         'ensemble_weights': {
             'random_forest': 0.40,
             'gradient_boosting': 0.40,
@@ -421,9 +368,9 @@ def train_and_evaluate():
         },
         'metrics': evaluation_results,
         'disclaimer': (
-            'RESEARCH PROTOTYPE ONLY: NeuroScan AI screening indicators are designed for technical and educational '
-            'demonstration. They do NOT constitute medical or clinical diagnoses. Professional diagnostic evaluations '
-            'require comprehensive multidisciplinary clinical assessment (e.g., ADOS-2, ADI-R, CARS).'
+            'RESEARCH PROTOTYPE: NeuroScan AI screening indicators are for educational '
+            'demonstration only. They do NOT constitute clinical diagnoses. '
+            'Professional evaluation requires ADOS-2, ADI-R, or CARS administered by specialists.'
         )
     }
 
@@ -431,8 +378,10 @@ def train_and_evaluate():
     with open(metrics_path, 'w', encoding='utf-8') as f:
         json.dump(metadata, f, indent=2)
 
-    print(f"\nSaved all artifacts and rigorous validation metrics to {artifacts_dir}")
+    print(f"\nSaved all artifacts to {artifacts_dir}")
+    print(f"Dataset: {dataset_stats['total']} real records | Train={len(y_train)} Test={len(y_test)}")
     return metadata
+
 
 if __name__ == '__main__':
     train_and_evaluate()
