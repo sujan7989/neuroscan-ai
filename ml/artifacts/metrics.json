@@ -1,4 +1,4 @@
-﻿{
+{
   "model_suite": "NeuroScan AI ASD Screening ML Suite",
   "status": "RESEARCH_PROTOTYPE",
   "is_experimental": true,
@@ -279,7 +279,7 @@
         "jaundice_num": -0.0672,
         "austim_num": 0.0
       },
-      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\logistic_regression.joblib"
+      "artifact_path": "ml/artifacts/logistic_regression.joblib"
     },
     "random_forest": {
       "model_name": "random_forest",
@@ -478,7 +478,7 @@
         "jaundice_num": 0.0051,
         "austim_num": 0.0
       },
-      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\random_forest.joblib"
+      "artifact_path": "ml/artifacts/random_forest.joblib"
     },
     "gradient_boosting": {
       "model_name": "gradient_boosting",
@@ -677,7 +677,7 @@
         "jaundice_num": 0.0005,
         "austim_num": 0.0
       },
-      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\gradient_boosting.joblib"
+      "artifact_path": "ml/artifacts/gradient_boosting.joblib"
     },
     "xgboost": {
       "model_name": "xgboost",
@@ -876,7 +876,7 @@
         "jaundice_num": 0.0048,
         "austim_num": 0.0
       },
-      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\xgboost.joblib"
+      "artifact_path": "ml/artifacts/xgboost.joblib"
     }
   },
   "disclaimer": "RESEARCH PROTOTYPE: NeuroScan AI screening indicators are for educational demonstration only. They do NOT constitute clinical diagnoses. Professional evaluation requires ADOS-2, ADI-R, or CARS administered by specialists."
