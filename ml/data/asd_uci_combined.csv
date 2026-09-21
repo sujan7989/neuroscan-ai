@@ -325,11 +325,9 @@ A1_Score,A2_Score,A3_Score,A4_Score,A5_Score,A6_Score,A7_Score,A8_Score,A9_Score
 1,1,0,1,1,0,0,0,0,0,18,f,'South Asian',no,no,Bangladesh,no,4,Self,0,adult
 1,0,0,0,0,0,0,0,0,1,37,f,Other,no,no,United Arab Emirates,no,2,Self,0,adult
 1,1,1,0,1,0,0,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,5,Relative,0,adult
-1,1,1,0,1,0,0,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,5,Relative,0,adult
 0,0,0,0,1,0,0,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,2,Relative,0,adult
 1,1,1,0,0,0,0,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,4,Relative,0,adult
 0,1,0,0,0,0,1,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,3,Relative,0,adult
-1,1,1,0,0,0,0,1,0,0,18,m,'Middle Eastern ',no,no,United Arab Emirates,no,4,Relative,0,adult
 1,1,1,1,1,1,1,1,1,1,19,m,White-European,no,no,Austria,no,10,Self,1,adult
 1,0,0,1,1,1,1,0,1,1,55,m,White-European,no,no,United Kingdom,no,7,Self,1,adult
 1,0,0,0,0,1,1,0,1,1,32,f,Asian,no,no,Canada,no,5,Parent,0,adult
@@ -572,8 +570,6 @@ A1_Score,A2_Score,A3_Score,A4_Score,A5_Score,A6_Score,A7_Score,A8_Score,A9_Score
 1,1,0,1,0,0,0,0,0,1,31,m,White-European,no,no,Australia,no,4,Self,0,adult
 1,0,0,0,0,0,0,1,0,1,47,m,Other,no,no,Jordan,no,3,Self,0,adult
 1,0,0,1,0,0,0,1,0,0,47,m,Other,no,no,Jordan,no,3,Self,0,adult
-1,1,1,1,1,1,1,1,1,1,44,m,White-European,no,no,United Kingdom,no,10,Self,1,adult
-1,0,0,0,1,0,1,1,0,0,25,f,White-European,no,no,United States,no,4,Self,0,adult
 1,0,0,0,1,0,1,1,0,0,25,f,White-European,no,no,United States,no,4,Self,0,adult
 1,1,0,0,1,1,1,1,1,1,20,m,White-European,no,no,United Kingdom,no,8,Self,1,adult
 1,1,1,1,1,0,1,1,1,1,43,m,White-European,yes,no,New Zealand,no,9,Self,1,adult
@@ -668,7 +664,6 @@ A1_Score,A2_Score,A3_Score,A4_Score,A5_Score,A6_Score,A7_Score,A8_Score,A9_Score
 0,0,0,0,0,0,0,1,0,0,56,m,Other,no,no,Iraq,no,1,Self,0,adult
 0,0,1,0,0,0,1,1,0,0,50,f,'Middle Eastern ',no,no,New Zealand,no,3,Parent,0,adult
 1,0,0,0,0,0,1,1,0,1,38,m,White-European,no,no,United States,no,4,Self,0,adult
-1,1,1,1,1,1,1,1,1,1,47,m,White-European,no,no,United States,no,10,Self,1,adult
 1,1,1,1,1,0,1,1,1,1,30,m,Others,no,no,United States,no,9,Self,1,adult
 1,1,1,1,1,0,0,1,0,1,21,m,Hispanic,no,no,United States,no,7,Self,1,adult
 1,1,1,1,1,0,1,1,0,1,21,m,White-European,no,no,Ireland,no,8,Self,1,adult
@@ -787,7 +782,6 @@ A1_Score,A2_Score,A3_Score,A4_Score,A5_Score,A6_Score,A7_Score,A8_Score,A9_Score
 0,1,1,1,1,1,1,1,1,1,7,m,White-European,yes,no,New Zealand,no,9,Parent,1,child
 1,0,1,1,1,1,1,1,0,1,8,m,White-European,no,no,United States,no,8,Parent,1,child
 0,1,1,0,1,1,0,0,0,1,5,m,Asian,no,no,South Korea,no,5,Parent,0,child
-0,0,1,0,1,1,1,0,1,1,4,m,Asian,no,no,India,no,6,Parent,0,child
 1,1,1,1,1,1,1,0,1,1,11,f,White-European,no,no,United Kingdom,no,9,Parent,1,child
 1,1,1,1,0,0,1,0,1,1,11,f,White-European,no,no,United Kingdom,no,7,Parent,1,child
 1,1,1,1,1,1,1,1,1,1,4,m,White-European,no,no,South Africa,no,10,Parent,1,child
@@ -795,7 +789,6 @@ A1_Score,A2_Score,A3_Score,A4_Score,A5_Score,A6_Score,A7_Score,A8_Score,A9_Score
 0,1,1,1,1,1,1,1,1,1,6,m,Hispanic,no,no,United States,no,9,Parent,1,child
 1,0,1,1,1,1,1,0,1,1,4,f,White-European,no,no,Australia,no,8,Parent,1,child
 1,0,0,1,1,1,1,0,0,0,11,f,White-European,yes,no,United Kingdom,no,5,Relative,0,child
-0,0,1,1,1,1,1,1,1,1,5,m,Asian,no,no,India,no,8,Parent,1,child
 0,0,1,1,1,1,1,1,1,1,5,m,Asian,no,no,India,no,8,Parent,1,child
 1,1,1,1,1,1,1,1,1,1,6,m,Latino,no,no,United States,no,10,Parent,1,child
 1,0,1,0,1,1,1,1,0,1,7,m,Hispanic,no,no,United States,no,7,Parent,1,child
