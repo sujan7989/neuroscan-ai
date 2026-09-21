@@ -5,6 +5,9 @@
 
 FROM node:20-alpine
 
+# Cache bust — increment to force fresh Render build
+ARG CACHE_BUST=3
+
 # Set working directory
 WORKDIR /app
 
