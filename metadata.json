@@ -1,0 +1,11 @@
+{
+  "name": "NeuroScan AI",
+  "description": "Advanced neurodevelopmental assessment and multi-disorder detection system featuring multimodal AI fusion (clinical questionnaires, speech biomarkers, drawing & CDT kinematics, cognitive reaction battery), calibrated uncertainty intervals, explainable AI, and longitudinal tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

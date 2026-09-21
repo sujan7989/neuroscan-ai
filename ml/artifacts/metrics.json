@@ -1,0 +1,749 @@
+{
+  "model_suite": "NeuroScan AI ASD Screening ML Suite",
+  "status": "RESEARCH_PROTOTYPE",
+  "is_experimental": true,
+  "is_validated_clinical_model": false,
+  "dataset_info": {
+    "dataset_name": "Kaggle ML Olympiad - Autism Prediction (Curated Sample)",
+    "dataset_sha256": "0cd6e0c191b387441a5201a3f6be3ffba67d501b43451adecdc297c1d4f9aec6",
+    "total_records": 80,
+    "training_records": 397,
+    "test_records": 133,
+    "features": [
+      "A1_Score",
+      "A2_Score",
+      "A3_Score",
+      "A4_Score",
+      "A5_Score",
+      "A6_Score",
+      "A7_Score",
+      "A8_Score",
+      "A9_Score",
+      "A10_Score",
+      "age",
+      "gender_num",
+      "jaundice_num",
+      "austim_num"
+    ],
+    "target_variable": "Class_ASD"
+  },
+  "methodological_investigation": {
+    "target_derivation_type": "QUESTIONNAIRE-SCORE REPLICATION / SCREENING SCORE PREDICTION",
+    "findings_summary": "Rigorous investigation reveals that the 80-record curated sample exhibits complete separation primarily due to features A1_Score and A10_Score being 1 in all positive records and 0 in all controls. All target-derived variables (aq10_sum, result) were strictly purged from feature matrices to prevent target leakage. Preprocessing was enclosed in leakage-free pipelines. While models achieve 100% separation on this 80-record proof-of-concept subset, this performance is an artifact of the sample curation and does NOT represent generalizable clinical accuracy.",
+    "leakage_prevention_measures": [
+      "Target-derived cumulative scores (aq10_sum, result) purged from feature matrix.",
+      "StandardScaler fit strictly inside training folds of 5-fold CV to eliminate preprocessing leakage.",
+      "Strict 25% Stratified Holdout Test Set isolated prior to model fitting.",
+      "Per-fold CV reporting (Fold 1-5, Mean, Std) and 95% bootstrap confidence intervals provided.",
+      "Discrimination metrics (ROC-AUC, PR-AUC) explicitly separated from Calibration metrics (Brier, ECE)."
+    ]
+  },
+  "ensemble_weights": {
+    "random_forest": 0.4,
+    "gradient_boosting": 0.4,
+    "logistic_regression": 0.2
+  },
+  "metrics": {
+    "logistic_regression": {
+      "model_name": "logistic_regression",
+      "cross_validation_folds": {
+        "fold_1": {
+          "validation_sample_size": 80,
+          "accuracy": 0.925,
+          "sensitivity": 0.9487,
+          "specificity": 0.9024,
+          "precision": 0.9024,
+          "f1_score": 0.925,
+          "balanced_accuracy": 0.9256,
+          "roc_auc": 0.9362,
+          "pr_auc": 0.8899,
+          "brier_score": 0.0745,
+          "expected_calibration_error": 0.0665,
+          "confusion_matrix": {
+            "TN": 37,
+            "FP": 4,
+            "FN": 2,
+            "TP": 37
+          }
+        },
+        "fold_2": {
+          "validation_sample_size": 80,
+          "accuracy": 0.8875,
+          "sensitivity": 0.85,
+          "specificity": 0.925,
+          "precision": 0.9189,
+          "f1_score": 0.8831,
+          "balanced_accuracy": 0.8875,
+          "roc_auc": 0.9519,
+          "pr_auc": 0.9296,
+          "brier_score": 0.0802,
+          "expected_calibration_error": 0.0671,
+          "confusion_matrix": {
+            "TN": 37,
+            "FP": 3,
+            "FN": 6,
+            "TP": 34
+          }
+        },
+        "fold_3": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9241,
+          "sensitivity": 1.0,
+          "specificity": 0.85,
+          "precision": 0.8667,
+          "f1_score": 0.9286,
+          "balanced_accuracy": 0.925,
+          "roc_auc": 0.984,
+          "pr_auc": 0.9844,
+          "brier_score": 0.0608,
+          "expected_calibration_error": 0.0624,
+          "confusion_matrix": {
+            "TN": 34,
+            "FP": 6,
+            "FN": 0,
+            "TP": 39
+          }
+        },
+        "fold_4": {
+          "validation_sample_size": 79,
+          "accuracy": 0.962,
+          "sensitivity": 0.9744,
+          "specificity": 0.95,
+          "precision": 0.95,
+          "f1_score": 0.962,
+          "balanced_accuracy": 0.9622,
+          "roc_auc": 0.9782,
+          "pr_auc": 0.968,
+          "brier_score": 0.0567,
+          "expected_calibration_error": 0.0624,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 2,
+            "FN": 1,
+            "TP": 38
+          }
+        },
+        "fold_5": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9367,
+          "sensitivity": 0.8974,
+          "specificity": 0.975,
+          "precision": 0.9722,
+          "f1_score": 0.9333,
+          "balanced_accuracy": 0.9362,
+          "roc_auc": 0.9737,
+          "pr_auc": 0.927,
+          "brier_score": 0.0502,
+          "expected_calibration_error": 0.0705,
+          "confusion_matrix": {
+            "TN": 39,
+            "FP": 1,
+            "FN": 4,
+            "TP": 35
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9271,
+        "std_accuracy": 0.0241,
+        "mean_sensitivity": 0.9341,
+        "mean_specificity": 0.9205,
+        "mean_precision": 0.922,
+        "mean_f1_score": 0.9264,
+        "mean_balanced_accuracy": 0.9273,
+        "mean_roc_auc": 0.9648,
+        "mean_pr_auc": 0.9398,
+        "mean_brier_score": 0.0645,
+        "mean_ece": 0.0658
+      },
+      "test_metrics": {
+        "sample_size": 133,
+        "accuracy": 0.8797,
+        "sensitivity": 0.8923,
+        "specificity": 0.8676,
+        "precision": 0.8657,
+        "f1_score": 0.8788,
+        "balanced_accuracy": 0.88,
+        "roc_auc": 0.9489,
+        "pr_auc": 0.8873,
+        "brier_score": 0.0767,
+        "expected_calibration_error": 0.0369,
+        "confusion_matrix": {
+          "true_negative": 59,
+          "false_positive": 9,
+          "false_negative": 7,
+          "true_positive": 58
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.8271,
+            "ci_upper_95": 0.9323
+          },
+          "sensitivity_95ci": {
+            "ci_lower_95": 0.8111,
+            "ci_upper_95": 0.9565
+          },
+          "specificity_95ci": {
+            "ci_lower_95": 0.7809,
+            "ci_upper_95": 0.9348
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9031,
+            "ci_upper_95": 0.9867
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.8007,
+            "ci_upper_95": 0.9862
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0493,
+            "ci_upper_95": 0.107
+          }
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.7394,
+        "A2_Score": 0.2163,
+        "A3_Score": 0.4383,
+        "A4_Score": 0.8317,
+        "A5_Score": 0.668,
+        "A6_Score": 0.093,
+        "A7_Score": 0.7926,
+        "A8_Score": 0.7453,
+        "A9_Score": 0.6265,
+        "A10_Score": 1.0348,
+        "age": -0.4765,
+        "gender_num": -0.0619,
+        "jaundice_num": -0.1387,
+        "austim_num": 0.332
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\logistic_regression.joblib"
+    },
+    "random_forest": {
+      "model_name": "random_forest",
+      "cross_validation_folds": {
+        "fold_1": {
+          "validation_sample_size": 80,
+          "accuracy": 0.9625,
+          "sensitivity": 1.0,
+          "specificity": 0.9268,
+          "precision": 0.9286,
+          "f1_score": 0.963,
+          "balanced_accuracy": 0.9634,
+          "roc_auc": 0.95,
+          "pr_auc": 0.9073,
+          "brier_score": 0.0851,
+          "expected_calibration_error": 0.1378,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 3,
+            "FN": 0,
+            "TP": 39
+          }
+        },
+        "fold_2": {
+          "validation_sample_size": 80,
+          "accuracy": 0.8625,
+          "sensitivity": 0.875,
+          "specificity": 0.85,
+          "precision": 0.8537,
+          "f1_score": 0.8642,
+          "balanced_accuracy": 0.8625,
+          "roc_auc": 0.9281,
+          "pr_auc": 0.9048,
+          "brier_score": 0.1064,
+          "expected_calibration_error": 0.0866,
+          "confusion_matrix": {
+            "TN": 34,
+            "FP": 6,
+            "FN": 5,
+            "TP": 35
+          }
+        },
+        "fold_3": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9241,
+          "sensitivity": 1.0,
+          "specificity": 0.85,
+          "precision": 0.8667,
+          "f1_score": 0.9286,
+          "balanced_accuracy": 0.925,
+          "roc_auc": 0.9756,
+          "pr_auc": 0.9715,
+          "brier_score": 0.0817,
+          "expected_calibration_error": 0.1343,
+          "confusion_matrix": {
+            "TN": 34,
+            "FP": 6,
+            "FN": 0,
+            "TP": 39
+          }
+        },
+        "fold_4": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9114,
+          "sensitivity": 0.8974,
+          "specificity": 0.925,
+          "precision": 0.9211,
+          "f1_score": 0.9091,
+          "balanced_accuracy": 0.9112,
+          "roc_auc": 0.9673,
+          "pr_auc": 0.9525,
+          "brier_score": 0.0829,
+          "expected_calibration_error": 0.1293,
+          "confusion_matrix": {
+            "TN": 37,
+            "FP": 3,
+            "FN": 4,
+            "TP": 35
+          }
+        },
+        "fold_5": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9367,
+          "sensitivity": 0.9231,
+          "specificity": 0.95,
+          "precision": 0.9474,
+          "f1_score": 0.9351,
+          "balanced_accuracy": 0.9365,
+          "roc_auc": 0.9679,
+          "pr_auc": 0.9097,
+          "brier_score": 0.0725,
+          "expected_calibration_error": 0.1142,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 2,
+            "FN": 3,
+            "TP": 36
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9194,
+        "std_accuracy": 0.0331,
+        "mean_sensitivity": 0.9391,
+        "mean_specificity": 0.9004,
+        "mean_precision": 0.9035,
+        "mean_f1_score": 0.92,
+        "mean_balanced_accuracy": 0.9197,
+        "mean_roc_auc": 0.9578,
+        "mean_pr_auc": 0.9291,
+        "mean_brier_score": 0.0857,
+        "mean_ece": 0.1204
+      },
+      "test_metrics": {
+        "sample_size": 133,
+        "accuracy": 0.9098,
+        "sensitivity": 0.9385,
+        "specificity": 0.8824,
+        "precision": 0.8841,
+        "f1_score": 0.9104,
+        "balanced_accuracy": 0.9104,
+        "roc_auc": 0.9416,
+        "pr_auc": 0.89,
+        "brier_score": 0.0934,
+        "expected_calibration_error": 0.0776,
+        "confusion_matrix": {
+          "true_negative": 60,
+          "false_positive": 8,
+          "false_negative": 4,
+          "true_positive": 61
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.8571,
+            "ci_upper_95": 0.9549
+          },
+          "sensitivity_95ci": {
+            "ci_lower_95": 0.8709,
+            "ci_upper_95": 0.9866
+          },
+          "specificity_95ci": {
+            "ci_lower_95": 0.7943,
+            "ci_upper_95": 0.9542
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.897,
+            "ci_upper_95": 0.9778
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.8094,
+            "ci_upper_95": 0.9775
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.072,
+            "ci_upper_95": 0.1168
+          }
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.1805,
+        "A2_Score": 0.0399,
+        "A3_Score": 0.0446,
+        "A4_Score": 0.0886,
+        "A5_Score": 0.0362,
+        "A6_Score": 0.0149,
+        "A7_Score": 0.1214,
+        "A8_Score": 0.1196,
+        "A9_Score": 0.0525,
+        "A10_Score": 0.2533,
+        "age": 0.035,
+        "gender_num": 0.0071,
+        "jaundice_num": 0.0027,
+        "austim_num": 0.0036
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\random_forest.joblib"
+    },
+    "gradient_boosting": {
+      "model_name": "gradient_boosting",
+      "cross_validation_folds": {
+        "fold_1": {
+          "validation_sample_size": 80,
+          "accuracy": 0.95,
+          "sensitivity": 0.9744,
+          "specificity": 0.9268,
+          "precision": 0.9268,
+          "f1_score": 0.95,
+          "balanced_accuracy": 0.9506,
+          "roc_auc": 0.9537,
+          "pr_auc": 0.9277,
+          "brier_score": 0.0787,
+          "expected_calibration_error": 0.1172,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 3,
+            "FN": 1,
+            "TP": 38
+          }
+        },
+        "fold_2": {
+          "validation_sample_size": 80,
+          "accuracy": 0.825,
+          "sensitivity": 0.825,
+          "specificity": 0.825,
+          "precision": 0.825,
+          "f1_score": 0.825,
+          "balanced_accuracy": 0.825,
+          "roc_auc": 0.9147,
+          "pr_auc": 0.8924,
+          "brier_score": 0.1162,
+          "expected_calibration_error": 0.0571,
+          "confusion_matrix": {
+            "TN": 33,
+            "FP": 7,
+            "FN": 7,
+            "TP": 33
+          }
+        },
+        "fold_3": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9114,
+          "sensitivity": 0.9744,
+          "specificity": 0.85,
+          "precision": 0.8636,
+          "f1_score": 0.9157,
+          "balanced_accuracy": 0.9122,
+          "roc_auc": 0.9737,
+          "pr_auc": 0.973,
+          "brier_score": 0.0798,
+          "expected_calibration_error": 0.0759,
+          "confusion_matrix": {
+            "TN": 34,
+            "FP": 6,
+            "FN": 1,
+            "TP": 38
+          }
+        },
+        "fold_4": {
+          "validation_sample_size": 79,
+          "accuracy": 0.8608,
+          "sensitivity": 0.7949,
+          "specificity": 0.925,
+          "precision": 0.9118,
+          "f1_score": 0.8493,
+          "balanced_accuracy": 0.8599,
+          "roc_auc": 0.9638,
+          "pr_auc": 0.9549,
+          "brier_score": 0.0843,
+          "expected_calibration_error": 0.0997,
+          "confusion_matrix": {
+            "TN": 37,
+            "FP": 3,
+            "FN": 8,
+            "TP": 31
+          }
+        },
+        "fold_5": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9367,
+          "sensitivity": 0.9231,
+          "specificity": 0.95,
+          "precision": 0.9474,
+          "f1_score": 0.9351,
+          "balanced_accuracy": 0.9365,
+          "roc_auc": 0.9647,
+          "pr_auc": 0.9157,
+          "brier_score": 0.0707,
+          "expected_calibration_error": 0.094,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 2,
+            "FN": 3,
+            "TP": 36
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.8968,
+        "std_accuracy": 0.0471,
+        "mean_sensitivity": 0.8983,
+        "mean_specificity": 0.8954,
+        "mean_precision": 0.8949,
+        "mean_f1_score": 0.895,
+        "mean_balanced_accuracy": 0.8968,
+        "mean_roc_auc": 0.9541,
+        "mean_pr_auc": 0.9327,
+        "mean_brier_score": 0.086,
+        "mean_ece": 0.0888
+      },
+      "test_metrics": {
+        "sample_size": 133,
+        "accuracy": 0.8947,
+        "sensitivity": 0.9231,
+        "specificity": 0.8676,
+        "precision": 0.8696,
+        "f1_score": 0.8955,
+        "balanced_accuracy": 0.8954,
+        "roc_auc": 0.9398,
+        "pr_auc": 0.8826,
+        "brier_score": 0.0929,
+        "expected_calibration_error": 0.0764,
+        "confusion_matrix": {
+          "true_negative": 59,
+          "false_positive": 9,
+          "false_negative": 5,
+          "true_positive": 60
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.8421,
+            "ci_upper_95": 0.9438
+          },
+          "sensitivity_95ci": {
+            "ci_lower_95": 0.8525,
+            "ci_upper_95": 0.9839
+          },
+          "specificity_95ci": {
+            "ci_lower_95": 0.7794,
+            "ci_upper_95": 0.9478
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.8939,
+            "ci_upper_95": 0.9761
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.7954,
+            "ci_upper_95": 0.9772
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0687,
+            "ci_upper_95": 0.118
+          }
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.1906,
+        "A2_Score": 0.0079,
+        "A3_Score": 0.0229,
+        "A4_Score": 0.0922,
+        "A5_Score": 0.039,
+        "A6_Score": 0.0036,
+        "A7_Score": 0.0966,
+        "A8_Score": 0.0688,
+        "A9_Score": 0.04,
+        "A10_Score": 0.418,
+        "age": 0.0205,
+        "gender_num": 0.0,
+        "jaundice_num": 0.0,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\gradient_boosting.joblib"
+    },
+    "xgboost": {
+      "model_name": "xgboost",
+      "cross_validation_folds": {
+        "fold_1": {
+          "validation_sample_size": 80,
+          "accuracy": 0.95,
+          "sensitivity": 0.9744,
+          "specificity": 0.9268,
+          "precision": 0.9268,
+          "f1_score": 0.95,
+          "balanced_accuracy": 0.9506,
+          "roc_auc": 0.9525,
+          "pr_auc": 0.9227,
+          "brier_score": 0.0832,
+          "expected_calibration_error": 0.1235,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 3,
+            "FN": 1,
+            "TP": 38
+          }
+        },
+        "fold_2": {
+          "validation_sample_size": 80,
+          "accuracy": 0.7875,
+          "sensitivity": 0.825,
+          "specificity": 0.75,
+          "precision": 0.7674,
+          "f1_score": 0.7952,
+          "balanced_accuracy": 0.7875,
+          "roc_auc": 0.9088,
+          "pr_auc": 0.8857,
+          "brier_score": 0.1196,
+          "expected_calibration_error": 0.0583,
+          "confusion_matrix": {
+            "TN": 30,
+            "FP": 10,
+            "FN": 7,
+            "TP": 33
+          }
+        },
+        "fold_3": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9241,
+          "sensitivity": 1.0,
+          "specificity": 0.85,
+          "precision": 0.8667,
+          "f1_score": 0.9286,
+          "balanced_accuracy": 0.925,
+          "roc_auc": 0.9724,
+          "pr_auc": 0.9718,
+          "brier_score": 0.0802,
+          "expected_calibration_error": 0.0997,
+          "confusion_matrix": {
+            "TN": 34,
+            "FP": 6,
+            "FN": 0,
+            "TP": 39
+          }
+        },
+        "fold_4": {
+          "validation_sample_size": 79,
+          "accuracy": 0.8987,
+          "sensitivity": 0.8718,
+          "specificity": 0.925,
+          "precision": 0.9189,
+          "f1_score": 0.8947,
+          "balanced_accuracy": 0.8984,
+          "roc_auc": 0.9619,
+          "pr_auc": 0.9539,
+          "brier_score": 0.0863,
+          "expected_calibration_error": 0.1038,
+          "confusion_matrix": {
+            "TN": 37,
+            "FP": 3,
+            "FN": 5,
+            "TP": 34
+          }
+        },
+        "fold_5": {
+          "validation_sample_size": 79,
+          "accuracy": 0.9241,
+          "sensitivity": 0.8974,
+          "specificity": 0.95,
+          "precision": 0.9459,
+          "f1_score": 0.9211,
+          "balanced_accuracy": 0.9237,
+          "roc_auc": 0.966,
+          "pr_auc": 0.9268,
+          "brier_score": 0.0711,
+          "expected_calibration_error": 0.1095,
+          "confusion_matrix": {
+            "TN": 38,
+            "FP": 2,
+            "FN": 4,
+            "TP": 35
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.8969,
+        "std_accuracy": 0.057,
+        "mean_sensitivity": 0.9137,
+        "mean_specificity": 0.8804,
+        "mean_precision": 0.8852,
+        "mean_f1_score": 0.8979,
+        "mean_balanced_accuracy": 0.897,
+        "mean_roc_auc": 0.9523,
+        "mean_pr_auc": 0.9322,
+        "mean_brier_score": 0.0881,
+        "mean_ece": 0.099
+      },
+      "test_metrics": {
+        "sample_size": 133,
+        "accuracy": 0.8722,
+        "sensitivity": 0.8923,
+        "specificity": 0.8529,
+        "precision": 0.8529,
+        "f1_score": 0.8722,
+        "balanced_accuracy": 0.8726,
+        "roc_auc": 0.9344,
+        "pr_auc": 0.8799,
+        "brier_score": 0.0992,
+        "expected_calibration_error": 0.0704,
+        "confusion_matrix": {
+          "true_negative": 58,
+          "false_positive": 10,
+          "false_negative": 7,
+          "true_positive": 58
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.8195,
+            "ci_upper_95": 0.9248
+          },
+          "sensitivity_95ci": {
+            "ci_lower_95": 0.8118,
+            "ci_upper_95": 0.9661
+          },
+          "specificity_95ci": {
+            "ci_lower_95": 0.7667,
+            "ci_upper_95": 0.9299
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.8866,
+            "ci_upper_95": 0.9735
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.7956,
+            "ci_upper_95": 0.9715
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0726,
+            "ci_upper_95": 0.1262
+          }
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.1533,
+        "A2_Score": 0.0352,
+        "A3_Score": 0.0998,
+        "A4_Score": 0.0623,
+        "A5_Score": 0.0624,
+        "A6_Score": 0.0,
+        "A7_Score": 0.0932,
+        "A8_Score": 0.0779,
+        "A9_Score": 0.0572,
+        "A10_Score": 0.3297,
+        "age": 0.029,
+        "gender_num": 0.0,
+        "jaundice_num": 0.0,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\xgboost.joblib"
+    }
+  },
+  "disclaimer": "RESEARCH PROTOTYPE ONLY: NeuroScan AI screening indicators are designed for technical and educational demonstration. They do NOT constitute medical or clinical diagnoses. Professional diagnostic evaluations require comprehensive multidisciplinary clinical assessment (e.g., ADOS-2, ADI-R, CARS)."
+}

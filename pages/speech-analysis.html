@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Speech &amp; Communication Analysis — NeuroScan AI</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    .page-hdr { background:linear-gradient(135deg,#1a0a2e,#2d1b5e); color:#fff; padding:44px; position:relative; overflow:hidden; }
+    .page-hdr::before { content:'🎙️'; position:absolute; right:60px; top:50%; transform:translateY(-50%); font-size:8rem; opacity:.06; }
+    .page-hdr h1 { font-family:var(--font-d); font-size:2.4rem; margin:0 0 10px; position:relative; }
+    .page-hdr p { color:rgba(255,255,255,.7); max-width:560px; line-height:1.65; position:relative; }
+    .page-inner { max-width:1100px; margin:0 auto; }
+
+    .speech-layout { max-width:1100px; margin:0 auto; padding:36px 44px 80px; display:grid; grid-template-columns:1fr 360px; gap:28px; }
+    @media(max-width:860px) { .speech-layout { grid-template-columns:1fr; padding:20px; } }
+
+    /* Recorder */
+    .recorder-panel { background:var(--card); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; margin-bottom:20px; }
+    .rp-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+    .rp-title { font-weight:700; font-size:.95rem; flex:1; }
+
+    /* Visualizer */
+    .visualizer-wrap { background:#0a0a12; height:120px; position:relative; }
+    #waveCanvas { width:100%; height:100%; display:block; }
+    .rec-indicator { position:absolute; top:10px; right:14px; display:flex; align-items:center; gap:5px; color:#ff4757; font-size:.72rem; font-weight:700; }
+    .rec-dot { width:8px; height:8px; border-radius:50%; background:#ff4757; animation:pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+    /* Recorder controls */
+    .rec-controls { padding:16px 20px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .btn-rec { padding:11px 22px; border-radius:var(--r-sm); font-size:.88rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; }
+    .btn-rec-start { background:#e76f51; color:#fff; }
+    .btn-rec-start:hover { background:#c44b1b; }
+    .btn-rec-stop { background:var(--bg); border:1.5px solid var(--border); color:var(--text); }
+    .btn-rec-stop:hover { border-color:var(--primary); }
+    .btn-rec-analyze { background:var(--primary); color:#fff; }
+    .btn-rec-analyze:hover { background:var(--primary-l); }
+    .btn-rec-analyze:disabled { opacity:.4; cursor:not-allowed; }
+    .timer-display { font-family:monospace; font-size:1.2rem; font-weight:700; color:var(--muted); margin-left:auto; }
+
+    /* Recordings list */
+    .recordings-list { margin-top:12px; }
+    .recording-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--bg); border-radius:var(--r-sm); margin-bottom:6px; }
+    .ri-num { width:24px; height:24px; border-radius:50%; background:var(--primary); color:#fff; font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ri-info { flex:1; }
+    .ri-name { font-size:.85rem; font-weight:600; }
+    .ri-duration { font-size:.72rem; color:var(--muted); }
+    .ri-actions { display:flex; gap:6px; }
+    .ri-btn { padding:5px 10px; border-radius:5px; border:1px solid var(--border); background:#fff; font-size:.72rem; font-weight:600; cursor:pointer; }
+
+    /* Prompt area */
+    .prompt-card { background:linear-gradient(135deg,#f9f0ff,var(--bg)); border-radius:var(--r-sm); padding:16px 18px; border-left:3px solid #9b5de5; margin-bottom:14px; }
+    .prompt-label { font-size:.72rem; font-weight:700; color:#7b1fa2; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .prompt-text { font-size:.95rem; font-weight:600; line-height:1.55; color:var(--text); }
+
+    /* Analysis Panel */
+    .analysis-panel { background:var(--card); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; }
+    .ap-section { padding:16px 20px; border-bottom:1px solid var(--border); }
+    .ap-section:last-child { border-bottom:none; }
+    .ap-title { font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+
+    /* Speech metrics */
+    .metric-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .metric-label { font-size:.82rem; font-weight:500; }
+    .metric-value { font-size:.9rem; font-weight:800; }
+    .metric-bar-wrap { width:100px; height:6px; background:var(--bg); border-radius:50px; overflow:hidden; margin:0 10px; }
+    .metric-bar { height:100%; border-radius:50px; }
+
+    /* Score badges */
+    .score-badge { display:inline-block; padding:3px 10px; border-radius:50px; font-size:.72rem; font-weight:800; }
+    .score-good { background:#e8f5e9; color:#2d6a4f; }
+    .score-warn { background:#fff8e1; color:#7a5c00; }
+    .score-alert { background:#ffe5d9; color:#c44b1b; }
+
+    /* Radar */
+    .radar-wrap { display:flex; justify-content:center; padding:10px 0; }
+
+    /* Transcript */
+    .transcript-box { background:var(--bg); border-radius:var(--r-sm); padding:14px; font-size:.85rem; line-height:1.75; min-height:80px; color:var(--text); border:1px solid var(--border); }
+    .transcript-placeholder { color:var(--muted); font-style:italic; }
+
+    /* Analyzing state */
+    .analyzing-state { text-align:center; padding:20px; }
+    .analyzing-spin { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 10px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Right sticky */
+    .right-sticky { position:sticky; top:calc(var(--nav-h)+16px); display:flex; flex-direction:column; gap:14px; }
+
+    /* Milestone checker */
+    .milestone-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-radius:var(--r-sm); background:var(--bg); margin-bottom:6px; }
+    .ms-icon { font-size:1rem; flex-shrink:0; margin-top:1px; }
+    .ms-text { flex:1; font-size:.8rem; line-height:1.5; }
+    .ms-status { font-size:.7rem; font-weight:700; padding:2px 8px; border-radius:50px; flex-shrink:0; }
+
+    .disclaimer-box { background:#fff8e1; border-radius:var(--r-sm); padding:12px 14px; font-size:.78rem; color:#7a5c00; border-left:3px solid #e9c46a; }
+  </style>
+</head>
+<body>
+<script type="module" src="../js/shared.js"></script>
+
+<div class="page-hdr">
+  <div class="page-inner">
+    <span style="display:inline-block;background:rgba(255,255,255,.1);padding:4px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2);margin-bottom:12px">🎙️ AI Speech Analysis</span>
+    <h1>Speech & Communication Analysis</h1>
+    <p>Record speech samples and let AI analyze tone, pace, pauses, repetitiveness, and language complexity — key indicators for speech delay, ASD, and related conditions.</p>
+  </div>
+</div>
+
+<div class="speech-layout">
+  <!-- LEFT -->
+  <div>
+    <!-- Speaking prompt -->
+    <div class="prompt-card" id="promptCard">
+      <div class="prompt-label">🎯 Speaking Prompt</div>
+      <div class="prompt-text" id="promptText">Tell me about your favorite activity or something you enjoy doing.</div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button onclick="nextPrompt()" style="padding:5px 14px;border-radius:50px;border:1.5px solid #9b5de5;background:transparent;color:#9b5de5;font-size:.75rem;font-weight:700;cursor:pointer">↻ New Prompt</button>
+        <select id="promptCategory" onchange="changeCategory()" style="padding:5px 12px;border-radius:50px;border:1.5px solid var(--border);font-size:.75rem;background:var(--bg)">
+          <option value="general">General conversation</option>
+          <option value="narrative">Narrative recall</option>
+          <option value="description">Picture description</option>
+          <option value="repetition">Sentence repetition</option>
+          <option value="phonological">Phonological tasks</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Recorder -->
+    <div class="recorder-panel">
+      <div class="rp-header">
+        <div class="rp-title">🎙️ Audio Recorder</div>
+        <div style="font-size:.78rem;color:var(--muted)">Max 60 seconds per recording</div>
+      </div>
+      <div class="visualizer-wrap">
+        <canvas id="waveCanvas"></canvas>
+        <div class="rec-indicator" id="recIndicator" style="display:none"><div class="rec-dot"></div>REC</div>
+      </div>
+      <div class="rec-controls">
+        <button class="btn-rec btn-rec-start" id="btnRecord" onclick="startRecording()">⏺ Record</button>
+        <button class="btn-rec" id="btnPause" onclick="pauseRecording()" style="display:none;background:#e9c46a;color:#1a1a1a">⏸ Pause</button>
+        <button class="btn-rec" id="btnResume" onclick="resumeRecording()" style="display:none;background:#2a9d8f;color:#fff">▶ Resume</button>
+        <button class="btn-rec btn-rec-stop" id="btnStop" onclick="stopRecording()" style="display:none">⏹ Stop</button>
+        <button class="btn-rec btn-rec-analyze" id="btnAnalyze" onclick="analyzeLatest()" disabled>🧠 Analyze</button>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+      </div>
+
+      <!-- File Upload Alternative (WAV, MP3, M4A, WebM) -->
+      <div style="margin:0 20px 14px;padding:12px 14px;background:var(--bg);border:1px dashed var(--border);border-radius:var(--r-sm)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div style="font-size:.82rem;font-weight:700">📁 Or Upload Audio File</div>
+          <div style="font-size:.72rem;color:var(--muted)">Supports WAV, MP3, M4A, WebM (Max 25MB)</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <input type="file" id="audioFileInput" accept="audio/*,.wav,.mp3,.m4a,.webm" style="font-size:.78rem" onchange="handleAudioUpload(event)"/>
+          <span id="uploadStatusBadge" style="font-size:.72rem;font-weight:700;color:var(--muted)"></span>
+        </div>
+      </div>
+
+      <!-- Real-Time Speech Recognition Transcript Box -->
+      <div id="liveTranscriptBox" style="margin:0 20px 14px;padding:12px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:.78rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px">
+            🎙️ Speech Transcription:
+            <span id="sttStatus" style="font-size:.7rem;padding:2px 6px;border-radius:4px;background:#e9ecef;color:#495057">Ready</span>
+          </span>
+          <span style="font-size:.7rem;color:var(--muted)">Editable before analysis</span>
+        </div>
+        <textarea id="liveTranscriptInput" rows="2" placeholder="Speech transcription will appear here in real time as you speak, or you can type/edit here..." style="width:100%;font-size:.84rem;border:1px solid #ced4da;border-radius:4px;padding:6px 8px;box-sizing:border-box;font-family:inherit;resize:vertical"></textarea>
+      </div>
+
+      <div style="padding:0 20px 16px">
+        <div id="recordingsList" class="recordings-list"></div>
+        <div id="noRecordings" style="text-align:center;color:var(--muted);font-size:.82rem;padding:16px 0">No audio sample loaded. Press Record or upload an audio file above.</div>
+      </div>
+    </div>
+
+    <!-- Speech Analysis Results -->
+    <div class="analysis-panel" id="analysisPanel">
+      <div class="ap-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="ap-title" style="margin-bottom:0">📊 Comprehensive Speech &amp; Acoustic Analysis</div>
+          <button id="btnSaveToSession" onclick="saveSpeechToSession()" class="btn btn-sm btn-primary" style="display:none;padding:5px 12px;font-size:.75rem">💾 Save to Assessment Session</button>
+        </div>
+        <div id="analysisContent">
+          <div style="text-align:center;color:var(--muted);font-size:.83rem;padding:24px">Record or upload an audio sample and click "Analyze" to run the acoustic and linguistic feature extraction pipeline.</div>
+        </div>
+      </div>
+
+      <!-- Interactive Speech & Pause Timeline -->
+      <div class="ap-section" id="timelineSection" style="display:none">
+        <div class="ap-title">⏱️ Speech &amp; Silence Timeline (Click pauses to inspect duration)</div>
+        <div id="speechTimelineContainer" style="margin-top:10px;padding:12px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--border)"></div>
+        <div id="pauseDetailBox" style="margin-top:8px;font-size:.76rem;color:var(--muted);font-style:italic">Select a pause block above to view exact duration and context.</div>
+      </div>
+
+      <div class="ap-section">
+        <div class="ap-title">📝 Highlighted Transcript &amp; Disfluency Annotations</div>
+        <div class="transcript-box" id="transcriptBox">
+          <span class="transcript-placeholder">Transcript with highlighted pauses, filled pauses, and repetitions will appear here…</span>
+        </div>
+      </div>
+
+      <div class="ap-section">
+        <div class="ap-title">🧠 Decision-Support Analysis &amp; Observed Patterns</div>
+        <div id="clinicalInterpretation" style="font-size:.85rem;line-height:1.75;color:var(--muted)">Model-associated pattern interpretations will appear after feature extraction.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-sticky">
+    <!-- Speech metrics radar -->
+    <div style="background:var(--card);border-radius:var(--r);padding:20px;border:1px solid var(--border)">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Speech Profile</div>
+      <div class="radar-wrap">
+        <canvas id="radarCanvas" width="220" height="180"></canvas>
+      </div>
+      <div id="speechMetricsList" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Developmental milestones -->
+    <div style="background:var(--card);border-radius:var(--r);padding:20px;border:1px solid var(--border)">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Developmental Milestones</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px">Age group:
+        <select id="ageGroup" onchange="updateMilestones()" style="padding:3px 8px;border-radius:5px;border:1px solid var(--border);font-size:.75rem;margin-left:4px">
+          <option value="12m">12 months</option>
+          <option value="18m">18 months</option>
+          <option value="24m" selected>24 months</option>
+          <option value="36m">36 months</option>
+          <option value="48m">4 years</option>
+          <option value="60m">5 years</option>
+        </select>
+      </div>
+      <div id="milestoneList"></div>
+    </div>
+
+    <!-- Disorders linked -->
+    <div style="background:var(--card);border-radius:var(--r);padding:20px;border:1px solid var(--border)">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Speech Indicators For</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:.8rem"><span>🧩</span><span><strong>ASD</strong> — delayed onset, echolalia, flat prosody</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.8rem"><span>🗣️</span><span><strong>Speech Delay</strong> — limited vocabulary, articulation errors</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.8rem"><span>📖</span><span><strong>Dyslexia</strong> — phonological processing difficulties</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.8rem"><span>⚡</span><span><strong>ADHD</strong> — tangential speech, impulsive interrupting</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.8rem"><span>🧠</span><span><strong>Intellectual Disability</strong> — simplified syntax, slow processing</span></div>
+      </div>
+    </div>
+
+    <div class="disclaimer-box">
+      ⚠️ Audio is processed by Claude AI. No audio is permanently stored. Analysis is for screening only — not a clinical diagnosis.
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { SpeechAnalysisEngine } from '../js/speech-analysis-engine.js';
+import { AssessmentSessionManager } from '../js/assessment-session.js';
+
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingTimer = null;
+let recordingSeconds = 0;
+let recordings = [];
+let analyzerNode = null;
+let audioCtx = null;
+let waveAnimFrame = null;
+let currentAnalysis = null;
+let isPaused = false;
+
+const PROMPTS = {
+  general: [
+    "Tell me about your favorite activity or something you enjoy doing.",
+    "Describe what you did yesterday from morning to evening.",
+    "Tell me about your best friend and what you like to do together.",
+    "What is your favorite food and how is it made?",
+    "Describe your home and what your favorite room looks like.",
+  ],
+  narrative: [
+    "Tell me the story of a movie or book you recently enjoyed.",
+    "Describe a time when something funny happened to you.",
+    "Tell me about a recent trip or outing you went on.",
+    "What happened at school or work today? Tell me the whole story.",
+  ],
+  description: [
+    "Describe everything you see around you right now in detail.",
+    "Imagine a park — describe all the things you would see there.",
+    "Describe what a supermarket looks like inside.",
+  ],
+  repetition: [
+    "Please repeat after me: 'The quick brown fox jumps over the lazy dog.'",
+    "Repeat: 'She sells seashells by the seashore.'",
+    "Repeat: 'Peter Piper picked a peck of pickled peppers.'",
+  ],
+  phonological: [
+    "Say as many words as you can that start with the letter 'S' in 30 seconds.",
+    "Say as many animal names as you can think of.",
+    "How many words rhyme with 'cat'? Say them all.",
+  ],
+};
+
+const MILESTONES = {
+  '12m': [
+    { text:'Uses 1-2 words meaningfully (mama, dada)', critical:true },
+    { text:'Responds to simple commands (no, bye)', critical:true },
+    { text:'Babbles with varied consonants', critical:false },
+    { text:'Points to objects of interest', critical:true },
+  ],
+  '18m': [
+    { text:'Uses 10+ words', critical:true },
+    { text:'Points to body parts when named', critical:false },
+    { text:'Follows 2-step directions', critical:false },
+    { text:'Uses words more than gestures', critical:true },
+  ],
+  '24m': [
+    { text:'Uses 50+ words', critical:true },
+    { text:'Combines 2 words ("more milk", "big dog")', critical:true },
+    { text:'Strangers understand ~50% of speech', critical:false },
+    { text:'Uses pronouns (me, mine)', critical:false },
+  ],
+  '36m': [
+    { text:'Uses 200+ words', critical:true },
+    { text:'Uses 3-word sentences', critical:true },
+    { text:'Strangers understand ~75% of speech', critical:false },
+    { text:'Asks "what" and "where" questions', critical:false },
+    { text:'Uses plurals (cats, dogs)', critical:false },
+  ],
+  '48m': [
+    { text:'Uses 4-5 word sentences', critical:true },
+    { text:'Tells simple stories', critical:false },
+    { text:'Speech mostly clear to strangers', critical:true },
+    { text:'Uses past tense', critical:false },
+    { text:'Answers "who" and "why" questions', critical:false },
+  ],
+  '60m': [
+    { text:'Uses full sentences (5-6+ words)', critical:true },
+    { text:'Tells detailed stories', critical:false },
+    { text:'Speech completely clear', critical:true },
+    { text:'Uses future tense', critical:false },
+    { text:'Understands opposites', critical:false },
+    { text:'Can maintain conversation', critical:true },
+  ],
+};
+
+window.updateMilestones = updateMilestones;
+window.nextPrompt = nextPrompt;
+window.changeCategory = changeCategory;
+window.startRecording = startRecording;
+window.pauseRecording = pauseRecording;
+window.resumeRecording = resumeRecording;
+window.stopRecording = stopRecording;
+window.analyzeLatest = analyzeLatest;
+window.handleAudioUpload = handleAudioUpload;
+window.saveSpeechToSession = saveSpeechToSession;
+
+let promptIdx = 0;
+let currentCategory = 'general';
+
+function nextPrompt() {
+  const cat = document.getElementById('promptCategory').value;
+  const list = PROMPTS[cat] || PROMPTS.general;
+  promptIdx = (promptIdx + 1) % list.length;
+  document.getElementById('promptText').textContent = list[promptIdx];
+}
+
+function safeSetHTML(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function safeSetText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function changeCategory() {
+  const catEl = document.getElementById('promptCategory');
+  currentCategory = catEl ? catEl.value : 'conversation';
+  promptIdx = 0;
+  safeSetText('promptText', (PROMPTS[currentCategory] || [])[0] || '');
+}
+
+function updateMilestones() {
+  const ageEl = document.getElementById('ageGroup');
+  const age = ageEl ? ageEl.value : '3-4';
+  const items = MILESTONES[age] || [];
+  safeSetHTML('milestoneList', items.map(m =>
+    `<div class="milestone-item">
+      <span class="ms-icon">${m.critical ? '🔴' : '🟡'}</span>
+      <span class="ms-text">${m.text}</span>
+      <span class="ms-status ${m.critical ? 'score-alert' : 'score-warn'}">${m.critical ? 'Key' : 'Watch'}</span>
+    </div>`
+  ).join(''));
+}
+updateMilestones();
+
+let speechRec = null;
+let capturedSpeech = '';
+
+// ── RECORDING CONTROLS ──────────────────────────────────────
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(stream);
+    analyzerNode = audioCtx.createAnalyser();
+    analyzerNode.fftSize = 2048;
+    source.connect(analyzerNode);
+
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    isPaused = false;
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type:'audio/webm' });
+      const url = URL.createObjectURL(blob);
+      recordings.push({ blob, url, duration:recordingSeconds, id:Date.now() });
+      renderRecordings();
+      document.getElementById('btnAnalyze').disabled = false;
+    };
+    mediaRecorder.start(250);
+
+    // Speech Recognition
+    capturedSpeech = '';
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRec) {
+      try {
+        speechRec = new SpeechRec();
+        speechRec.continuous = true;
+        speechRec.interimResults = true;
+        speechRec.lang = 'en-US';
+        const sttStatus = document.getElementById('sttStatus');
+        if (sttStatus) { sttStatus.textContent = 'Listening…'; sttStatus.style.background = '#d1e7dd'; sttStatus.style.color = '#0f5132'; }
+        
+        speechRec.onresult = (e) => {
+          let interim = '';
+          for (let i = e.resultIndex; i < e.results.length; ++i) {
+            if (e.results[i].isFinal) {
+              capturedSpeech += e.results[i][0].transcript + ' ';
+            } else {
+              interim += e.results[i][0].transcript;
+            }
+          }
+          const full = (capturedSpeech + ' ' + interim).trim();
+          const input = document.getElementById('liveTranscriptInput');
+          if (input && full) input.value = full;
+        };
+        speechRec.start();
+      } catch (recErr) {
+        console.warn('SpeechRec start warning:', recErr);
+      }
+    }
+
+    drawWaveform();
+    startTimer();
+    document.getElementById('btnRecord').style.display = 'none';
+    document.getElementById('btnPause').style.display = 'inline-block';
+    document.getElementById('btnResume').style.display = 'none';
+    document.getElementById('btnStop').style.display = 'inline-block';
+    document.getElementById('recIndicator').style.display = 'flex';
+    document.getElementById('noRecordings').style.display = 'none';
+  } catch(e) {
+    alert('Microphone access denied or unavailable. You can also upload an audio file directly using the file input above.');
+  }
+}
+
+function pauseRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+    isPaused = true;
+    clearInterval(recordingTimer);
+    document.getElementById('btnPause').style.display = 'none';
+    document.getElementById('btnResume').style.display = 'inline-block';
+    document.getElementById('recIndicator').textContent = '⏸ PAUSED';
+  }
+}
+
+function resumeRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+    isPaused = false;
+    startTimer();
+    const btnResume = document.getElementById('btnResume');
+    if (btnResume) btnResume.style.display = 'none';
+    const btnPause = document.getElementById('btnPause');
+    if (btnPause) btnPause.style.display = 'inline-block';
+    safeSetHTML('recIndicator', '<div class="rec-dot"></div>REC');
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if (audioCtx) audioCtx.close();
+  if (speechRec) {
+    try { speechRec.stop(); } catch(e) {}
+    speechRec = null;
+    const sttStatus = document.getElementById('sttStatus');
+    if (sttStatus) { sttStatus.textContent = 'Completed'; sttStatus.style.background = '#e9ecef'; sttStatus.style.color = '#495057'; }
+  }
+  cancelAnimationFrame(waveAnimFrame);
+  clearInterval(recordingTimer);
+  document.getElementById('btnRecord').style.display = 'inline-block';
+  document.getElementById('btnPause').style.display = 'none';
+  document.getElementById('btnResume').style.display = 'none';
+  document.getElementById('btnStop').style.display = 'none';
+  document.getElementById('recIndicator').style.display = 'none';
+  
+  // Clear waveform
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0a12'; ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+// ── AUDIO FILE UPLOAD ───────────────────────────────────────
+async function handleAudioUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const badge = document.getElementById('uploadStatusBadge');
+  badge.textContent = `Loading ${file.name}...`;
+
+  const url = URL.createObjectURL(file);
+  const audio = new Audio(url);
+  audio.onloadedmetadata = () => {
+    const dur = Math.round(audio.duration) || 15;
+    recordings.push({ blob: file, url, duration: dur, id: Date.now(), name: file.name });
+    renderRecordings();
+    document.getElementById('btnAnalyze').disabled = false;
+    document.getElementById('noRecordings').style.display = 'none';
+    badge.textContent = `✓ Loaded (${dur}s · ${(file.size / 1024).toFixed(0)} KB)`;
+  };
+}
+
+function startTimer() {
+  recordingTimer = setInterval(() => {
+    recordingSeconds++;
+    const m = String(Math.floor(recordingSeconds/60)).padStart(2,'0');
+    const s = String(recordingSeconds%60).padStart(2,'0');
+    document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+    if (recordingSeconds >= 60) stopRecording();
+  }, 1000);
+}
+
+function drawWaveform() {
+  const canvas = document.getElementById('waveCanvas');
+  canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  const bufLen = analyzerNode.frequencyBinCount;
+  const dataArr = new Uint8Array(bufLen);
+
+  function draw() {
+    waveAnimFrame = requestAnimationFrame(draw);
+    analyzerNode.getByteTimeDomainData(dataArr);
+    ctx.fillStyle = '#0a0a12';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#52b788';
+    ctx.beginPath();
+    const sliceW = canvas.width / bufLen;
+    let x = 0;
+    for (let i = 0; i < bufLen; i++) {
+      const v = dataArr[i] / 128.0;
+      const y = (v * canvas.height) / 2;
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      x += sliceW;
+    }
+    ctx.lineTo(canvas.width, canvas.height/2);
+    ctx.stroke();
+  }
+  draw();
+}
+
+function renderRecordings() {
+  safeSetHTML('recordingsList', recordings.map((r, i) =>
+    `<div class="recording-item">
+      <div class="ri-num">${i+1}</div>
+      <div class="ri-info">
+        <div class="ri-name">${r.name || 'Sample ' + (i+1)}</div>
+        <div class="ri-duration">${r.duration}s · ${(r.blob.size/1024).toFixed(1)} KB</div>
+      </div>
+      <audio src="${r.url}" controls style="height:28px;max-width:180px"></audio>
+      <div class="ri-actions">
+        <button class="ri-btn" onclick="downloadRecording(${i})" title="Download">⬇</button>
+        <button class="ri-btn" style="color:#c44b1b" onclick="deleteRecording(${i})" title="Delete">✕</button>
+      </div>
+    </div>`
+  ).join(''));
+}
+
+window.downloadRecording = function(i) {
+  const a = document.createElement('a');
+  a.href = recordings[i].url;
+  a.download = `speech_sample_${i+1}.webm`;
+  a.click();
+};
+
+window.deleteRecording = function(i) {
+  recordings.splice(i,1);
+  renderRecordings();
+  if (!recordings.length) {
+    const btnAnalyze = document.getElementById('btnAnalyze');
+    if (btnAnalyze) btnAnalyze.disabled = true;
+    const noRec = document.getElementById('noRecordings');
+    if (noRec) noRec.style.display = 'block';
+  }
+};
+
+// ── ANALYSIS EXECUTION ─────────────────────────────────────
+async function analyzeLatest() {
+  if (!recordings.length) return;
+  const btn = document.getElementById('btnAnalyze');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '⏳ Analyzing…';
+  }
+
+  safeSetHTML('analysisContent', `
+    <div class="analyzing-state">
+      <div class="analyzing-spin"></div>
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:4px">Running Real Speech &amp; Acoustic Analysis Engine</div>
+      <div style="font-size:.78rem;color:var(--muted)">Extracting temporal silence windows, fluency markers, vocabulary diversity, and prosodic metrics…</div>
+    </div>`);
+
+  const latest = recordings[recordings.length - 1];
+  const transcriptInput = document.getElementById('liveTranscriptInput')?.value?.trim() || '';
+
+  // Run comprehensive real analysis
+  try {
+    const analysis = await SpeechAnalysisEngine.analyzeSpeech(latest.blob, transcriptInput, latest.duration);
+    currentAnalysis = analysis;
+    renderAnalysis(analysis);
+    document.getElementById('btnSaveToSession').style.display = 'inline-block';
+  } catch (err) {
+    console.error('Speech analysis error:', err);
+    alert('Error running speech analysis: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🧠 Re-Analyze';
+  }
+}
+
+// ── RENDER ANALYSIS RESULTS ────────────────────────────────
+function renderAnalysis(a) {
+  const badgeForScore = s => s >= 75 ? 'score-good' : s >= 50 ? 'score-warn' : 'score-alert';
+
+  const html = `
+    <!-- Top KPI Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:10px;margin-bottom:18px">
+      <div style="background:var(--bg);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid #2d6a4f">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase">Speech Duration</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#2d6a4f">${a.duration}s</div>
+        <div style="font-size:.7rem;color:var(--muted)">Speaking: ${a.speakingDuration}s</div>
+      </div>
+      <div style="background:var(--bg);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid #457b9d">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase">Speaking Rate</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#457b9d">${a.wpm} <span style="font-size:.75rem">WPM</span></div>
+        <div style="font-size:.7rem;color:var(--muted)">${a.syllablesPerSecond} syll/sec</div>
+      </div>
+      <div style="background:var(--bg);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid #e76f51">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase">Pause Frequency</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#e76f51">${a.pauseFrequency}<span style="font-size:.75rem">/min</span></div>
+        <div style="font-size:.7rem;color:var(--muted)">${a.pauseCount} total pauses</div>
+      </div>
+      <div style="background:var(--bg);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid #9b5de5">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase">Mean Pause</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#9b5de5">${a.meanPauseDuration}s</div>
+        <div style="font-size:.7rem;color:var(--muted)">Max: ${a.maxPauseDuration}s</div>
+      </div>
+      <div style="background:var(--bg);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid #2a9d8f">
+        <div style="font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase">Fluency Score</div>
+        <div style="font-size:1.3rem;font-weight:800;color:#2a9d8f">${a.fluencyScore}<span style="font-size:.75rem">/100</span></div>
+        <div style="font-size:.7rem;color:var(--muted)">Quality: ${a.qualityScore}%</div>
+      </div>
+    </div>
+
+    <!-- Feature Groups Tables -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+      <!-- Fluency & Linguistic -->
+      <div style="background:var(--bg);padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--border)">
+        <div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Linguistic &amp; Fluency Features</div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>Vocabulary Diversity (TTR)</span><strong>${Math.round(a.vocabularyDiversity * 100)}%</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>Filled Pauses (um, uh, er)</span><strong>${a.filledPausesCount}</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>Repetitions / Echolalia markers</span><strong>${a.repetitionCount}</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0">
+          <span>Avg Sentence Length</span><strong>${a.avgSentenceLength} words</strong>
+        </div>
+      </div>
+
+      <!-- Acoustic Features -->
+      <div style="background:var(--bg);padding:12px 14px;border-radius:var(--r-sm);border:1px solid var(--border)">
+        <div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Acoustic &amp; Prosodic Features</div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>Fundamental Frequency (F0)</span><strong>${a.pitchF0} Hz</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>Pitch Variability</span><strong>${a.pitchVar} semitones</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span>RMS Energy Intensity</span><strong>${a.energyRMS}</strong>
+        </div>
+        <div style="font-size:.78rem;display:flex;justify-content:space-between;padding:4px 0">
+          <span>Voice Activity Ratio (VAD)</span><strong>${Math.round(a.voiceActivityRatio * 100)}%</strong>
+        </div>
+      </div>
+    </div>
+  `;
+
+  safeSetHTML('analysisContent', html);
+
+  // Render Interactive Timeline
+  renderSpeechTimeline(a);
+
+  // Render Highlighted Transcript
+  renderHighlightedTranscript(a);
+
+  // Decision-support non-diagnostic narrative
+  safeSetHTML('clinicalInterpretation', `
+    <div style="background:#f8fafc;padding:12px 14px;border-radius:var(--r-sm);border-left:3px solid #2d6a4f">
+      <strong>Model-Associated Pattern Analysis:</strong><br>
+      The audio recording reflects an observed speech cadence of <strong>${a.wpm} words per minute</strong> with <strong>${a.pauseFrequency} pauses/min</strong> (mean pause: ${a.meanPauseDuration}s).
+      ${a.pauseFrequency > 8 ? 'Pausing rate is slightly elevated compared to neurotypical baseline cadences.' : 'Pausing patterns reflect continuous, regulated verbal flow.'}
+      Vocabulary diversity is at <strong>${Math.round(a.vocabularyDiversity * 100)}%</strong> with ${a.filledPausesCount} filled pauses and ${a.repetitionCount} word repetitions.
+      <div style="margin-top:8px;font-size:.74rem;color:var(--muted)">
+        <em>Note: This analysis reflects acoustic feature extraction for multimodal decision-support. It does not constitute a clinical medical diagnosis.</em>
+      </div>
+    </div>
+  `);
+
+  drawRadar({
+    fluency: a.fluencyScore,
+    articulation: Math.min(100, Math.round(a.voiceActivityRatio * 100)),
+    vocabulary_complexity: Math.round(a.vocabularyDiversity * 100),
+    sentence_length: Math.min(100, a.avgSentenceLength * 10)
+  });
+}
+
+function renderSpeechTimeline(a) {
+  const container = document.getElementById('speechTimelineContainer');
+  const section = document.getElementById('timelineSection');
+  if (section) section.style.display = 'block';
+
+  let html = `<div style="display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--border);width:100%;box-shadow:inset 0 1px 3px rgba(0,0,0,.05)">`;
+
+  const totalDur = Math.max(1, a.duration);
+  a.timeline.forEach(seg => {
+    const widthPct = Math.max(2, (seg.duration / totalDur) * 100);
+    if (seg.type === 'speech') {
+      html += `
+        <div style="width:${widthPct}%;background:#2d6a4f;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.66rem;font-weight:700;overflow:hidden" title="Speech Segment: ${seg.duration}s">
+          ${seg.duration >= 1 ? 'Speech' : ''}
+        </div>`;
+    } else {
+      html += `
+        <div onclick="selectPause('${seg.id}', ${seg.duration}, '${seg.start}s - ${seg.end}s')" 
+             style="width:${widthPct}%;background:#f4a261;height:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.62rem;font-weight:800;transition:all .2s" 
+             title="Pause: ${seg.duration}s (${seg.context})">
+          ⏸
+        </div>`;
+    }
+  });
+
+  html += `</div>`;
+  html += `
+    <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-top:6px">
+      <span>0:00</span>
+      <span>Total: ${a.duration}s (Speech: ${a.speakingDuration}s | Pauses: ${a.silenceDuration}s)</span>
+      <span>${Math.floor(a.duration / 60)}:${String(Math.round(a.duration % 60)).padStart(2, '0')}</span>
+    </div>`;
+
+  safeSetHTML('speechTimelineContainer', html);
+}
+
+window.selectPause = function(id, duration, timeRange) {
+  const box = document.getElementById('pauseDetailBox');
+  if (box) {
+    box.innerHTML = `<strong>Selected Pause (${id}):</strong> Duration: <strong>${duration}s</strong> at timeline <code>${timeRange}</code>. Atypical long pauses (>1.0s) can reflect linguistic retrieval delays or executive planning pauses.`;
+    box.style.color = '#713f12';
+    box.style.fontStyle = 'normal';
+  }
+};
+
+function renderHighlightedTranscript(a) {
+  const box = document.getElementById('transcriptBox');
+  if (!box) return;
+  let words = a.transcript.split(/\s+/);
+
+  const filledWords = ['um', 'uh', 'er', 'ah', 'like'];
+  const formattedWords = words.map(w => {
+    const clean = w.toLowerCase().replace(/[^a-z]/g, '');
+    if (filledWords.includes(clean)) {
+      return `<span style="background:#fee2e2;color:#991b1b;padding:1px 4px;border-radius:3px;font-weight:700" title="Filled Pause">${w}</span>`;
+    }
+    return w;
+  });
+
+  box.innerHTML = formattedWords.join(' ');
+}
+
+// ── SAVE TO ACTIVE ASSESSMENT SESSION ───────────────────────
+function saveSpeechToSession() {
+  if (!currentAnalysis) return;
+  const session = AssessmentSessionManager.getActiveSession();
+  AssessmentSessionManager.recordModalityData(session.sessionId, 'speech', currentAnalysis);
+
+  const btn = document.getElementById('btnSaveToSession');
+  btn.textContent = '✓ Saved to Session!';
+  btn.style.background = '#15803d';
+  setTimeout(() => {
+    btn.textContent = '💾 Save to Assessment Session';
+    btn.style.background = '';
+  }, 3000);
+
+  if (window.toast) {
+    window.toast('Speech features recorded to Assessment Session (' + session.sessionId + ')', 'success');
+  } else {
+    alert('Speech features saved to Assessment Session!');
+  }
+}
+
+function drawRadar(metrics) {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width/2, cy = canvas.height/2, r = 70;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const dims = ['fluency','articulation','vocabulary_complexity','sentence_length'];
+  const labels = ['Fluency','Voice Act.','Vocabulary','Syntax'];
+  const vals = dims.map(d => (metrics[d]||0)/100);
+  const colors = ['#2d6a4f','#457b9d','#9b5de5','#f4a261'];
+  const n = dims.length;
+
+  // Grid rings
+  [0.25,0.5,0.75,1].forEach(f => {
+    ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
+    dims.forEach((_, i) => {
+      const angle = (i/n)*2*Math.PI - Math.PI/2;
+      const x = cx + Math.cos(angle)*r*f, y = cy + Math.sin(angle)*r*f;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.closePath(); ctx.stroke();
+  });
+
+  // Axes
+  dims.forEach((_,i) => {
+    const angle = (i/n)*2*Math.PI - Math.PI/2;
+    ctx.beginPath(); ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=0.5;
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*r, cy+Math.sin(angle)*r);
+    ctx.stroke();
+  });
+
+  // Data polygon
+  ctx.beginPath(); ctx.fillStyle='rgba(45,106,79,.18)'; ctx.strokeStyle='#2d6a4f'; ctx.lineWidth=2;
+  vals.forEach((v,i) => {
+    const angle=(i/n)*2*Math.PI-Math.PI/2;
+    const x=cx+Math.cos(angle)*r*v, y=cy+Math.sin(angle)*r*v;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  // Dots + labels
+  vals.forEach((v,i) => {
+    const angle=(i/n)*2*Math.PI-Math.PI/2;
+    const x=cx+Math.cos(angle)*r*v, y=cy+Math.sin(angle)*r*v;
+    ctx.beginPath(); ctx.arc(x,y,4,0,2*Math.PI); ctx.fillStyle=colors[i]; ctx.fill();
+    const lx=cx+Math.cos(angle)*(r+18), ly=cy+Math.sin(angle)*(r+18);
+    ctx.fillStyle='#555'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(labels[i],lx,ly);
+  });
+}
+
+function updateSpeechMetricsList(metrics) {
+  const items = [
+    { label:'Fluency', val:metrics.fluency||0 },
+    { label:'Articulation', val:metrics.articulation||0 },
+    { label:'Vocabulary', val:metrics.vocabulary_complexity||0 },
+    { label:'Sentence length', val:metrics.sentence_length||0 },
+  ];
+  safeSetHTML('speechMetricsList', items.map(m =>
+    `<div style="display:flex;align-items:center;gap:6px;font-size:.78rem;margin-bottom:5px">
+      <span style="width:80px;color:var(--muted)">${m.label}</span>
+      <div style="flex:1;height:4px;background:var(--bg);border-radius:50px"><div style="width:${m.val}%;height:100%;background:#2d6a4f;border-radius:50px"></div></div>
+      <span style="width:24px;text-align:right;font-weight:700">${m.val}</span>
+    </div>`
+  ).join(''));
+}
+
+async function blobToBase64(blob) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+</script>
+</body>
+</html>
