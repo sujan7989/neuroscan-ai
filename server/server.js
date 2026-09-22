@@ -68,8 +68,29 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files from parent directory (frontend)
-app.use(express.static(path.join(__dirname, '..')));
+// Serve static files — on Render, serve from server/public/ (built fresh each deploy)
+// On local dev, fall back to repo root (../). This prevents stale-cache mojibake.
+const publicDir = path.join(__dirname, 'public');
+const rootDir   = path.join(__dirname, '..');
+
+const staticOptions = {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+};
+
+if (fs.existsSync(publicDir) && fs.existsSync(path.join(publicDir, 'index.html'))) {
+  // Render: serve from built public/ directory
+  app.use(express.static(publicDir, staticOptions));
+  console.log('✅ Serving static files from server/public/');
+} else {
+  // Local dev: serve from repo root
+  app.use(express.static(rootDir, staticOptions));
+  console.log('✅ Serving static files from repo root');
+}
 
 // ── DATABASE LAYER (MongoDB + In-Memory Fallback) ─────────────
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017';
@@ -1972,7 +1993,11 @@ app.use('/api/learning', createLearningRouter(() => mongoDbInstance, memoryStore
 
 // ── FALLBACK ROUTE ────────────────────────────────────────────
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+  const indexPath = fs.existsSync(path.join(__dirname, 'public', 'index.html'))
+    ? path.join(__dirname, 'public', 'index.html')
+    : path.join(__dirname, '..', 'index.html');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.sendFile(indexPath);
 });
 
 // ── START SERVER ──────────────────────────────────────────────

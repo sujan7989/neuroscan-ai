@@ -8,7 +8,7 @@
     "start":   "node server.js",
     "dev":     "node --watch server.js",
     "seed":    "node seed.js",
-    "build":   "node -e \"const fs=require('fs'),path=require('path');const src=path.join(__dirname,'ml_artifacts');const dst=path.join(__dirname,'..','ml','artifacts');if(!fs.existsSync(dst)){fs.mkdirSync(dst,{recursive:true})}fs.readdirSync(src).forEach(f=>{fs.copyFileSync(path.join(src,f),path.join(dst,f));console.log('Copied',f,'to ml/artifacts/')});\""
+    "build":   "node build.cjs"
   },
   "dependencies": {
     "@google/genai":    "^2.21.0",

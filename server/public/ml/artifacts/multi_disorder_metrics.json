@@ -1,0 +1,171 @@
+{
+  "status": "EXPERIMENTAL_RESEARCH_PROTOTYPE",
+  "is_synthetic_cohort": true,
+  "is_validated_clinical_model": false,
+  "cohort_disclaimer": "NOTICE: The 7-disorder screening models are experimental research prototypes. ASD uses the real UCI dataset (996 records, CC BY 4.0) in train_asd_models.py. ADHD, Dyslexia, Social Anxiety, Speech Delay, Intellectual Disability, and SPD use a structured heuristic synthetic cohort (N=1200) based on DSM-5/ICD-11 symptom covariance \u2014 no clean public questionnaire CSV exists for these conditions with the required feature schema. Do NOT cite these 6 models as real clinical benchmarks.",
+  "data_sources": {
+    "asd": "UCI ASD Screening Dataset (Real, CC BY 4.0, Thabtah 2017) \u2014 used in dedicated ASD model (train_asd_models.py)",
+    "adhd": "SYNTHETIC \u2014 no clean public questionnaire CSV available; DSM-5/ICD-11 heuristic cohort",
+    "dyslexia": "SYNTHETIC \u2014 no public dataset with matching AQ-style feature schema; DSM-5/ICD-11 heuristic cohort",
+    "social_anxiety": "SYNTHETIC \u2014 no dedicated public screening CSV available; DSM-5/ICD-11 heuristic cohort",
+    "speech_delay": "SYNTHETIC \u2014 no dedicated public CSV available; ICD-11 F80.9 heuristic cohort",
+    "intellectual_disability": "SYNTHETIC \u2014 no dedicated public CSV available; ICD-11 F70-F79 heuristic cohort",
+    "spd": "SYNTHETIC \u2014 no dedicated public CSV available; clinical heuristic cohort"
+  },
+  "disorders": {
+    "asd": {
+      "name": "Autism Spectrum Disorder",
+      "short": "ASD",
+      "icd": "F84.0",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "UCI ASD Screening Dataset (Real, CC BY 4.0, Thabtah 2017) \u2014 used in dedicated ASD model (train_asd_models.py)",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 314,
+      "negative_cases": 886,
+      "prevalence_in_cohort": 0.2617,
+      "cv_metrics": {
+        "accuracy": 0.9708,
+        "sensitivity": 0.9841,
+        "specificity": 0.9661,
+        "f1_score": 0.9465,
+        "balanced_accuracy": 0.9751,
+        "roc_auc": 0.9974,
+        "pr_auc": 0.9926
+      },
+      "imbalance_warning": null
+    },
+    "adhd": {
+      "name": "Attention-Deficit / Hyperactivity Disorder",
+      "short": "ADHD",
+      "icd": "F90.9",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no clean public questionnaire CSV available; DSM-5/ICD-11 heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 406,
+      "negative_cases": 794,
+      "prevalence_in_cohort": 0.3383,
+      "cv_metrics": {
+        "accuracy": 0.9858,
+        "sensitivity": 0.9902,
+        "specificity": 0.9836,
+        "f1_score": 0.9794,
+        "balanced_accuracy": 0.9869,
+        "roc_auc": 0.999,
+        "pr_auc": 0.9981
+      },
+      "imbalance_warning": null
+    },
+    "dyslexia": {
+      "name": "Specific Learning Disorder (Reading/Dyslexia)",
+      "short": "Dyslexia",
+      "icd": "F81.0",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no public dataset with matching AQ-style feature schema; DSM-5/ICD-11 heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 173,
+      "negative_cases": 1027,
+      "prevalence_in_cohort": 0.1442,
+      "cv_metrics": {
+        "accuracy": 0.9108,
+        "sensitivity": 0.9308,
+        "specificity": 0.9075,
+        "f1_score": 0.7523,
+        "balanced_accuracy": 0.9191,
+        "roc_auc": 0.9834,
+        "pr_auc": 0.9251
+      },
+      "imbalance_warning": null
+    },
+    "social_anxiety": {
+      "name": "Social Anxiety Disorder",
+      "short": "Social Anxiety",
+      "icd": "F40.1",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no dedicated public screening CSV available; DSM-5/ICD-11 heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 262,
+      "negative_cases": 938,
+      "prevalence_in_cohort": 0.2183,
+      "cv_metrics": {
+        "accuracy": 0.945,
+        "sensitivity": 0.9655,
+        "specificity": 0.9393,
+        "f1_score": 0.8851,
+        "balanced_accuracy": 0.9524,
+        "roc_auc": 0.9907,
+        "pr_auc": 0.9662
+      },
+      "imbalance_warning": null
+    },
+    "speech_delay": {
+      "name": "Developmental Speech & Language Disorder",
+      "short": "Speech Delay",
+      "icd": "F80.9",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no dedicated public CSV available; ICD-11 F80.9 heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 156,
+      "negative_cases": 1044,
+      "prevalence_in_cohort": 0.13,
+      "cv_metrics": {
+        "accuracy": 0.93,
+        "sensitivity": 0.9494,
+        "specificity": 0.9272,
+        "f1_score": 0.7848,
+        "balanced_accuracy": 0.9383,
+        "roc_auc": 0.9806,
+        "pr_auc": 0.8528
+      },
+      "imbalance_warning": null
+    },
+    "intellectual_disability": {
+      "name": "Intellectual Developmental Disorder",
+      "short": "Intellectual",
+      "icd": "F70-F79",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no dedicated public CSV available; ICD-11 F70-F79 heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 65,
+      "negative_cases": 1135,
+      "prevalence_in_cohort": 0.0542,
+      "cv_metrics": {
+        "accuracy": 0.995,
+        "sensitivity": 0.9538,
+        "specificity": 0.9974,
+        "f1_score": 0.9532,
+        "balanced_accuracy": 0.9756,
+        "roc_auc": 0.9997,
+        "pr_auc": 0.9943
+      },
+      "imbalance_warning": null
+    },
+    "spd": {
+      "name": "Sensory Processing Sensitivity / SPD",
+      "short": "SPD",
+      "icd": "R20.8",
+      "status": "EXPERIMENTAL_PROTOTYPE",
+      "data_source": "SYNTHETIC \u2014 no dedicated public CSV available; clinical heuristic cohort",
+      "is_synthetic_cohort": true,
+      "is_validated": false,
+      "positive_cases": 289,
+      "negative_cases": 911,
+      "prevalence_in_cohort": 0.2408,
+      "cv_metrics": {
+        "accuracy": 0.9625,
+        "sensitivity": 0.9688,
+        "specificity": 0.9605,
+        "f1_score": 0.9257,
+        "balanced_accuracy": 0.9646,
+        "roc_auc": 0.992,
+        "pr_auc": 0.9711
+      },
+      "imbalance_warning": null
+    }
+  }
+}
