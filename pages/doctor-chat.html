@@ -371,7 +371,7 @@
         <p>Pediatric Neurodevelopment Specialist · Powered by Google Gemini</p>
       </div>
       <div class="chat-topbar-actions">
-        <button class="topbar-btn" id="explainReportBtn" onclick="explainLatestAssessment()" style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,106,79,.12);color:var(--primary);border-color:var(--primary);font-weight:700" title="Explain current fused assessment report with RAG citations">📄 Explain My Report</button>
+        <button class="topbar-btn" id="explainReportBtn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,106,79,.12);color:var(--primary);border-color:var(--primary);font-weight:700" title="Explain current fused assessment report with RAG citations">📄 Explain My Report</button>
         <button class="topbar-btn" id="openAiAssistantBtn" onclick="window.nsToggleBot ? window.nsToggleBot(true) : document.getElementById('nsBotLauncher')?.click()" style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,106,79,.08);color:var(--primary);border-color:var(--primary)" title="Open AI Assistant Copilot">🤖 AI Assistant</button>
         <button class="topbar-btn" id="toggleCaseBuilderBtn" onclick="toggleCaseBuilder()">📋 Case Builder</button>
         <button class="topbar-btn" onclick="window.location.href='assess.html'">🧠 Take Assessment</button>
@@ -431,10 +431,9 @@
 
     <div class="chat-input-area">
       <div class="chat-input-row">
-        <button class="voice-mic-btn" id="voiceMicBtn" title="Voice Input (Speech-to-Text)" onclick="toggleVoiceInput()">🎙️</button>
-        <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Ask Dr. NeuroScan about autism, ADHD, speech milestones, or therapy options…"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="chat-send-btn" id="sendBtn" title="Send message" onclick="sendMessage()">➤</button>
+        <button class="voice-mic-btn" id="voiceMicBtn" title="Voice Input (Speech-to-Text)">🎙️</button>
+        <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Ask Dr. NeuroScan about autism, ADHD, speech milestones, or therapy options…"></textarea>
+        <button class="chat-send-btn" id="sendBtn" title="Send message">➤</button>
       </div>
       <div class="input-hint">Press Enter to send · Shift+Enter for new line · Powered by Google Gemini 2.0 Flash</div>
     </div>
@@ -452,20 +451,32 @@ let speechRecognition = null;
 let isRecordingVoice = false;
 let currentUtterance = null;
 
-window.setLang = setLang;
-window.sendSuggested = sendSuggested;
-window.clearChat = clearChat;
-window.exportChat = exportChat;
-window.toggleCaseBuilder = toggleCaseBuilder;
-window.selectAge = selectAge;
-window.toggleChip = toggleChip;
-window.submitCaseBuilder = submitCaseBuilder;
-window.toggleVoiceInput = toggleVoiceInput;
-window.speakMessage = speakMessage;
-window.copyMessageText = copyMessageText;
-window.applyAssessmentContext = applyAssessmentContext;
-window.dismissContext = dismissContext;
-window.explainLatestAssessment = explainLatestAssessment;
+// ── ASSIGN ALL WINDOW FUNCTIONS IMMEDIATELY ──────────────────────────────
+// These MUST be on window before any inline HTML handler fires (module
+// scripts execute after HTML is parsed but inline handlers fire on interaction).
+window.handleKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
+};
+window.autoResize = function(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+};
+window.setLang = (lang, btn) => setLang(lang, btn);
+window.sendSuggested = (el) => sendSuggested(el);
+window.clearChat = () => clearChat();
+window.exportChat = () => exportChat();
+window.toggleCaseBuilder = () => toggleCaseBuilder();
+window.selectAge = (btn) => selectAge(btn);
+window.toggleChip = (btn) => toggleChip(btn);
+window.submitCaseBuilder = () => submitCaseBuilder();
+window.toggleVoiceInput = () => toggleVoiceInput();
+window.speakMessage = (id) => speakMessage(id);
+window.copyMessageText = (id, btn) => copyMessageText(id, btn);
+window.applyAssessmentContext = () => applyAssessmentContext();
+window.dismissContext = () => dismissContext();
+window.explainLatestAssessment = () => explainLatestAssessment();
+// sendMessage is defined below and overwritten after definition
 
 // Check for recent assessment data in storage
 try {
@@ -1010,14 +1021,21 @@ function dismissContext() {
   if (banner) banner.style.display = 'none';
 }
 
-window.handleKey = function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
-};
+// ── Wire input elements via addEventListener (avoids inline handler + module scope mismatch) ──
+document.addEventListener('DOMContentLoaded', () => {
+  const chatInput  = document.getElementById('chatInput');
+  const sendBtn    = document.getElementById('sendBtn');
+  const micBtn     = document.getElementById('voiceMicBtn');
+  const explainBtn = document.getElementById('explainReportBtn');
 
-window.autoResize = function(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-};
+  if (chatInput) {
+    chatInput.addEventListener('keydown', e => window.handleKey(e));
+    chatInput.addEventListener('input',   () => window.autoResize(chatInput));
+  }
+  if (sendBtn)    sendBtn.addEventListener('click', () => window.sendMessage());
+  if (micBtn)     micBtn.addEventListener('click', () => toggleVoiceInput());
+  if (explainBtn) explainBtn.addEventListener('click', () => explainLatestAssessment());
+});
 
 // Defensive removal of any footer element in doctor-chat
 function removeAnyFooters() {
