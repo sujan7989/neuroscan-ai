@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Media Analysis — NeuroScan AI</title>
+  <title>Media Analysis â€” NeuroScan AI</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
-    /* ── PAGE HEADER ── */
+    /* â”€â”€ PAGE HEADER â”€â”€ */
     .page-hdr{background:linear-gradient(135deg,#0a1628 0%,#1a2d4a 50%,#0d2137 100%);color:#fff;padding:48px 44px;position:relative;overflow:hidden}
     .page-hdr::before{content:'';position:absolute;right:-60px;top:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(244,162,97,.12),transparent 70%)}
     .page-hdr h1{font-family:var(--font-d);font-size:2.5rem;margin:0 0 10px;position:relative}
@@ -15,11 +15,11 @@
     .hdr-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;position:relative}
     .hdr-badge{padding:4px 14px;border-radius:50px;font-size:.72rem;font-weight:700;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75)}
 
-    /* ── MAIN LAYOUT ── */
+    /* â”€â”€ MAIN LAYOUT â”€â”€ */
     .media-layout{max-width:1200px;margin:0 auto;padding:36px 44px 80px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
     @media(max-width:960px){.media-layout{grid-template-columns:1fr;padding:20px}}
 
-    /* ── UPLOAD SECTION ── */
+    /* â”€â”€ UPLOAD SECTION â”€â”€ */
     .upload-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
     .upload-card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
     .upload-card-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:9px}
@@ -104,7 +104,7 @@
     .fp-vid{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9}
     .fp-aud{background:#f3e5f5;color:#7b1fa2;border:1px solid #ce93d8}
 
-    /* ── RESULTS PANEL ── */
+    /* â”€â”€ RESULTS PANEL â”€â”€ */
     .results-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;position:sticky;top:calc(var(--nav-h) + 14px);max-height:calc(100vh - 120px);overflow-y:auto}
     .results-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
     .results-title{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px}
@@ -136,7 +136,7 @@
     .ao-step.done{background:var(--green-bg);color:var(--primary)}
     .ao-step.active{background:#fff8e1;color:#7a5c00}
 
-    /* ── RESULT VIEWS ── */
+    /* â”€â”€ RESULT VIEWS â”€â”€ */
 
     /* 1. Simple output */
     .simple-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
@@ -252,82 +252,82 @@
 <!-- PAGE HEADER -->
 <div class="page-hdr">
   <div class="page-hdr-inner">
-    <span style="display:inline-block;background:rgba(255,255,255,.1);padding:4px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2);margin-bottom:12px">📤 Multi-Modal AI Analysis</span>
+    <span style="display:inline-block;background:rgba(255,255,255,.1);padding:4px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2);margin-bottom:12px">ðŸ“¤ Multi-Modal AI Analysis</span>
     <h1>Upload & Detect</h1>
     <p>Upload images, videos, or audio recordings for AI-powered multi-disorder behavioral analysis across all 7 neurodevelopmental conditions. Results are saved to your profile.</p>
     <div class="hdr-badges">
-      <span class="hdr-badge">🧩 ASD</span>
-      <span class="hdr-badge">⚡ ADHD</span>
-      <span class="hdr-badge">📖 Dyslexia</span>
-      <span class="hdr-badge">😰 Social Anxiety</span>
-      <span class="hdr-badge">🗣️ Speech Delay</span>
-      <span class="hdr-badge">🧠 Intellectual</span>
-      <span class="hdr-badge">✋ SPD</span>
-      <span class="hdr-badge">🤖 AI Powered</span>
-      <span class="hdr-badge">💾 Saved to DB</span>
+      <span class="hdr-badge">ðŸ§© ASD</span>
+      <span class="hdr-badge">âš¡ ADHD</span>
+      <span class="hdr-badge">ðŸ“– Dyslexia</span>
+      <span class="hdr-badge">ðŸ˜° Social Anxiety</span>
+      <span class="hdr-badge">ðŸ—£ï¸ Speech Delay</span>
+      <span class="hdr-badge">ðŸ§  Intellectual</span>
+      <span class="hdr-badge">âœ‹ SPD</span>
+      <span class="hdr-badge">ðŸ¤– AI Powered</span>
+      <span class="hdr-badge">ðŸ’¾ Saved to DB</span>
     </div>
   </div>
 </div>
 
 <div class="media-layout">
-  <!-- ── LEFT: UPLOAD ── -->
+  <!-- â”€â”€ LEFT: UPLOAD â”€â”€ -->
   <div>
-    <!-- ── DISORDER SELECTOR ── -->
+    <!-- â”€â”€ DISORDER SELECTOR â”€â”€ -->
     <div class="upload-card" style="margin-bottom:20px">
       <div class="upload-card-header">
-        <div class="upload-card-title">🎯 Select Disorder to Analyze</div>
+        <div class="upload-card-title">ðŸŽ¯ Select Disorder to Analyze</div>
         <div style="font-size:.78rem;color:var(--muted)">Choose one or analyze all 7</div>
       </div>
       <div style="padding:16px 20px">
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px" id="disorderGrid">
           <button type="button" class="disorder-sel-btn active" data-disorder="all" onclick="selectDisorder('all',this)">
-            <span style="font-size:1.2rem">🔬</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">All 7</div>
+            <span style="font-size:1.2rem">ðŸ”¬</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">All 7</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="asd" onclick="selectDisorder('asd',this)">
-            <span style="font-size:1.2rem">🧩</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ASD</div>
+            <span style="font-size:1.2rem">ðŸ§©</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ASD</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="adhd" onclick="selectDisorder('adhd',this)">
-            <span style="font-size:1.2rem">⚡</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ADHD</div>
+            <span style="font-size:1.2rem">âš¡</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ADHD</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="dyslexia" onclick="selectDisorder('dyslexia',this)">
-            <span style="font-size:1.2rem">📖</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Dyslexia</div>
+            <span style="font-size:1.2rem">ðŸ“–</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Dyslexia</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="social_anxiety" onclick="selectDisorder('social_anxiety',this)">
-            <span style="font-size:1.2rem">😰</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Social Anxiety</div>
+            <span style="font-size:1.2rem">ðŸ˜°</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Social Anxiety</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="speech_delay" onclick="selectDisorder('speech_delay',this)">
-            <span style="font-size:1.2rem">🗣️</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Speech Delay</div>
+            <span style="font-size:1.2rem">ðŸ—£ï¸</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Speech Delay</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="intellectual_disability" onclick="selectDisorder('intellectual_disability',this)">
-            <span style="font-size:1.2rem">🧠</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Intellectual</div>
+            <span style="font-size:1.2rem">ðŸ§ </span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Intellectual</div>
           </button>
           <button type="button" class="disorder-sel-btn" data-disorder="spd" onclick="selectDisorder('spd',this)">
-            <span style="font-size:1.2rem">✋</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">SPD</div>
+            <span style="font-size:1.2rem">âœ‹</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">SPD</div>
           </button>
         </div>
         <div id="disorderInfoBar" style="background:var(--green-bg);border-radius:var(--r-sm);padding:10px 14px;font-size:.8rem;color:var(--primary);font-weight:600;border:1px solid var(--primary-l)">
-          🔬 <strong>Analyzing all 7 disorders</strong> — eye contact, behavior, speech, attention, sensory, reading, and social patterns
+          ðŸ”¬ <strong>Analyzing all 7 disorders</strong> â€” eye contact, behavior, speech, attention, sensory, reading, and social patterns
         </div>
       </div>
     </div>
     <div class="upload-card">
       <div class="upload-card-header">
-        <div class="upload-card-title">📤 Upload Media Files</div>
+        <div class="upload-card-title">ðŸ“¤ Upload Media Files</div>
         <div style="font-size:.78rem;color:var(--muted)">Upload one or more files to begin analysis</div>
       </div>
 
       <!-- Upload tabs -->
       <div class="upload-tabs">
         <button class="upload-tab active" id="tab-img" onclick="switchUpTab('img')">
-          🖼️ Images
+          ðŸ–¼ï¸ Images
           <span class="tab-count" id="cnt-img">0</span>
         </button>
         <button class="upload-tab" id="tab-vid" onclick="switchUpTab('vid')">
-          🎥 Videos
+          ðŸŽ¥ Videos
           <span class="tab-count" id="cnt-vid">0</span>
         </button>
         <button class="upload-tab" id="tab-aud" onclick="switchUpTab('aud')">
-          🎙️ Audio
+          ðŸŽ™ï¸ Audio
           <span class="tab-count" id="cnt-aud">0</span>
         </button>
       </div>
@@ -337,14 +337,14 @@
         <div class="drop-zone" id="dz-img"
              ondragover="onDragOver(event,'dz-img')" ondragleave="onDragLeave('dz-img')" ondrop="onDrop(event,'img')"
              onclick="document.getElementById('input-img').click()">
-          <span class="dz-icon">🖼️</span>
+          <span class="dz-icon">ðŸ–¼ï¸</span>
           <div class="dz-title">Drag & drop images or click to browse</div>
-          <div class="dz-sub">JPG, PNG, WebP, GIF · Max 10 MB per file<br>
-            Analyzed for: facial expressions · eye contact · emotional response</div>
+          <div class="dz-sub">JPG, PNG, WebP, GIF Â· Max 10 MB per file<br>
+            Analyzed for: facial expressions Â· eye contact Â· emotional response</div>
           <div class="dz-btn-row" onclick="event.stopPropagation()">
-            <button class="dz-btn" type="button" onclick="document.getElementById('input-img').click()">📁 Choose Images</button>
+            <button class="dz-btn" type="button" onclick="document.getElementById('input-img').click()">ðŸ“ Choose Images</button>
             <button class="dz-btn dz-analyze-btn" id="dz-analyze-img" type="button" onclick="runAnalysis()" style="display:none">
-              <span style="font-size:1.15rem;margin-right:6px">🔍</span> Analyze for Autism Indicators
+              <span style="font-size:1.15rem;margin-right:6px">ðŸ”</span> Analyze for Neurodevelopmental Disorders
             </button>
           </div>
         </div>
@@ -352,14 +352,14 @@
         
         <div class="media-ready-banner" id="ready-banner-img" style="display:none">
           <div class="mrb-info">
-            <span class="mrb-icon">✅</span>
+            <span class="mrb-icon">âœ…</span>
             <div>
               <div class="mrb-title"><span id="mrb-cnt-img">0</span> image(s) uploaded and ready</div>
               <div class="mrb-sub">Click below to detect facial affect, eye gaze stability & biomarkers</div>
             </div>
           </div>
           <button class="mrb-btn" type="button" onclick="runAnalysis()">
-            <span style="font-size:1.2rem">🔍</span> Analyze for Autism Indicators
+            <span style="font-size:1.2rem">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
 
@@ -367,7 +367,7 @@
 
         <div class="post-upload-action" id="post-upload-img" style="display:none">
           <button class="action-analyze-btn" type="button" onclick="runAnalysis()">
-            <span class="action-analyze-sym">🔍</span> Analyze for Autism Indicators
+            <span class="action-analyze-sym">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
       </div>
@@ -377,14 +377,14 @@
         <div class="drop-zone" id="dz-vid"
              ondragover="onDragOver(event,'dz-vid')" ondragleave="onDragLeave('dz-vid')" ondrop="onDrop(event,'vid')"
              onclick="document.getElementById('input-vid').click()">
-          <span class="dz-icon">🎥</span>
+          <span class="dz-icon">ðŸŽ¥</span>
           <div class="dz-title">Drag & drop videos or click to browse</div>
-          <div class="dz-sub">MP4, MOV, WebM · Max 100 MB per file<br>
-            Analyzed for: behavior patterns · movement · social interaction · eye gaze</div>
+          <div class="dz-sub">MP4, MOV, WebM Â· Max 100 MB per file<br>
+            Analyzed for: behavior patterns Â· movement Â· social interaction Â· eye gaze</div>
           <div class="dz-btn-row" onclick="event.stopPropagation()">
-            <button class="dz-btn" type="button" onclick="document.getElementById('input-vid').click()">📁 Choose Videos</button>
+            <button class="dz-btn" type="button" onclick="document.getElementById('input-vid').click()">ðŸ“ Choose Videos</button>
             <button class="dz-btn dz-analyze-btn" id="dz-analyze-vid" type="button" onclick="runAnalysis()" style="display:none">
-              <span style="font-size:1.15rem;margin-right:6px">🔍</span> Analyze for Autism Indicators
+              <span style="font-size:1.15rem;margin-right:6px">ðŸ”</span> Analyze for Neurodevelopmental Disorders
             </button>
           </div>
         </div>
@@ -392,14 +392,14 @@
 
         <div class="media-ready-banner" id="ready-banner-vid" style="display:none">
           <div class="mrb-info">
-            <span class="mrb-icon">✅</span>
+            <span class="mrb-icon">âœ…</span>
             <div>
               <div class="mrb-title"><span id="mrb-cnt-vid">0</span> video(s) uploaded and ready</div>
               <div class="mrb-sub">Click below to track repetitive motor behaviors & joint attention</div>
             </div>
           </div>
           <button class="mrb-btn" type="button" onclick="runAnalysis()">
-            <span style="font-size:1.2rem">🔍</span> Analyze for Autism Indicators
+            <span style="font-size:1.2rem">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
 
@@ -407,7 +407,7 @@
 
         <div class="post-upload-action" id="post-upload-vid" style="display:none">
           <button class="action-analyze-btn" type="button" onclick="runAnalysis()">
-            <span class="action-analyze-sym">🔍</span> Analyze for Autism Indicators
+            <span class="action-analyze-sym">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
       </div>
@@ -417,14 +417,14 @@
         <div class="drop-zone" id="dz-aud"
              ondragover="onDragOver(event,'dz-aud')" ondragleave="onDragLeave('dz-aud')" ondrop="onDrop(event,'aud')"
              onclick="document.getElementById('input-aud').click()">
-          <span class="dz-icon">🎙️</span>
+          <span class="dz-icon">ðŸŽ™ï¸</span>
           <div class="dz-title">Drag & drop audio or click to browse</div>
-          <div class="dz-sub">MP3, WAV, OGG, M4A, WebM · Max 50 MB per file<br>
-            Analyzed for: speech patterns · tone · prosody · repetitiveness · delays</div>
+          <div class="dz-sub">MP3, WAV, OGG, M4A, WebM Â· Max 50 MB per file<br>
+            Analyzed for: speech patterns Â· tone Â· prosody Â· repetitiveness Â· delays</div>
           <div class="dz-btn-row" onclick="event.stopPropagation()">
-            <button class="dz-btn" type="button" onclick="document.getElementById('input-aud').click()">📁 Choose Audio</button>
+            <button class="dz-btn" type="button" onclick="document.getElementById('input-aud').click()">ðŸ“ Choose Audio</button>
             <button class="dz-btn dz-analyze-btn" id="dz-analyze-aud" type="button" onclick="runAnalysis()" style="display:none">
-              <span style="font-size:1.15rem;margin-right:6px">🔍</span> Analyze for Autism Indicators
+              <span style="font-size:1.15rem;margin-right:6px">ðŸ”</span> Analyze for Neurodevelopmental Disorders
             </button>
           </div>
         </div>
@@ -432,14 +432,14 @@
 
         <div class="media-ready-banner" id="ready-banner-aud" style="display:none">
           <div class="mrb-info">
-            <span class="mrb-icon">✅</span>
+            <span class="mrb-icon">âœ…</span>
             <div>
               <div class="mrb-title"><span id="mrb-cnt-aud">0</span> audio file(s) uploaded and ready</div>
               <div class="mrb-sub">Click below to evaluate acoustic prosody, formant shifts & latency</div>
             </div>
           </div>
           <button class="mrb-btn" type="button" onclick="runAnalysis()">
-            <span style="font-size:1.2rem">🔍</span> Analyze for Autism Indicators
+            <span style="font-size:1.2rem">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
 
@@ -447,18 +447,18 @@
 
         <div class="post-upload-action" id="post-upload-aud" style="display:none">
           <button class="action-analyze-btn" type="button" onclick="runAnalysis()">
-            <span class="action-analyze-sym">🔍</span> Analyze for Autism Indicators
+            <span class="action-analyze-sym">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
       </div>
 
       <!-- File summary + analyze -->
       <div class="file-summary" id="fileSummary" style="display:none">
-        <span class="file-pill fp-img" id="pill-img" style="display:none">🖼️ <span id="pill-img-n">0</span> image(s)</span>
-        <span class="file-pill fp-vid" id="pill-vid" style="display:none">🎥 <span id="pill-vid-n">0</span> video(s)</span>
-        <span class="file-pill fp-aud" id="pill-aud" style="display:none">🎙️ <span id="pill-aud-n">0</span> audio file(s)</span>
+        <span class="file-pill fp-img" id="pill-img" style="display:none">ðŸ–¼ï¸ <span id="pill-img-n">0</span> image(s)</span>
+        <span class="file-pill fp-vid" id="pill-vid" style="display:none">ðŸŽ¥ <span id="pill-vid-n">0</span> video(s)</span>
+        <span class="file-pill fp-aud" id="pill-aud" style="display:none">ðŸŽ™ï¸ <span id="pill-aud-n">0</span> audio file(s)</span>
         <button class="summary-analyze-btn" id="summaryAnalyzeBtn" type="button" onclick="runAnalysis()">
-          <span style="font-size:1.05rem">🔍</span> Analyze for Autism Indicators (<span id="summary-total-files">0</span>)
+          <span style="font-size:1.05rem">ðŸ”</span> Analyze for Neurodevelopmental Disorders (<span id="summary-total-files">0</span>)
         </button>
       </div>
 
@@ -466,63 +466,63 @@
         <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()" disabled>
           <div class="spinner"></div>
           <span class="btn-text" style="display:inline-flex;align-items:center;justify-content:center;gap:10px">
-            <span style="font-size:1.4rem;line-height:1;display:inline-block">🔍</span>
-            <span style="font-size:1.05rem;font-weight:800;letter-spacing:.02em">Analyze for Autism Indicators</span>
+            <span style="font-size:1.4rem;line-height:1;display:inline-block">ðŸ”</span>
+            <span style="font-size:1.05rem;font-weight:800;letter-spacing:.02em">Analyze for Neurodevelopmental Disorders</span>
           </span>
         </button>
         <p style="margin-top:8px;font-size:.73rem;color:var(--muted);text-align:center">
-          AI analysis powered by NeuroScan Multi-Modal Engine · Results saved to MongoDB
+          AI analysis powered by NeuroScan Multi-Modal Engine Â· Results saved to MongoDB
         </p>
       </div>
     </div>
 
     <!-- How it works -->
     <div style="background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:22px">
-      <div style="font-size:.9rem;font-weight:700;margin-bottom:16px">⚙️ How Analysis Works</div>
+      <div style="font-size:.9rem;font-weight:700;margin-bottom:16px">âš™ï¸ How Analysis Works</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
         <div style="background:var(--bg);border-radius:var(--r-sm);padding:12px;text-align:center">
-          <div style="font-size:1.6rem;margin-bottom:6px">🖼️</div>
+          <div style="font-size:1.6rem;margin-bottom:6px">ðŸ–¼ï¸</div>
           <div style="font-size:.8rem;font-weight:700;margin-bottom:4px">Images</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Facial expression analysis · Eye contact detection · Emotional response scoring</div>
+          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Facial expression analysis Â· Eye contact detection Â· Emotional response scoring</div>
         </div>
         <div style="background:var(--bg);border-radius:var(--r-sm);padding:12px;text-align:center">
-          <div style="font-size:1.6rem;margin-bottom:6px">🎥</div>
+          <div style="font-size:1.6rem;margin-bottom:6px">ðŸŽ¥</div>
           <div style="font-size:.8rem;font-weight:700;margin-bottom:4px">Videos</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Behavior pattern detection · Movement analysis · Social interaction tracking</div>
+          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Behavior pattern detection Â· Movement analysis Â· Social interaction tracking</div>
         </div>
         <div style="background:var(--bg);border-radius:var(--r-sm);padding:12px;text-align:center">
-          <div style="font-size:1.6rem;margin-bottom:6px">🎙️</div>
+          <div style="font-size:1.6rem;margin-bottom:6px">ðŸŽ™ï¸</div>
           <div style="font-size:.8rem;font-weight:700;margin-bottom:4px">Audio</div>
-          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Speech delay detection · Prosody analysis · Repetitive speech patterns</div>
+          <div style="font-size:.72rem;color:var(--muted);line-height:1.5">Speech delay detection Â· Prosody analysis Â· Repetitive speech patterns</div>
         </div>
       </div>
       <div style="margin-top:14px;padding:12px 14px;background:#fff8e1;border-radius:var(--r-sm);font-size:.76rem;color:#7a5c00;border-left:3px solid #e9c46a">
-        ⚠️ Files are processed by Claude AI for behavioral analysis. Audio and video metadata is analyzed — actual media files are not permanently stored. Results saved to your MongoDB profile.
+        âš ï¸ Files are processed by Claude AI for behavioral analysis. Audio and video metadata is analyzed â€” actual media files are not permanently stored. Results saved to your MongoDB profile.
       </div>
     </div>
   </div>
 
-  <!-- ── RIGHT: RESULTS ── -->
+  <!-- â”€â”€ RIGHT: RESULTS â”€â”€ -->
   <div class="results-card" id="resultsPanel">
     <!-- Placeholder -->
     <div id="resultPlaceholder">
       <div class="results-header">
-        <div class="results-title">📊 Analysis Results</div>
+        <div class="results-title">ðŸ“Š Analysis Results</div>
       </div>
       <div class="results-placeholder">
-        <div class="rph-icon">🔬</div>
+        <div class="rph-icon">ðŸ”¬</div>
         <div class="rph-title">No Analysis Yet</div>
         <div class="rph-desc">Upload one or more files and click Analyze to see results in 5 clinical formats.</div>
         <div class="rph-list">
-          ✅ Select disorder (or all 7) to analyze<br>
-          ✅ Simple output (eye contact, emotion, speech)<br>
-          ✅ Probability analysis per disorder<br>
-          ✅ Behavior analysis report<br>
-          ✅ Clinical dashboard table<br>
-          ✅ Probability graph visualization<br>
-          ✅ 💊 Therapy recommendations<br>
-          ✅ 🏥 Hospital & specialist referrals<br>
-          ✅ Saved to MongoDB automatically
+          âœ… Select disorder (or all 7) to analyze<br>
+          âœ… Simple output (eye contact, emotion, speech)<br>
+          âœ… Probability analysis per disorder<br>
+          âœ… Behavior analysis report<br>
+          âœ… Clinical dashboard table<br>
+          âœ… Probability graph visualization<br>
+          âœ… ðŸ’Š Therapy recommendations<br>
+          âœ… ðŸ¥ Hospital & specialist referrals<br>
+          âœ… Saved to MongoDB automatically
         </div>
       </div>
     </div>
@@ -530,33 +530,33 @@
     <!-- Analyzing -->
     <div class="analyzing-overlay" id="analyzingOverlay">
       <div class="ao-spinner"></div>
-      <div class="ao-title" id="analyzingTitle">Running AI Analysis…</div>
+      <div class="ao-title" id="analyzingTitle">Running AI Analysisâ€¦</div>
       <div class="ao-sub" id="analyzingSub">Analyzing uploaded files for neurodevelopmental indicators</div>
       <div class="ao-steps">
-        <div class="ao-step" id="aostep1">📁 Reading uploaded file metadata</div>
-        <div class="ao-step" id="aostep2">🖼️ Analyzing visual behavioral cues</div>
-        <div class="ao-step" id="aostep3">🎙️ Processing speech and audio patterns</div>
-        <div class="ao-step" id="aostep4">🤖 Running ensemble ML models</div>
-        <div class="ao-step" id="aostep5">📊 Generating multi-format results</div>
-        <div class="ao-step" id="aostep6">💾 Saving results to MongoDB</div>
+        <div class="ao-step" id="aostep1">ðŸ“ Reading uploaded file metadata</div>
+        <div class="ao-step" id="aostep2">ðŸ–¼ï¸ Analyzing visual behavioral cues</div>
+        <div class="ao-step" id="aostep3">ðŸŽ™ï¸ Processing speech and audio patterns</div>
+        <div class="ao-step" id="aostep4">ðŸ¤– Running ensemble ML models</div>
+        <div class="ao-step" id="aostep5">ðŸ“Š Generating multi-format results</div>
+        <div class="ao-step" id="aostep6">ðŸ’¾ Saving results to MongoDB</div>
       </div>
     </div>
 
     <!-- Results content (hidden until analysis) -->
     <div id="resultContent" style="display:none">
       <div class="results-header">
-        <div class="results-title" id="resultsCompleteTitle">✅ Analysis Complete</div>
-        <button class="clear-btn" onclick="clearAll()">✕ Clear</button>
+        <div class="results-title" id="resultsCompleteTitle">âœ… Analysis Complete</div>
+        <button class="clear-btn" onclick="clearAll()">âœ• Clear</button>
       </div>
 
       <!-- Result tabs -->
       <div class="result-tabs">
-        <button class="result-tab active" onclick="switchResTab('simple',this)">1️⃣ Simple</button>
-        <button class="result-tab" onclick="switchResTab('prob',this)">2️⃣ Probability</button>
-        <button class="result-tab" onclick="switchResTab('beh',this)">3️⃣ Behavior</button>
-        <button class="result-tab" onclick="switchResTab('clin',this)">4️⃣ Clinical</button>
-        <button class="result-tab" onclick="switchResTab('graph',this)">5️⃣ Graph</button>
-        <button class="result-tab" onclick="switchResTab('recs',this)">6️⃣ Recommendations</button>
+        <button class="result-tab active" onclick="switchResTab('simple',this)">1ï¸âƒ£ Simple</button>
+        <button class="result-tab" onclick="switchResTab('prob',this)">2ï¸âƒ£ Probability</button>
+        <button class="result-tab" onclick="switchResTab('beh',this)">3ï¸âƒ£ Behavior</button>
+        <button class="result-tab" onclick="switchResTab('clin',this)">4ï¸âƒ£ Clinical</button>
+        <button class="result-tab" onclick="switchResTab('graph',this)">5ï¸âƒ£ Graph</button>
+        <button class="result-tab" onclick="switchResTab('recs',this)">6ï¸âƒ£ Recommendations</button>
       </div>
 
       <!-- 1. SIMPLE OUTPUT -->
@@ -569,7 +569,7 @@
           <span class="conf-pct" id="confPct"></span>
         </div>
         <div class="ai-explain" id="simpleExplain">
-          <div class="ae-title">🧠 AI Interpretation</div>
+          <div class="ae-title">ðŸ§  AI Interpretation</div>
           <div id="simpleExplainText"></div>
         </div>
       </div>
@@ -579,7 +579,7 @@
         <div id="probBars"></div>
         <div class="prob-verdict" id="probVerdict"></div>
         <div class="ai-explain" style="margin-top:14px">
-          <div class="ae-title">🤖 Model Analysis</div>
+          <div class="ae-title">ðŸ¤– Model Analysis</div>
           <div id="probExplainText" style="font-size:.83rem;line-height:1.7"></div>
         </div>
       </div>
@@ -627,13 +627,13 @@
         <div id="recsContent"></div>
       </div>
         <div class="save-badge" id="saveBadge" style="display:none">
-          ✅ Results saved to MongoDB
+          âœ… Results saved to MongoDB
         </div>
         <button class="pdf-btn" id="pdfBtn" onclick="downloadPDF()">
-          📄 Download PDF Report
+          ðŸ“„ Download PDF Report
         </button>
         <div class="disclaimer">
-          ⚠️ This AI analysis is for educational screening only. Not a clinical diagnosis. Always consult a qualified healthcare professional.
+          âš ï¸ This AI analysis is for educational screening only. Not a clinical diagnosis. Always consult a qualified healthcare professional.
         </div>
       </div>
     </div>
@@ -643,47 +643,47 @@
 <script type="module">
 import { saveAssessment, onAuthChange, auth } from '../js/mongodb.js';
 
-// ── STATE ──────────────────────────────────────────────────────
+// â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const files = { img: [], vid: [], aud: [] };
 let analysisResults = null;
 let chartInstance   = null;
 let selectedDisorder = 'all'; // 'all' | 'asd' | 'adhd' | 'dyslexia' | 'social_anxiety' | 'speech_delay' | 'intellectual_disability' | 'spd'
 
 const DISORDER_CONFIG = {
-  all:                    { icon:'🔬', label:'All 7 Disorders',       analyzeText:'Analyze for All 7 Disorders' },
-  asd:                    { icon:'🧩', label:'Autism Spectrum (ASD)', analyzeText:'Analyze for ASD Indicators' },
-  adhd:                   { icon:'⚡', label:'ADHD',                  analyzeText:'Analyze for ADHD Indicators' },
-  dyslexia:               { icon:'📖', label:'Dyslexia',              analyzeText:'Analyze for Dyslexia Indicators' },
-  social_anxiety:         { icon:'😰', label:'Social Anxiety',        analyzeText:'Analyze for Social Anxiety Indicators' },
-  speech_delay:           { icon:'🗣️', label:'Speech & Language Delay', analyzeText:'Analyze for Speech Delay Indicators' },
-  intellectual_disability:{ icon:'🧠', label:'Intellectual Disability', analyzeText:'Analyze for Intellectual Disability Indicators' },
-  spd:                    { icon:'✋', label:'Sensory Processing (SPD)', analyzeText:'Analyze for SPD Indicators' },
+  all:                    { icon:'ðŸ”¬', label:'All 7 Disorders',       analyzeText:'Analyze for All 7 Disorders' },
+  asd:                    { icon:'ðŸ§©', label:'Autism Spectrum (ASD)', analyzeText:'Analyze for ASD Indicators' },
+  adhd:                   { icon:'âš¡', label:'ADHD',                  analyzeText:'Analyze for ADHD Indicators' },
+  dyslexia:               { icon:'ðŸ“–', label:'Dyslexia',              analyzeText:'Analyze for Dyslexia Indicators' },
+  social_anxiety:         { icon:'ðŸ˜°', label:'Social Anxiety',        analyzeText:'Analyze for Social Anxiety Indicators' },
+  speech_delay:           { icon:'ðŸ—£ï¸', label:'Speech & Language Delay', analyzeText:'Analyze for Speech Delay Indicators' },
+  intellectual_disability:{ icon:'ðŸ§ ', label:'Intellectual Disability', analyzeText:'Analyze for Intellectual Disability Indicators' },
+  spd:                    { icon:'âœ‹', label:'Sensory Processing (SPD)', analyzeText:'Analyze for SPD Indicators' },
 };
 
 const DISORDER_INFO = {
-  all:                    'Analyzing all 7 disorders — eye contact, behavior, speech, attention, sensory, reading, and social patterns',
-  asd:                    '🧩 Analyzing for ASD — eye contact, repetitive behaviors, social reciprocity, sensory sensitivity',
-  adhd:                   '⚡ Analyzing for ADHD — attention span, hyperactivity, impulsivity, task completion',
-  dyslexia:               '📖 Analyzing for Dyslexia — reading patterns, phonological awareness, letter reversal, comprehension',
-  social_anxiety:         '😰 Analyzing for Social Anxiety — avoidance behaviors, facial expressions, performance anxiety',
-  speech_delay:           '🗣️ Analyzing for Speech Delay — prosody, vocabulary, articulation, sentence formation',
-  intellectual_disability:'🧠 Analyzing for Intellectual Disability — adaptive behavior, cognitive function, developmental milestones',
-  spd:                    '✋ Analyzing for SPD — sensory responses, tactile/auditory sensitivity, sensory seeking behaviors',
+  all:                    'Analyzing all 7 disorders â€” eye contact, behavior, speech, attention, sensory, reading, and social patterns',
+  asd:                    'ðŸ§© Analyzing for ASD â€” eye contact, repetitive behaviors, social reciprocity, sensory sensitivity',
+  adhd:                   'âš¡ Analyzing for ADHD â€” attention span, hyperactivity, impulsivity, task completion',
+  dyslexia:               'ðŸ“– Analyzing for Dyslexia â€” reading patterns, phonological awareness, letter reversal, comprehension',
+  social_anxiety:         'ðŸ˜° Analyzing for Social Anxiety â€” avoidance behaviors, facial expressions, performance anxiety',
+  speech_delay:           'ðŸ—£ï¸ Analyzing for Speech Delay â€” prosody, vocabulary, articulation, sentence formation',
+  intellectual_disability:'ðŸ§  Analyzing for Intellectual Disability â€” adaptive behavior, cognitive function, developmental milestones',
+  spd:                    'âœ‹ Analyzing for SPD â€” sensory responses, tactile/auditory sensitivity, sensory seeking behaviors',
 };
 
 const RECOMMENDATIONS_DB = {
   asd: {
     therapies:[
-      { name:'Applied Behavior Analysis (ABA)', detail:'Evidence-based behavioral intervention, 20–40 hrs/week. Improves communication, social skills, and adaptive behavior.' },
-      { name:'Speech-Language Therapy (SLP)', detail:'Targets pragmatic language, nonverbal communication, and expressive/receptive skills. 2–3 sessions/week.' },
+      { name:'Applied Behavior Analysis (ABA)', detail:'Evidence-based behavioral intervention, 20â€“40 hrs/week. Improves communication, social skills, and adaptive behavior.' },
+      { name:'Speech-Language Therapy (SLP)', detail:'Targets pragmatic language, nonverbal communication, and expressive/receptive skills. 2â€“3 sessions/week.' },
       { name:'Sensory Integration OT', detail:'Occupational therapy addressing sensory processing, fine motor skills, and daily adaptive routines.' },
       { name:'Social Skills Training (SST)', detail:'Structured peer interaction groups. Improves conversation, emotional recognition, and turn-taking.' },
     ],
     specialists:['Developmental Pediatrician','Child Neurologist','Board Certified Behavior Analyst (BCBA)','Speech-Language Pathologist (SLP)'],
     hospitals:[
-      { name:'NIMHANS, Bangalore', detail:'National Institute of Mental Health and Neuro Sciences — premier autism assessment center', icon:'🏥' },
-      { name:'AIIMS, New Delhi', detail:'Department of Psychiatry & Child Development — comprehensive neurodevelopmental evaluation', icon:'🏥' },
-      { name:'Shroff\'s Charity Eye Hospital (CDC)', detail:'Child Development Centre, Mumbai — multi-disciplinary ASD diagnostic team', icon:'🏥' },
+      { name:'NIMHANS, Bangalore', detail:'National Institute of Mental Health and Neuro Sciences â€” premier autism assessment center', icon:'ðŸ¥' },
+      { name:'AIIMS, New Delhi', detail:'Department of Psychiatry & Child Development â€” comprehensive neurodevelopmental evaluation', icon:'ðŸ¥' },
+      { name:'Shroff\'s Charity Eye Hospital (CDC)', detail:'Child Development Centre, Mumbai â€” multi-disciplinary ASD diagnostic team', icon:'ðŸ¥' },
     ],
     nextSteps:['Schedule ADOS-2 diagnostic evaluation','Request school IEP/504 accommodations','Join parent support group (Autism Society of India)'],
   },
@@ -692,28 +692,28 @@ const RECOMMENDATIONS_DB = {
       { name:'Behavioral Parent Training (BPT)', detail:'Equips parents with reinforcement strategies, token economies, and structured routines. Weekly sessions.' },
       { name:'Cognitive Behavioral Therapy (CBT)', detail:'Manages impulsivity, emotional regulation, and executive function strategies. 1 session/week.' },
       { name:'Executive Function Coaching', detail:'Time management, organization, chunking tasks, and working memory strategies for daily life.' },
-      { name:'Neurofeedback Therapy', detail:'Brain-computer interface training to regulate attention and reduce hyperactivity. 20–40 sessions.' },
+      { name:'Neurofeedback Therapy', detail:'Brain-computer interface training to regulate attention and reduce hyperactivity. 20â€“40 sessions.' },
     ],
     specialists:['Child Psychiatrist','Clinical Psychologist (ADHD Specialist)','Pediatric Neurologist','ADHD Coach'],
     hospitals:[
-      { name:'NIMHANS, Bangalore', detail:'ADHD Clinic — comprehensive assessment with Conners Scale and EEG', icon:'🏥' },
-      { name:'KEM Hospital, Mumbai', detail:'Child Guidance Clinic — behavioral and medication management', icon:'🏥' },
-      { name:'Apollo Hospitals (Child Development)', detail:'Multi-city centers — ADHD evaluation, therapy coordination', icon:'🏥' },
+      { name:'NIMHANS, Bangalore', detail:'ADHD Clinic â€” comprehensive assessment with Conners Scale and EEG', icon:'ðŸ¥' },
+      { name:'KEM Hospital, Mumbai', detail:'Child Guidance Clinic â€” behavioral and medication management', icon:'ðŸ¥' },
+      { name:'Apollo Hospitals (Child Development)', detail:'Multi-city centers â€” ADHD evaluation, therapy coordination', icon:'ðŸ¥' },
     ],
     nextSteps:['Complete Conners ADHD Rating Scale (parent + teacher)','Request classroom accommodations (extended time, preferential seating)','Explore Pomodoro-based study schedules'],
   },
   dyslexia: {
     therapies:[
-      { name:'Orton-Gillingham Reading Therapy', detail:'Multisensory structured phonics instruction — gold standard for dyslexia. 3–5 sessions/week.' },
+      { name:'Orton-Gillingham Reading Therapy', detail:'Multisensory structured phonics instruction â€” gold standard for dyslexia. 3â€“5 sessions/week.' },
       { name:'Wilson Reading System', detail:'Systematic phonological and phonemic awareness program. Highly structured 12-step curriculum.' },
       { name:'Assistive Technology Training', detail:'Text-to-speech (Speechify, NaturalReader), audiobooks (Bookshare), speech-to-text tools.' },
       { name:'Fluency & Comprehension Coaching', detail:'Repeated reading, vocabulary building, and reading comprehension strategies.' },
     ],
     specialists:['Educational Psychologist','Certified Reading Specialist (CERI)','Learning Disabilities Specialist','Speech-Language Pathologist'],
     hospitals:[
-      { name:'NIMHANS Learning Disabilities Clinic', detail:'Psychoeducational assessment battery — dyslexia screening and IQ testing', icon:'🏥' },
-      { name:'Dyslexia Association of India (DAI)', detail:'Diagnosis, remediation centers, and parent guidance across major Indian cities', icon:'🏥' },
-      { name:'The Reading Project, Mumbai', detail:'Specialized dyslexia remediation and educational therapy center', icon:'🏥' },
+      { name:'NIMHANS Learning Disabilities Clinic', detail:'Psychoeducational assessment battery â€” dyslexia screening and IQ testing', icon:'ðŸ¥' },
+      { name:'Dyslexia Association of India (DAI)', detail:'Diagnosis, remediation centers, and parent guidance across major Indian cities', icon:'ðŸ¥' },
+      { name:'The Reading Project, Mumbai', detail:'Specialized dyslexia remediation and educational therapy center', icon:'ðŸ¥' },
     ],
     nextSteps:['Request comprehensive psychoeducational evaluation (WISC-V + WIAT)','Apply for exam accommodations (extra time, reader/scribe)','Enroll in structured literacy program immediately'],
   },
@@ -726,24 +726,24 @@ const RECOMMENDATIONS_DB = {
     ],
     specialists:['Child Clinical Psychologist','Licensed CBT Therapist','Child Psychiatrist (for medication evaluation)','School Counselor'],
     hospitals:[
-      { name:'NIMHANS OPD, Bangalore', detail:'Child & Adolescent Psychiatry — anxiety assessment and therapy', icon:'🏥' },
-      { name:'iCall (TISS, Mumbai)', detail:'Affordable telephonic and in-person counseling for children and teens', icon:'🏥' },
-      { name:'Vandrevala Foundation', detail:'24x7 mental health helpline + therapy centers across India', icon:'🏥' },
+      { name:'NIMHANS OPD, Bangalore', detail:'Child & Adolescent Psychiatry â€” anxiety assessment and therapy', icon:'ðŸ¥' },
+      { name:'iCall (TISS, Mumbai)', detail:'Affordable telephonic and in-person counseling for children and teens', icon:'ðŸ¥' },
+      { name:'Vandrevala Foundation', detail:'24x7 mental health helpline + therapy centers across India', icon:'ðŸ¥' },
     ],
     nextSteps:['Complete SCARED or SPAI-C screening questionnaire','Create graded exposure hierarchy with therapist','Inform school counselor for social support plan'],
   },
   speech_delay: {
     therapies:[
-      { name:'Speech-Language Therapy (SLP)', detail:'Oral-motor exercises, phonological awareness, expressive syntax building. 2–3x/week.' },
-      { name:'PROMPT Therapy', detail:'Physical cues to shape accurate sound production — highly effective for motor speech disorders.' },
+      { name:'Speech-Language Therapy (SLP)', detail:'Oral-motor exercises, phonological awareness, expressive syntax building. 2â€“3x/week.' },
+      { name:'PROMPT Therapy', detail:'Physical cues to shape accurate sound production â€” highly effective for motor speech disorders.' },
       { name:'AAC (Augmentative & Alternative Communication)', detail:'PECS, visual communication boards, or digital AAC apps to reduce frustration.' },
       { name:'DIR/Floortime Approach', detail:'Child-led play-based therapy expanding circles of communication and emotional development.' },
     ],
     specialists:['Speech-Language Pathologist (CCC-SLP)','Pediatric Audiologist (hearing evaluation)','Developmental Pediatrician','ENT Specialist'],
     hospitals:[
-      { name:'AIIMS Speech & Hearing Clinic', detail:'Comprehensive audiological and speech-language evaluation', icon:'🏥' },
-      { name:'All India Institute of Speech & Hearing (AIISH), Mysore', detail:'Premier speech-language pathology center — evaluation and therapy', icon:'🏥' },
-      { name:'Kokilaben Dhirubhai Ambani Hospital', detail:'Speech therapy department — pediatric and adult programs', icon:'🏥' },
+      { name:'AIIMS Speech & Hearing Clinic', detail:'Comprehensive audiological and speech-language evaluation', icon:'ðŸ¥' },
+      { name:'All India Institute of Speech & Hearing (AIISH), Mysore', detail:'Premier speech-language pathology center â€” evaluation and therapy', icon:'ðŸ¥' },
+      { name:'Kokilaben Dhirubhai Ambani Hospital', detail:'Speech therapy department â€” pediatric and adult programs', icon:'ðŸ¥' },
     ],
     nextSteps:['Get audiological hearing test immediately (rule out hearing loss)','Start SLP therapy within 2 weeks of diagnosis','Implement language-rich home environment: narrate, read aloud, sing'],
   },
@@ -756,9 +756,9 @@ const RECOMMENDATIONS_DB = {
     ],
     specialists:['Developmental Pediatrician','Educational Psychologist (IQ testing)','Special Education Teacher','Occupational Therapist'],
     hospitals:[
-      { name:'NIMHANS Intellectual Disability Clinic', detail:'IQ/adaptive behavior assessment (WISC-V, Vineland) and family guidance', icon:'🏥' },
-      { name:'National Institute for Empowerment of Persons with ID (NIEPID)', detail:'Government center — assessment, therapy, vocational training', icon:'🏥' },
-      { name:'Asha Kiran Society, Bangalore', detail:'Residential and day-care services for persons with intellectual disabilities', icon:'🏥' },
+      { name:'NIMHANS Intellectual Disability Clinic', detail:'IQ/adaptive behavior assessment (WISC-V, Vineland) and family guidance', icon:'ðŸ¥' },
+      { name:'National Institute for Empowerment of Persons with ID (NIEPID)', detail:'Government center â€” assessment, therapy, vocational training', icon:'ðŸ¥' },
+      { name:'Asha Kiran Society, Bangalore', detail:'Residential and day-care services for persons with intellectual disabilities', icon:'ðŸ¥' },
     ],
     nextSteps:['Request IQ + adaptive behavior assessment (WISC-V + Vineland-3)','Apply for Disability Certificate (Person with Disabilities Act)','Contact National Trust India for benefits and legal support'],
   },
@@ -767,13 +767,13 @@ const RECOMMENDATIONS_DB = {
       { name:'Ayres Sensory Integration Therapy (ASI)', detail:'Clinician-directed sensory gym work balancing vestibular, proprioceptive, tactile input. 2x/week.' },
       { name:'Sensory Diet Implementation', detail:'Customized schedule of proprioceptive heavy work, compression, noise-dampening, oral-motor tools.' },
       { name:'Wilbarger Deep Pressure Protocol', detail:'Structured brushing and joint compression technique for tactile defensiveness.' },
-      { name:'Environmental Modification Therapy', detail:'Classroom/home sensory accommodations — noise-canceling headphones, fidgets, lighting control.' },
+      { name:'Environmental Modification Therapy', detail:'Classroom/home sensory accommodations â€” noise-canceling headphones, fidgets, lighting control.' },
     ],
     specialists:['Pediatric OT (Sensory Integration Certified, SIPT)','Pediatric Physical Therapist','Child Neurologist (rule out comorbid ASD)'],
     hospitals:[
-      { name:'Occupational Therapy India (OTI)', detail:'Certified ASI centers across Bangalore, Mumbai, Delhi', icon:'🏥' },
-      { name:'Fortis Hospital OT Dept', detail:'Pediatric sensory integration assessment and therapy programs', icon:'🏥' },
-      { name:'Rainbow Children\'s Hospital', detail:'Comprehensive sensory processing evaluation and multi-disciplinary therapy', icon:'🏥' },
+      { name:'Occupational Therapy India (OTI)', detail:'Certified ASI centers across Bangalore, Mumbai, Delhi', icon:'ðŸ¥' },
+      { name:'Fortis Hospital OT Dept', detail:'Pediatric sensory integration assessment and therapy programs', icon:'ðŸ¥' },
+      { name:'Rainbow Children\'s Hospital', detail:'Comprehensive sensory processing evaluation and multi-disciplinary therapy', icon:'ðŸ¥' },
     ],
     nextSteps:['Complete Sensory Profile 2 (Winnie Dunn) questionnaire','Schedule SIPT (Sensory Integration & Praxis Test) evaluation','Create sensory-friendly environment at home and school immediately'],
   },
@@ -797,7 +797,7 @@ function selectDisorder(d, btn) {
   const cfg = DISORDER_CONFIG[d];
   const info = DISORDER_INFO[d];
   // Update info bar
-  document.getElementById('disorderInfoBar').innerHTML = `🔬 <strong>${cfg.icon} ${cfg.label}</strong> — ${info.replace(/^[🔬🧩⚡📖😰🗣️🧠✋]\s*/,'')}`;
+  document.getElementById('disorderInfoBar').innerHTML = `ðŸ”¬ <strong>${cfg.icon} ${cfg.label}</strong> â€” ${info.replace(/^[ðŸ”¬ðŸ§©âš¡ðŸ“–ðŸ˜°ðŸ—£ï¸ðŸ§ âœ‹]\s*/,'')}`;
   // Update ALL analyze buttons text
   const btnText = `${cfg.icon} ${cfg.analyzeText}`;
   document.querySelectorAll('.analyze-btn .btn-text span:last-child, .mrb-btn, .action-analyze-btn, .summary-analyze-btn, .dz-analyze-btn').forEach(el => {
@@ -819,7 +819,7 @@ function selectDisorder(d, btn) {
   if (sb) sb.innerHTML = `<span style="font-size:1.05rem">${cfg.icon}</span> ${cfg.analyzeText} (<span id="summary-total-files">${files.img.length+files.vid.length+files.aud.length}</span>)`;
 }
 
-// ── UPLOAD TAB SWITCHING ───────────────────────────────────────
+// â”€â”€ UPLOAD TAB SWITCHING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function switchUpTab(type) {
   ['img','vid','aud'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === type);
@@ -827,7 +827,7 @@ function switchUpTab(type) {
   });
 }
 
-// ── DRAG & DROP ────────────────────────────────────────────────
+// â”€â”€ DRAG & DROP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function onDragOver(e, dzId) {
   e.preventDefault();
   document.getElementById(dzId).classList.add('dragover');
@@ -841,7 +841,7 @@ function onDrop(e, type) {
   addFiles(type, e.dataTransfer.files);
 }
 
-// ── FILE HANDLING ──────────────────────────────────────────────
+// â”€â”€ FILE HANDLING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function addFiles(type, fileList) {
   const LIMITS = { img: 10, vid: 100, aud: 50 };
   Array.from(fileList).forEach(f => {
@@ -870,10 +870,10 @@ function renderPreviews(type) {
         <div class="preview-footer">
           <span class="preview-name" title="${f.name}">${f.name}</span>
           <button class="item-analyze-btn" type="button" onclick="event.stopPropagation(); runAnalysis()" title="Analyze this image">
-            ⚡ Analyze
+            âš¡ Analyze
           </button>
         </div>
-        <div class="preview-remove" onclick="removeFile('img',${i})" title="Remove">✕</div>
+        <div class="preview-remove" onclick="removeFile('img',${i})" title="Remove">âœ•</div>
       </div>`).join('');
   } else if (type === 'vid') {
     document.getElementById('preview-vid').innerHTML = files.vid.map((f, i) => `
@@ -883,24 +883,24 @@ function renderPreviews(type) {
         <div class="preview-footer">
           <span class="preview-name" title="${f.name}">${f.name}</span>
           <button class="item-analyze-btn" type="button" onclick="event.stopPropagation(); runAnalysis()" title="Analyze this video">
-            ⚡ Analyze
+            âš¡ Analyze
           </button>
         </div>
-        <div class="preview-remove" onclick="removeFile('vid',${i})" title="Remove">✕</div>
+        <div class="preview-remove" onclick="removeFile('vid',${i})" title="Remove">âœ•</div>
       </div>`).join('');
   } else {
     document.getElementById('preview-aud').innerHTML = files.aud.map((f, i) => `
       <div class="preview-item" style="border-radius:var(--r-sm)">
         <div class="preview-audio">
-          <div class="preview-audio-icon">🎵</div>
+          <div class="preview-audio-icon">ðŸŽµ</div>
           <div class="preview-audio-name">${f.name}</div>
           <audio src="${URL.createObjectURL(f)}" controls></audio>
-          <div style="font-size:.68rem;color:var(--muted);text-align:center">${(f.size/1024/1024).toFixed(1)} MB · ${f.type}</div>
-          <button class="item-analyze-btn full-width" type="button" onclick="event.stopPropagation(); runAnalysis()" title="Analyze for Autism Indicators">
-            <span style="font-size:.9rem;margin-right:4px">🔍</span> Analyze for Autism Indicators
+          <div style="font-size:.68rem;color:var(--muted);text-align:center">${(f.size/1024/1024).toFixed(1)} MB Â· ${f.type}</div>
+          <button class="item-analyze-btn full-width" type="button" onclick="event.stopPropagation(); runAnalysis()" title="Analyze for Neurodevelopmental Disorders">
+            <span style="font-size:.9rem;margin-right:4px">ðŸ”</span> Analyze for Neurodevelopmental Disorders
           </button>
         </div>
-        <div class="preview-remove" onclick="removeFile('aud',${i})" title="Remove">✕</div>
+        <div class="preview-remove" onclick="removeFile('aud',${i})" title="Remove">âœ•</div>
       </div>`).join('');
   }
 }
@@ -957,7 +957,7 @@ function readFileAsDataURL(file) {
   });
 }
 
-// ── CLIENT-SIDE FEATURE EXTRACTION ─────────────────────────────
+// â”€â”€ CLIENT-SIDE FEATURE EXTRACTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function extractMediaFeaturesAndPayloads() {
   const mediaPayloads = [];
   const clientMetrics = { images: [], videos: [], audios: [] };
@@ -1106,7 +1106,7 @@ async function extractMediaFeaturesAndPayloads() {
   return { mediaPayloads, clientMetrics };
 }
 
-// ── ANALYSIS ENGINE ────────────────────────────────────────────
+// â”€â”€ ANALYSIS ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function runAnalysis() {
   const btn = document.getElementById('analyzeBtn');
   btn.classList.add('loading');
@@ -1120,7 +1120,7 @@ async function runAnalysis() {
   const cfg = DISORDER_CONFIG[selectedDisorder] || DISORDER_CONFIG.all;
   const titleEl = document.getElementById('analyzingTitle');
   const subEl   = document.getElementById('analyzingSub');
-  if (titleEl) titleEl.textContent = `${cfg.icon} Analyzing for ${cfg.label}…`;
+  if (titleEl) titleEl.textContent = `${cfg.icon} Analyzing for ${cfg.label}â€¦`;
   if (subEl)   subEl.textContent   = `Running multi-modal analysis for ${cfg.label} indicators`;
 
   // Extract client features and media frames
@@ -1186,7 +1186,7 @@ async function runAnalysis() {
   document.getElementById('analyzingOverlay').classList.remove('show');
   document.getElementById('resultContent').style.display = 'block';
   const rt = document.getElementById('resultsCompleteTitle');
-  if (rt) rt.textContent = `✅ ${cfg.icon} ${cfg.label} Analysis Complete`;
+  if (rt) rt.textContent = `âœ… ${cfg.icon} ${cfg.label} Analysis Complete`;
 
   btn.classList.remove('loading');
   btn.disabled = false;
@@ -1281,7 +1281,7 @@ function generateFallbackResults(fileDesc, clientMetrics = {}) {
   };
 }
 
-// ── RENDER FUNCTIONS ───────────────────────────────────────────
+// â”€â”€ RENDER FUNCTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderSimpleOutput(r) {
   const metrics = r.simple_metrics || {};
   const labels = {
@@ -1337,7 +1337,7 @@ function renderProbabilityOutput(r) {
   const verdictBg    = asd > 60 ? '#fff5f2' : asd > 40 ? '#fff8e1' : '#f0faf3';
   document.getElementById('probVerdict').innerHTML =
     `<div style="color:${verdictColor}">Final Prediction: <strong>${asd > 50 ? 'Autism Traits Likely' : 'Low Autism Probability'}</strong></div>
-     <div style="font-size:.78rem;margin-top:4px;font-weight:400;color:${verdictColor}">ASD probability: ${asd}% · Confidence: ${r.confidence}%</div>`;
+     <div style="font-size:.78rem;margin-top:4px;font-weight:400;color:${verdictColor}">ASD probability: ${asd}% Â· Confidence: ${r.confidence}%</div>`;
   document.getElementById('probVerdict').style.background = verdictBg;
   document.getElementById('probVerdict').style.border = `1.5px solid ${verdictColor}30`;
   document.getElementById('probVerdict').style.borderRadius = 'var(--r-sm)';
@@ -1361,12 +1361,12 @@ function renderBehaviorOutput(r) {
   ctx.strokeStyle = riskColor; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.stroke();
   document.getElementById('behScoreVal').textContent  = score + '/100';
   document.getElementById('behScoreVal').style.color  = riskColor;
-  document.getElementById('behRiskLabel').textContent = score > 65 ? '⚠️ High concern' : score > 45 ? '⚡ Moderate concern' : '✅ Low concern';
+  document.getElementById('behRiskLabel').textContent = score > 65 ? 'âš ï¸ High concern' : score > 45 ? 'âš¡ Moderate concern' : 'âœ… Low concern';
 
   document.getElementById('behGrid').innerHTML = [
-    { label:'Eye Contact Duration', value: det.eye_contact_duration || '2.1 sec', detail:'Typical: 4–6 sec' },
+    { label:'Eye Contact Duration', value: det.eye_contact_duration || '2.1 sec', detail:'Typical: 4â€“6 sec' },
     { label:'Hand Movement Pattern', value: det.hand_movement || 'Stereotyped', detail:'Repetitive patterns' },
-    { label:'Social Response Time', value: det.social_response_time || '3.2 sec', detail:'Typical: 1.0–1.8 sec' },
+    { label:'Social Response Time', value: det.social_response_time || '3.2 sec', detail:'Typical: 1.0â€“1.8 sec' },
     { label:'Behavior Score', value: score + '/100', detail:'Based on multi-modal analysis' },
   ].map(b => `
     <div class="beh-item">
@@ -1405,7 +1405,7 @@ function renderClinicalOutput(r) {
     <div class="cs-label">Clinical Assessment</div>
     <div class="cs-value">${level} Risk</div>
     <div class="cs-risk-pct">${asd}%</div>
-    <div style="font-size:.72rem;opacity:.75">ASD Probability · ${r.confidence}% model confidence</div>
+    <div style="font-size:.72rem;opacity:.75">ASD Probability Â· ${r.confidence}% model confidence</div>
     <div class="cs-recommendation">${r.recommendation}</div>`;
 }
 
@@ -1461,7 +1461,7 @@ function drawBarChart(r) {
   });
 }
 
-// ── RECOMMENDATIONS ────────────────────────────────────────────
+// â”€â”€ RECOMMENDATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderRecommendations(r) {
   // Determine which disorders to show recs for
   let disorders = selectedDisorder === 'all'
@@ -1485,7 +1485,7 @@ function renderRecommendations(r) {
     <div style="background:linear-gradient(135deg,#1b4d3e,#2d6a4f);color:#fff;border-radius:var(--r-sm);padding:16px;margin-bottom:16px">
       <div style="font-size:.7rem;opacity:.75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Primary Finding</div>
       <div style="font-size:1.1rem;font-weight:800">${cfg.icon} ${cfg.label}</div>
-      <div style="font-size:.8rem;opacity:.85;margin-top:4px">${r.risk_level || 'Moderate'} Risk · ${r.probabilities?.[topDisorder] || r.probabilities?.asd || 0}% probability</div>
+      <div style="font-size:.8rem;opacity:.85;margin-top:4px">${r.risk_level || 'Moderate'} Risk Â· ${r.probabilities?.[topDisorder] || r.probabilities?.asd || 0}% probability</div>
     </div>`;
 
   disorders.slice(0, selectedDisorder === 'all' ? 3 : 1).forEach(d => {
@@ -1497,10 +1497,10 @@ function renderRecommendations(r) {
 
     html += `
       <div style="margin-bottom:20px">
-        ${selectedDisorder === 'all' ? `<div style="font-size:.82rem;font-weight:800;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--green-bg);border-radius:var(--r-sm)">${dcfg.icon||'🔬'} ${dcfg.label||d} — ${prob}% probability</div>` : ''}
+        ${selectedDisorder === 'all' ? `<div style="font-size:.82rem;font-weight:800;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--green-bg);border-radius:var(--r-sm)">${dcfg.icon||'ðŸ”¬'} ${dcfg.label||d} â€” ${prob}% probability</div>` : ''}
 
         <div class="rec-section">
-          <div class="rec-section-title">💊 Recommended Therapies</div>
+          <div class="rec-section-title">ðŸ’Š Recommended Therapies</div>
           ${rec.therapies.map(t => `
             <div class="rec-card">
               <div class="rec-card-title">${t.name}</div>
@@ -1510,14 +1510,14 @@ function renderRecommendations(r) {
         </div>
 
         <div class="rec-section">
-          <div class="rec-section-title">👨‍⚕️ Specialist Referrals</div>
+          <div class="rec-section-title">ðŸ‘¨â€âš•ï¸ Specialist Referrals</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-            ${rec.specialists.map(s => `<span class="rec-tag specialist">👤 ${s}</span>`).join('')}
+            ${rec.specialists.map(s => `<span class="rec-tag specialist">ðŸ‘¤ ${s}</span>`).join('')}
           </div>
         </div>
 
         <div class="rec-section">
-          <div class="rec-section-title">🏥 Recommended Hospitals & Clinics (India)</div>
+          <div class="rec-section-title">ðŸ¥ Recommended Hospitals & Clinics (India)</div>
           ${rec.hospitals.map(h => `
             <div class="rec-hospital-item">
               <span class="rec-hospital-icon">${h.icon}</span>
@@ -1530,7 +1530,7 @@ function renderRecommendations(r) {
         </div>
 
         <div class="rec-section">
-          <div class="rec-section-title">✅ Immediate Next Steps</div>
+          <div class="rec-section-title">âœ… Immediate Next Steps</div>
           ${rec.nextSteps.map((s,i) => `
             <div style="display:flex;gap:10px;padding:9px 12px;background:var(--bg);border-radius:var(--r-sm);margin-bottom:6px;font-size:.82rem">
               <span style="background:var(--primary);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0">${i+1}</span>
@@ -1544,13 +1544,13 @@ function renderRecommendations(r) {
 
   html += `
     <div style="background:#fff8e1;border-radius:var(--r-sm);padding:12px 14px;font-size:.76rem;color:#7a5c00;border-left:3px solid #e9c46a;margin-top:8px">
-      ⚠️ These recommendations are educational and based on AI screening only. Always consult qualified specialists for formal diagnosis and treatment planning.
+      âš ï¸ These recommendations are educational and based on AI screening only. Always consult qualified specialists for formal diagnosis and treatment planning.
     </div>`;
 
   container.innerHTML = html;
 }
 
-// ── RESULT TAB SWITCHING ───────────────────────────────────────
+// â”€â”€ RESULT TAB SWITCHING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function switchResTab(name, btn) {
   document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.result-pane').forEach(p => p.classList.remove('active'));
@@ -1559,7 +1559,7 @@ function switchResTab(name, btn) {
   if (name === 'graph' && analysisResults) setTimeout(() => drawBarChart(analysisResults), 50);
 }
 
-// ── CLEAR ──────────────────────────────────────────────────────
+// â”€â”€ CLEAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function clearAll() {
   files.img = []; files.vid = []; files.aud = [];
   ['img','vid','aud'].forEach(t => renderPreviews(t));
@@ -1574,11 +1574,11 @@ function clearAll() {
   });
 }
 
-// ── PDF REPORT ─────────────────────────────────────────────────
+// â”€â”€ PDF REPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function downloadPDF() {
   if (!analysisResults) return;
   const btn = document.getElementById('pdfBtn');
-  btn.textContent = '⏳ Generating…';
+  btn.textContent = 'â³ Generatingâ€¦';
   btn.disabled = true;
 
   if (!window.jspdf) {
@@ -1598,13 +1598,13 @@ async function downloadPDF() {
   // Header
   doc.setFillColor(10,22,40); doc.rect(0,0,210,36,'F');
   doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(18);
-  doc.text('NeuroScan AI — Media Analysis Report', 14, 16);
+  doc.text('NeuroScan AI â€” Media Analysis Report', 14, 16);
   doc.setFont('helvetica','normal'); doc.setFontSize(10);
-  doc.text(`Multi-Modal Upload Analysis · Generated: ${date}`, 14, 28);
+  doc.text(`Multi-Modal Upload Analysis Â· Generated: ${date}`, 14, 28);
 
   // Risk summary
   doc.setTextColor(30,30,30); doc.setFontSize(12); doc.setFont('helvetica','bold');
-  doc.text(`Risk Level: ${r.risk_level?.toUpperCase()}  ·  ASD Probability: ${r.probabilities?.asd || 0}%  ·  Confidence: ${r.confidence}%`, 14, 50);
+  doc.text(`Risk Level: ${r.risk_level?.toUpperCase()}  Â·  ASD Probability: ${r.probabilities?.asd || 0}%  Â·  Confidence: ${r.confidence}%`, 14, 50);
 
   // Files analyzed
   doc.setFont('helvetica','normal'); doc.setFontSize(10);
@@ -1626,7 +1626,7 @@ async function downloadPDF() {
   doc.text('Clinical Parameters', 14, y); y += 8;
   (r.clinical_parameters || []).forEach(p => {
     doc.setFont('helvetica','normal'); doc.setFontSize(10);
-    doc.text(`• ${p.parameter}: ${p.result}`, 14, y); y += 7;
+    doc.text(`â€¢ ${p.parameter}: ${p.result}`, 14, y); y += 7;
     if (y > 260) { doc.addPage(); y = 20; }
   });
 
@@ -1642,15 +1642,15 @@ async function downloadPDF() {
   y += 6;
   doc.setFillColor(255,248,225); doc.rect(14,y,182,18,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(180,100,0);
-  doc.text('DISCLAIMER: This AI analysis is for educational screening only — not a clinical diagnosis.', 16, y+7);
+  doc.text('DISCLAIMER: This AI analysis is for educational screening only â€” not a clinical diagnosis.', 16, y+7);
   doc.text('Always consult a qualified healthcare professional for clinical evaluation.', 16, y+14);
 
   doc.save(`NeuroScan_Media_Report_${date}.pdf`);
-  btn.textContent = '📄 Download PDF Report';
+  btn.textContent = 'ðŸ“„ Download PDF Report';
   btn.disabled = false;
 }
 
-// ── UTILS ──────────────────────────────────────────────────────
+// â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function showToast(msg, type) {
@@ -1663,3 +1663,4 @@ window.addEventListener('resize', () => { if (analysisResults) drawBarChart(anal
 </script>
 </body>
 </html>
+
