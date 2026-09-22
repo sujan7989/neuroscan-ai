@@ -787,14 +787,17 @@ app.post('/api/ml/assess', async (req, res) => {
 // GET /api/ml/metrics — Model performance & cross-validation metrics
 app.get('/api/ml/metrics', async (_req, res) => {
   try {
-    // Primary path: full repo deployed (local dev / root deploy)
-    // Fallback path: only server/ deployed (Render rootDir:server) — metrics copied into server/ml_artifacts/
-    const asdMetricsPath = fs.existsSync(path.resolve(__dirname, '../ml/artifacts/metrics.json'))
-      ? path.resolve(__dirname, '../ml/artifacts/metrics.json')
-      : path.resolve(__dirname, 'ml_artifacts/metrics.json');
-    const multiMetricsPath = fs.existsSync(path.resolve(__dirname, '../ml/artifacts/multi_disorder_metrics.json'))
-      ? path.resolve(__dirname, '../ml/artifacts/multi_disorder_metrics.json')
-      : path.resolve(__dirname, 'ml_artifacts/multi_disorder_metrics.json');
+    // Try all possible paths in order: full repo, server subfolder copy, fallback
+    const candidates = [
+      path.resolve(__dirname, 'ml_artifacts/metrics.json'),
+      path.resolve(__dirname, '../ml/artifacts/metrics.json'),
+    ];
+    const multiCandidates = [
+      path.resolve(__dirname, 'ml_artifacts/multi_disorder_metrics.json'),
+      path.resolve(__dirname, '../ml/artifacts/multi_disorder_metrics.json'),
+    ];
+    const asdMetricsPath   = candidates.find(p => fs.existsSync(p));
+    const multiMetricsPath = multiCandidates.find(p => fs.existsSync(p));
 
     let asdMetrics = null;
     let multiMetrics = null;
