@@ -1,0 +1,883 @@
+{
+  "model_suite": "NeuroScan AI ASD Screening ML Suite",
+  "status": "RESEARCH_PROTOTYPE",
+  "is_experimental": true,
+  "is_validated_clinical_model": false,
+  "dataset_info": {
+    "dataset_name": "UCI ASD Screening Dataset (Adults + Children combined)",
+    "sources": [
+      {
+        "name": "Autism Screening Adult",
+        "uci_id": 426,
+        "records": 704,
+        "doi": "https://doi.org/10.24432/C5F019",
+        "license": "CC BY 4.0"
+      },
+      {
+        "name": "Autistic Spectrum Disorder Screening Data for Children",
+        "uci_id": 419,
+        "records": 292,
+        "doi": "https://doi.org/10.24432/C5659W",
+        "license": "CC BY 4.0"
+      }
+    ],
+    "citation": "Thabtah, F. (2017). UCI ML Repository. CC BY 4.0.",
+    "dataset_sha256": "30c7a15e2277f1ba9ae67ec1740311b0a1b78ea456a351c41b90cd85ef412921",
+    "total_real_records": 989,
+    "total_records": 989,
+    "positive_asd": 327,
+    "negative_asd": 662,
+    "positive_rate": 0.3306,
+    "age_groups": {
+      "adult": 681,
+      "adolescent": 18,
+      "child": 290
+    },
+    "sex_distribution": {
+      "asd_positive": {
+        "m": 186,
+        "f": 141
+      },
+      "asd_negative": {
+        "m": 383,
+        "f": 279
+      }
+    },
+    "age_range": [
+      4,
+      64
+    ],
+    "training_records": 741,
+    "test_records": 248,
+    "train_test_split": "75% train / 25% test (stratified)",
+    "features": [
+      "A1_Score",
+      "A2_Score",
+      "A3_Score",
+      "A4_Score",
+      "A5_Score",
+      "A6_Score",
+      "A7_Score",
+      "A8_Score",
+      "A9_Score",
+      "A10_Score",
+      "age",
+      "gender_num",
+      "jaundice_num",
+      "austim_num"
+    ],
+    "target_variable": "Class_ASD",
+    "augmentation_note": "NO synthetic augmentation \u2014 model trained on real UCI data only"
+  },
+  "leakage_prevention": [
+    "result column (AQ-10 raw sum) excluded from feature matrix",
+    "aq10_sum excluded from feature matrix",
+    "Class_ASD label excluded from feature matrix",
+    "StandardScaler fit strictly within CV training folds",
+    "Holdout test set isolated before any model fitting"
+  ],
+  "ensemble_weights": {
+    "random_forest": 0.4,
+    "gradient_boosting": 0.4,
+    "logistic_regression": 0.2
+  },
+  "metrics": {
+    "logistic_regression": {
+      "model_name": "logistic_regression",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0108,
+          "confusion_matrix": {
+            "TN": 100,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0073,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0091,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0091,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0131,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 1.0,
+        "std_accuracy": 0.0,
+        "mean_sensitivity": 1.0,
+        "mean_specificity": 1.0,
+        "mean_f1_score": 1.0,
+        "mean_balanced_accuracy": 1.0,
+        "mean_roc_auc": 1.0,
+        "mean_pr_auc": 1.0,
+        "mean_brier_score": 0.0099,
+        "mean_ece": 0.0463
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0,
+        "f1_score": 1.0,
+        "balanced_accuracy": 1.0,
+        "roc_auc": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.0058,
+        "ece": 0.034,
+        "confusion_matrix": {
+          "TN": 166,
+          "FP": 0,
+          "FN": 0,
+          "TP": 82
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.004,
+            "ci_upper_95": 0.0077
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 1.5955,
+        "A2_Score": 1.5094,
+        "A3_Score": 1.4999,
+        "A4_Score": 1.6978,
+        "A5_Score": 1.7776,
+        "A6_Score": 1.6229,
+        "A7_Score": 1.525,
+        "A8_Score": 1.5833,
+        "A9_Score": 1.5564,
+        "A10_Score": 1.5222,
+        "age": -0.0462,
+        "gender_num": -0.1021,
+        "jaundice_num": -0.092,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\logistic_regression.joblib"
+    },
+    "random_forest": {
+      "model_name": "random_forest",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.9396,
+          "sensitivity": 0.9592,
+          "specificity": 0.93,
+          "f1_score": 0.9126,
+          "balanced_accuracy": 0.9446,
+          "roc_auc": 0.9935,
+          "pr_auc": 0.9878,
+          "brier_score": 0.051,
+          "confusion_matrix": {
+            "TN": 93,
+            "FP": 7,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 0.9388,
+          "specificity": 0.9697,
+          "f1_score": 0.9388,
+          "balanced_accuracy": 0.9542,
+          "roc_auc": 0.9932,
+          "pr_auc": 0.988,
+          "brier_score": 0.0486,
+          "confusion_matrix": {
+            "TN": 96,
+            "FP": 3,
+            "FN": 3,
+            "TP": 46
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 0.9662,
+          "sensitivity": 0.9388,
+          "specificity": 0.9798,
+          "f1_score": 0.9485,
+          "balanced_accuracy": 0.9593,
+          "roc_auc": 0.9967,
+          "pr_auc": 0.994,
+          "brier_score": 0.0454,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 3,
+            "TP": 46
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 0.9592,
+          "specificity": 0.9596,
+          "f1_score": 0.94,
+          "balanced_accuracy": 0.9594,
+          "roc_auc": 0.9955,
+          "pr_auc": 0.9914,
+          "brier_score": 0.0486,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.973,
+          "sensitivity": 0.9796,
+          "specificity": 0.9697,
+          "f1_score": 0.96,
+          "balanced_accuracy": 0.9746,
+          "roc_auc": 0.993,
+          "pr_auc": 0.984,
+          "brier_score": 0.0557,
+          "confusion_matrix": {
+            "TN": 96,
+            "FP": 3,
+            "FN": 1,
+            "TP": 48
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9595,
+        "std_accuracy": 0.0112,
+        "mean_sensitivity": 0.9551,
+        "mean_specificity": 0.9618,
+        "mean_f1_score": 0.94,
+        "mean_balanced_accuracy": 0.9584,
+        "mean_roc_auc": 0.9944,
+        "mean_pr_auc": 0.9891,
+        "mean_brier_score": 0.0499,
+        "mean_ece": 0.1118
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9718,
+        "sensitivity": 0.939,
+        "specificity": 0.988,
+        "f1_score": 0.9565,
+        "balanced_accuracy": 0.9635,
+        "roc_auc": 0.9979,
+        "pr_auc": 0.996,
+        "brier_score": 0.0423,
+        "ece": 0.1122,
+        "confusion_matrix": {
+          "TN": 164,
+          "FP": 2,
+          "FN": 5,
+          "TP": 77
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9476,
+            "ci_upper_95": 0.9879
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9944,
+            "ci_upper_95": 0.9998
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9894,
+            "ci_upper_95": 0.9995
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.034,
+            "ci_upper_95": 0.0511
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.96,
+          "sensitivity": 0.95,
+          "specificity": 0.9714,
+          "roc_auc": 0.9936,
+          "f1_score": 0.962
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9821,
+          "sensitivity": 0.95,
+          "specificity": 0.9922,
+          "roc_auc": 0.9996,
+          "f1_score": 0.962
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9592,
+          "sensitivity": 0.9245,
+          "specificity": 0.9787,
+          "roc_auc": 0.996,
+          "f1_score": 0.9423
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9901,
+          "sensitivity": 0.9655,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 0.9825
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0604,
+        "A2_Score": 0.0483,
+        "A3_Score": 0.0878,
+        "A4_Score": 0.1145,
+        "A5_Score": 0.154,
+        "A6_Score": 0.1545,
+        "A7_Score": 0.0455,
+        "A8_Score": 0.0462,
+        "A9_Score": 0.1748,
+        "A10_Score": 0.0662,
+        "age": 0.0355,
+        "gender_num": 0.0072,
+        "jaundice_num": 0.0051,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\random_forest.joblib"
+    },
+    "gradient_boosting": {
+      "model_name": "gradient_boosting",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.953,
+          "sensitivity": 0.9184,
+          "specificity": 0.97,
+          "f1_score": 0.9278,
+          "balanced_accuracy": 0.9442,
+          "roc_auc": 0.9949,
+          "pr_auc": 0.9903,
+          "brier_score": 0.0356,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 3,
+            "FN": 4,
+            "TP": 45
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9662,
+          "sensitivity": 0.9388,
+          "specificity": 0.9798,
+          "f1_score": 0.9485,
+          "balanced_accuracy": 0.9593,
+          "roc_auc": 0.9944,
+          "pr_auc": 0.9899,
+          "brier_score": 0.0333,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 3,
+            "TP": 46
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 0.9527,
+          "sensitivity": 0.898,
+          "specificity": 0.9798,
+          "f1_score": 0.9263,
+          "balanced_accuracy": 0.9389,
+          "roc_auc": 0.9975,
+          "pr_auc": 0.9951,
+          "brier_score": 0.0306,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 5,
+            "TP": 44
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 0.9592,
+          "specificity": 0.9596,
+          "f1_score": 0.94,
+          "balanced_accuracy": 0.9594,
+          "roc_auc": 0.9959,
+          "pr_auc": 0.9924,
+          "brier_score": 0.0335,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.9324,
+          "sensitivity": 0.8367,
+          "specificity": 0.9798,
+          "f1_score": 0.8913,
+          "balanced_accuracy": 0.9083,
+          "roc_auc": 0.992,
+          "pr_auc": 0.9831,
+          "brier_score": 0.043,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 8,
+            "TP": 41
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9528,
+        "std_accuracy": 0.0113,
+        "mean_sensitivity": 0.9102,
+        "mean_specificity": 0.9738,
+        "mean_f1_score": 0.9268,
+        "mean_balanced_accuracy": 0.942,
+        "mean_roc_auc": 0.9949,
+        "mean_pr_auc": 0.9902,
+        "mean_brier_score": 0.0352,
+        "mean_ece": 0.0738
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9798,
+        "sensitivity": 0.939,
+        "specificity": 1.0,
+        "f1_score": 0.9686,
+        "balanced_accuracy": 0.9695,
+        "roc_auc": 0.9976,
+        "pr_auc": 0.9957,
+        "brier_score": 0.0291,
+        "ece": 0.0727,
+        "confusion_matrix": {
+          "TN": 166,
+          "FP": 0,
+          "FN": 5,
+          "TP": 77
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9597,
+            "ci_upper_95": 0.9919
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9937,
+            "ci_upper_95": 0.9998
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9893,
+            "ci_upper_95": 0.9997
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.021,
+            "ci_upper_95": 0.0378
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.9733,
+          "sensitivity": 0.95,
+          "specificity": 1.0,
+          "roc_auc": 0.9936,
+          "f1_score": 0.9744
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9821,
+          "sensitivity": 0.925,
+          "specificity": 1.0,
+          "roc_auc": 0.9982,
+          "f1_score": 0.961
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9796,
+          "sensitivity": 0.9434,
+          "specificity": 1.0,
+          "roc_auc": 0.9964,
+          "f1_score": 0.9709
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9802,
+          "sensitivity": 0.931,
+          "specificity": 1.0,
+          "roc_auc": 0.999,
+          "f1_score": 0.9643
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0749,
+        "A2_Score": 0.0454,
+        "A3_Score": 0.0497,
+        "A4_Score": 0.1015,
+        "A5_Score": 0.1261,
+        "A6_Score": 0.1551,
+        "A7_Score": 0.0421,
+        "A8_Score": 0.0505,
+        "A9_Score": 0.3002,
+        "A10_Score": 0.0423,
+        "age": 0.0098,
+        "gender_num": 0.0003,
+        "jaundice_num": 0.0021,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\gradient_boosting.joblib"
+    },
+    "xgboost": {
+      "model_name": "xgboost",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.9463,
+          "sensitivity": 0.9592,
+          "specificity": 0.94,
+          "f1_score": 0.9216,
+          "balanced_accuracy": 0.9496,
+          "roc_auc": 0.9945,
+          "pr_auc": 0.9894,
+          "brier_score": 0.0423,
+          "confusion_matrix": {
+            "TN": 94,
+            "FP": 6,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9527,
+          "sensitivity": 0.9796,
+          "specificity": 0.9394,
+          "f1_score": 0.932,
+          "balanced_accuracy": 0.9595,
+          "roc_auc": 0.9948,
+          "pr_auc": 0.9904,
+          "brier_score": 0.0381,
+          "confusion_matrix": {
+            "TN": 93,
+            "FP": 6,
+            "FN": 1,
+            "TP": 48
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 0.9662,
+          "sensitivity": 1.0,
+          "specificity": 0.9495,
+          "f1_score": 0.9515,
+          "balanced_accuracy": 0.9747,
+          "roc_auc": 0.9969,
+          "pr_auc": 0.994,
+          "brier_score": 0.0325,
+          "confusion_matrix": {
+            "TN": 94,
+            "FP": 5,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 1.0,
+          "specificity": 0.9394,
+          "f1_score": 0.9423,
+          "balanced_accuracy": 0.9697,
+          "roc_auc": 0.9977,
+          "pr_auc": 0.9958,
+          "brier_score": 0.037,
+          "confusion_matrix": {
+            "TN": 93,
+            "FP": 6,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.973,
+          "sensitivity": 1.0,
+          "specificity": 0.9596,
+          "f1_score": 0.9608,
+          "balanced_accuracy": 0.9798,
+          "roc_auc": 0.9946,
+          "pr_auc": 0.9887,
+          "brier_score": 0.0429,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 0,
+            "TP": 49
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9595,
+        "std_accuracy": 0.0095,
+        "mean_sensitivity": 0.9878,
+        "mean_specificity": 0.9456,
+        "mean_f1_score": 0.9416,
+        "mean_balanced_accuracy": 0.9667,
+        "mean_roc_auc": 0.9957,
+        "mean_pr_auc": 0.9917,
+        "mean_brier_score": 0.0385,
+        "mean_ece": 0.0847
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9637,
+        "sensitivity": 0.9756,
+        "specificity": 0.9578,
+        "f1_score": 0.9467,
+        "balanced_accuracy": 0.9667,
+        "roc_auc": 0.9985,
+        "pr_auc": 0.9972,
+        "brier_score": 0.0293,
+        "ece": 0.0901,
+        "confusion_matrix": {
+          "TN": 159,
+          "FP": 7,
+          "FN": 2,
+          "TP": 80
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9395,
+            "ci_upper_95": 0.9839
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9959,
+            "ci_upper_95": 1.0
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9926,
+            "ci_upper_95": 1.0
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0217,
+            "ci_upper_95": 0.0378
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.9467,
+          "sensitivity": 0.975,
+          "specificity": 0.9143,
+          "roc_auc": 0.995,
+          "f1_score": 0.9512
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9702,
+          "sensitivity": 0.975,
+          "specificity": 0.9688,
+          "roc_auc": 0.9992,
+          "f1_score": 0.9398
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9524,
+          "sensitivity": 0.9623,
+          "specificity": 0.9468,
+          "roc_auc": 0.9976,
+          "f1_score": 0.9358
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9802,
+          "sensitivity": 1.0,
+          "specificity": 0.9722,
+          "roc_auc": 0.9995,
+          "f1_score": 0.9667
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0617,
+        "A2_Score": 0.0484,
+        "A3_Score": 0.0741,
+        "A4_Score": 0.1028,
+        "A5_Score": 0.1448,
+        "A6_Score": 0.1388,
+        "A7_Score": 0.04,
+        "A8_Score": 0.0582,
+        "A9_Score": 0.2459,
+        "A10_Score": 0.0614,
+        "age": 0.0088,
+        "gender_num": 0.0,
+        "jaundice_num": 0.0151,
+        "austim_num": 0.0
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\xgboost.joblib"
+    }
+  },
+  "disclaimer": "RESEARCH PROTOTYPE: NeuroScan AI screening indicators are for educational demonstration only. They do NOT constitute clinical diagnoses. Professional evaluation requires ADOS-2, ADI-R, or CARS administered by specialists."
+}
