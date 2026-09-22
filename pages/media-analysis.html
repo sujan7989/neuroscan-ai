@@ -224,6 +224,26 @@
     .pdf-btn{width:100%;padding:12px;border-radius:var(--r-sm);background:#0a1628;color:#fff;border:none;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;transition:all .2s}
     .pdf-btn:hover{background:#1a2d4a;transform:translateY(-1px)}
     .pdf-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+    /* Disorder selector */
+    .disorder-sel-btn{padding:10px 6px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all .2s;color:var(--text)}
+    .disorder-sel-btn:hover{border-color:var(--primary);background:var(--green-bg)}
+    .disorder-sel-btn.active{border-color:var(--primary);background:var(--green-bg);color:var(--primary);box-shadow:0 0 0 2px rgba(45,106,79,.15)}
+
+    /* Recommendations section */
+    .rec-section{margin-bottom:16px}
+    .rec-section-title{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .rec-card{background:var(--bg);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;border:1px solid var(--border)}
+    .rec-card-title{font-size:.84rem;font-weight:700;margin-bottom:4px;color:var(--text)}
+    .rec-card-detail{font-size:.76rem;color:var(--muted);line-height:1.55}
+    .rec-tag{display:inline-block;padding:2px 8px;border-radius:50px;font-size:.65rem;font-weight:700;background:var(--green-bg);color:var(--primary);border:1px solid var(--primary-l);margin-right:4px;margin-top:4px}
+    .rec-tag.hospital{background:#e0f2fe;color:#0369a1;border-color:#7dd3fc}
+    .rec-tag.specialist{background:#f3e8ff;color:#7c3aed;border-color:#c4b5fd}
+    .rec-tag.therapy{background:#dcfce7;color:#166534;border-color:#86efac}
+    .rec-hospital-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:6px}
+    .rec-hospital-icon{font-size:1.4rem;flex-shrink:0}
+    .rec-hospital-name{font-size:.83rem;font-weight:700;margin-bottom:2px}
+    .rec-hospital-detail{font-size:.72rem;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -234,14 +254,17 @@
   <div class="page-hdr-inner">
     <span style="display:inline-block;background:rgba(255,255,255,.1);padding:4px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2);margin-bottom:12px">📤 Multi-Modal AI Analysis</span>
     <h1>Upload & Detect</h1>
-    <p>Upload images, videos, or audio recordings for AI-powered autism behavioral analysis. Results are saved to your MongoDB profile and presented in 5 different clinical formats.</p>
+    <p>Upload images, videos, or audio recordings for AI-powered multi-disorder behavioral analysis across all 7 neurodevelopmental conditions. Results are saved to your profile.</p>
     <div class="hdr-badges">
-      <span class="hdr-badge">🖼️ Image Analysis</span>
-      <span class="hdr-badge">🎥 Video Behavior Tracking</span>
-      <span class="hdr-badge">🎙️ Speech Pattern Analysis</span>
-      <span class="hdr-badge">🤖 Claude AI Powered</span>
-      <span class="hdr-badge">💾 Saved to MongoDB</span>
-      <span class="hdr-badge">📄 PDF Report</span>
+      <span class="hdr-badge">🧩 ASD</span>
+      <span class="hdr-badge">⚡ ADHD</span>
+      <span class="hdr-badge">📖 Dyslexia</span>
+      <span class="hdr-badge">😰 Social Anxiety</span>
+      <span class="hdr-badge">🗣️ Speech Delay</span>
+      <span class="hdr-badge">🧠 Intellectual</span>
+      <span class="hdr-badge">✋ SPD</span>
+      <span class="hdr-badge">🤖 AI Powered</span>
+      <span class="hdr-badge">💾 Saved to DB</span>
     </div>
   </div>
 </div>
@@ -249,6 +272,44 @@
 <div class="media-layout">
   <!-- ── LEFT: UPLOAD ── -->
   <div>
+    <!-- ── DISORDER SELECTOR ── -->
+    <div class="upload-card" style="margin-bottom:20px">
+      <div class="upload-card-header">
+        <div class="upload-card-title">🎯 Select Disorder to Analyze</div>
+        <div style="font-size:.78rem;color:var(--muted)">Choose one or analyze all 7</div>
+      </div>
+      <div style="padding:16px 20px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px" id="disorderGrid">
+          <button type="button" class="disorder-sel-btn active" data-disorder="all" onclick="selectDisorder('all',this)">
+            <span style="font-size:1.2rem">🔬</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">All 7</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="asd" onclick="selectDisorder('asd',this)">
+            <span style="font-size:1.2rem">🧩</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ASD</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="adhd" onclick="selectDisorder('adhd',this)">
+            <span style="font-size:1.2rem">⚡</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">ADHD</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="dyslexia" onclick="selectDisorder('dyslexia',this)">
+            <span style="font-size:1.2rem">📖</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Dyslexia</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="social_anxiety" onclick="selectDisorder('social_anxiety',this)">
+            <span style="font-size:1.2rem">😰</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Social Anxiety</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="speech_delay" onclick="selectDisorder('speech_delay',this)">
+            <span style="font-size:1.2rem">🗣️</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Speech Delay</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="intellectual_disability" onclick="selectDisorder('intellectual_disability',this)">
+            <span style="font-size:1.2rem">🧠</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">Intellectual</div>
+          </button>
+          <button type="button" class="disorder-sel-btn" data-disorder="spd" onclick="selectDisorder('spd',this)">
+            <span style="font-size:1.2rem">✋</span><div style="font-size:.72rem;font-weight:700;margin-top:3px">SPD</div>
+          </button>
+        </div>
+        <div id="disorderInfoBar" style="background:var(--green-bg);border-radius:var(--r-sm);padding:10px 14px;font-size:.8rem;color:var(--primary);font-weight:600;border:1px solid var(--primary-l)">
+          🔬 <strong>Analyzing all 7 disorders</strong> — eye contact, behavior, speech, attention, sensory, reading, and social patterns
+        </div>
+      </div>
+    </div>
     <div class="upload-card">
       <div class="upload-card-header">
         <div class="upload-card-title">📤 Upload Media Files</div>
@@ -453,12 +514,14 @@
         <div class="rph-title">No Analysis Yet</div>
         <div class="rph-desc">Upload one or more files and click Analyze to see results in 5 clinical formats.</div>
         <div class="rph-list">
+          ✅ Select disorder (or all 7) to analyze<br>
           ✅ Simple output (eye contact, emotion, speech)<br>
-          ✅ Probability analysis (ASD/ADHD/Normal %)<br>
+          ✅ Probability analysis per disorder<br>
           ✅ Behavior analysis report<br>
           ✅ Clinical dashboard table<br>
           ✅ Probability graph visualization<br>
-          ✅ AI doctor explanation<br>
+          ✅ 💊 Therapy recommendations<br>
+          ✅ 🏥 Hospital & specialist referrals<br>
           ✅ Saved to MongoDB automatically
         </div>
       </div>
@@ -467,8 +530,8 @@
     <!-- Analyzing -->
     <div class="analyzing-overlay" id="analyzingOverlay">
       <div class="ao-spinner"></div>
-      <div class="ao-title">Running AI Analysis…</div>
-      <div class="ao-sub">Claude is analyzing your uploaded files</div>
+      <div class="ao-title" id="analyzingTitle">Running AI Analysis…</div>
+      <div class="ao-sub" id="analyzingSub">Analyzing uploaded files for neurodevelopmental indicators</div>
       <div class="ao-steps">
         <div class="ao-step" id="aostep1">📁 Reading uploaded file metadata</div>
         <div class="ao-step" id="aostep2">🖼️ Analyzing visual behavioral cues</div>
@@ -482,7 +545,7 @@
     <!-- Results content (hidden until analysis) -->
     <div id="resultContent" style="display:none">
       <div class="results-header">
-        <div class="results-title">✅ Analysis Complete</div>
+        <div class="results-title" id="resultsCompleteTitle">✅ Analysis Complete</div>
         <button class="clear-btn" onclick="clearAll()">✕ Clear</button>
       </div>
 
@@ -493,6 +556,7 @@
         <button class="result-tab" onclick="switchResTab('beh',this)">3️⃣ Behavior</button>
         <button class="result-tab" onclick="switchResTab('clin',this)">4️⃣ Clinical</button>
         <button class="result-tab" onclick="switchResTab('graph',this)">5️⃣ Graph</button>
+        <button class="result-tab" onclick="switchResTab('recs',this)">6️⃣ Recommendations</button>
       </div>
 
       <!-- 1. SIMPLE OUTPUT -->
@@ -557,6 +621,11 @@
 
       <!-- Save status + PDF -->
       <div style="padding:0 20px 20px">
+
+      <!-- 6. RECOMMENDATIONS -->
+      <div class="result-pane" id="pane-recs">
+        <div id="recsContent"></div>
+      </div>
         <div class="save-badge" id="saveBadge" style="display:none">
           ✅ Results saved to MongoDB
         </div>
@@ -578,6 +647,137 @@ import { saveAssessment, onAuthChange, auth } from '../js/mongodb.js';
 const files = { img: [], vid: [], aud: [] };
 let analysisResults = null;
 let chartInstance   = null;
+let selectedDisorder = 'all'; // 'all' | 'asd' | 'adhd' | 'dyslexia' | 'social_anxiety' | 'speech_delay' | 'intellectual_disability' | 'spd'
+
+const DISORDER_CONFIG = {
+  all:                    { icon:'🔬', label:'All 7 Disorders',       analyzeText:'Analyze for All 7 Disorders' },
+  asd:                    { icon:'🧩', label:'Autism Spectrum (ASD)', analyzeText:'Analyze for ASD Indicators' },
+  adhd:                   { icon:'⚡', label:'ADHD',                  analyzeText:'Analyze for ADHD Indicators' },
+  dyslexia:               { icon:'📖', label:'Dyslexia',              analyzeText:'Analyze for Dyslexia Indicators' },
+  social_anxiety:         { icon:'😰', label:'Social Anxiety',        analyzeText:'Analyze for Social Anxiety Indicators' },
+  speech_delay:           { icon:'🗣️', label:'Speech & Language Delay', analyzeText:'Analyze for Speech Delay Indicators' },
+  intellectual_disability:{ icon:'🧠', label:'Intellectual Disability', analyzeText:'Analyze for Intellectual Disability Indicators' },
+  spd:                    { icon:'✋', label:'Sensory Processing (SPD)', analyzeText:'Analyze for SPD Indicators' },
+};
+
+const DISORDER_INFO = {
+  all:                    'Analyzing all 7 disorders — eye contact, behavior, speech, attention, sensory, reading, and social patterns',
+  asd:                    '🧩 Analyzing for ASD — eye contact, repetitive behaviors, social reciprocity, sensory sensitivity',
+  adhd:                   '⚡ Analyzing for ADHD — attention span, hyperactivity, impulsivity, task completion',
+  dyslexia:               '📖 Analyzing for Dyslexia — reading patterns, phonological awareness, letter reversal, comprehension',
+  social_anxiety:         '😰 Analyzing for Social Anxiety — avoidance behaviors, facial expressions, performance anxiety',
+  speech_delay:           '🗣️ Analyzing for Speech Delay — prosody, vocabulary, articulation, sentence formation',
+  intellectual_disability:'🧠 Analyzing for Intellectual Disability — adaptive behavior, cognitive function, developmental milestones',
+  spd:                    '✋ Analyzing for SPD — sensory responses, tactile/auditory sensitivity, sensory seeking behaviors',
+};
+
+const RECOMMENDATIONS_DB = {
+  asd: {
+    therapies:[
+      { name:'Applied Behavior Analysis (ABA)', detail:'Evidence-based behavioral intervention, 20–40 hrs/week. Improves communication, social skills, and adaptive behavior.' },
+      { name:'Speech-Language Therapy (SLP)', detail:'Targets pragmatic language, nonverbal communication, and expressive/receptive skills. 2–3 sessions/week.' },
+      { name:'Sensory Integration OT', detail:'Occupational therapy addressing sensory processing, fine motor skills, and daily adaptive routines.' },
+      { name:'Social Skills Training (SST)', detail:'Structured peer interaction groups. Improves conversation, emotional recognition, and turn-taking.' },
+    ],
+    specialists:['Developmental Pediatrician','Child Neurologist','Board Certified Behavior Analyst (BCBA)','Speech-Language Pathologist (SLP)'],
+    hospitals:[
+      { name:'NIMHANS, Bangalore', detail:'National Institute of Mental Health and Neuro Sciences — premier autism assessment center', icon:'🏥' },
+      { name:'AIIMS, New Delhi', detail:'Department of Psychiatry & Child Development — comprehensive neurodevelopmental evaluation', icon:'🏥' },
+      { name:'Shroff\'s Charity Eye Hospital (CDC)', detail:'Child Development Centre, Mumbai — multi-disciplinary ASD diagnostic team', icon:'🏥' },
+    ],
+    nextSteps:['Schedule ADOS-2 diagnostic evaluation','Request school IEP/504 accommodations','Join parent support group (Autism Society of India)'],
+  },
+  adhd: {
+    therapies:[
+      { name:'Behavioral Parent Training (BPT)', detail:'Equips parents with reinforcement strategies, token economies, and structured routines. Weekly sessions.' },
+      { name:'Cognitive Behavioral Therapy (CBT)', detail:'Manages impulsivity, emotional regulation, and executive function strategies. 1 session/week.' },
+      { name:'Executive Function Coaching', detail:'Time management, organization, chunking tasks, and working memory strategies for daily life.' },
+      { name:'Neurofeedback Therapy', detail:'Brain-computer interface training to regulate attention and reduce hyperactivity. 20–40 sessions.' },
+    ],
+    specialists:['Child Psychiatrist','Clinical Psychologist (ADHD Specialist)','Pediatric Neurologist','ADHD Coach'],
+    hospitals:[
+      { name:'NIMHANS, Bangalore', detail:'ADHD Clinic — comprehensive assessment with Conners Scale and EEG', icon:'🏥' },
+      { name:'KEM Hospital, Mumbai', detail:'Child Guidance Clinic — behavioral and medication management', icon:'🏥' },
+      { name:'Apollo Hospitals (Child Development)', detail:'Multi-city centers — ADHD evaluation, therapy coordination', icon:'🏥' },
+    ],
+    nextSteps:['Complete Conners ADHD Rating Scale (parent + teacher)','Request classroom accommodations (extended time, preferential seating)','Explore Pomodoro-based study schedules'],
+  },
+  dyslexia: {
+    therapies:[
+      { name:'Orton-Gillingham Reading Therapy', detail:'Multisensory structured phonics instruction — gold standard for dyslexia. 3–5 sessions/week.' },
+      { name:'Wilson Reading System', detail:'Systematic phonological and phonemic awareness program. Highly structured 12-step curriculum.' },
+      { name:'Assistive Technology Training', detail:'Text-to-speech (Speechify, NaturalReader), audiobooks (Bookshare), speech-to-text tools.' },
+      { name:'Fluency & Comprehension Coaching', detail:'Repeated reading, vocabulary building, and reading comprehension strategies.' },
+    ],
+    specialists:['Educational Psychologist','Certified Reading Specialist (CERI)','Learning Disabilities Specialist','Speech-Language Pathologist'],
+    hospitals:[
+      { name:'NIMHANS Learning Disabilities Clinic', detail:'Psychoeducational assessment battery — dyslexia screening and IQ testing', icon:'🏥' },
+      { name:'Dyslexia Association of India (DAI)', detail:'Diagnosis, remediation centers, and parent guidance across major Indian cities', icon:'🏥' },
+      { name:'The Reading Project, Mumbai', detail:'Specialized dyslexia remediation and educational therapy center', icon:'🏥' },
+    ],
+    nextSteps:['Request comprehensive psychoeducational evaluation (WISC-V + WIAT)','Apply for exam accommodations (extra time, reader/scribe)','Enroll in structured literacy program immediately'],
+  },
+  social_anxiety: {
+    therapies:[
+      { name:'Cognitive Behavioral Therapy (CBT)', detail:'Graded exposure hierarchy, thought reframing, safety behavior reduction. Weekly sessions.' },
+      { name:'Social Skills Group Therapy', detail:'Safe peer environment for practicing conversations, assertions, and social navigation.' },
+      { name:'Exposure and Response Prevention (ERP)', detail:'Systematic desensitization to feared social situations with structured support.' },
+      { name:'Mindfulness-Based Stress Reduction', detail:'Body-scan meditation, diaphragmatic breathing, and grounding techniques for anxiety.' },
+    ],
+    specialists:['Child Clinical Psychologist','Licensed CBT Therapist','Child Psychiatrist (for medication evaluation)','School Counselor'],
+    hospitals:[
+      { name:'NIMHANS OPD, Bangalore', detail:'Child & Adolescent Psychiatry — anxiety assessment and therapy', icon:'🏥' },
+      { name:'iCall (TISS, Mumbai)', detail:'Affordable telephonic and in-person counseling for children and teens', icon:'🏥' },
+      { name:'Vandrevala Foundation', detail:'24x7 mental health helpline + therapy centers across India', icon:'🏥' },
+    ],
+    nextSteps:['Complete SCARED or SPAI-C screening questionnaire','Create graded exposure hierarchy with therapist','Inform school counselor for social support plan'],
+  },
+  speech_delay: {
+    therapies:[
+      { name:'Speech-Language Therapy (SLP)', detail:'Oral-motor exercises, phonological awareness, expressive syntax building. 2–3x/week.' },
+      { name:'PROMPT Therapy', detail:'Physical cues to shape accurate sound production — highly effective for motor speech disorders.' },
+      { name:'AAC (Augmentative & Alternative Communication)', detail:'PECS, visual communication boards, or digital AAC apps to reduce frustration.' },
+      { name:'DIR/Floortime Approach', detail:'Child-led play-based therapy expanding circles of communication and emotional development.' },
+    ],
+    specialists:['Speech-Language Pathologist (CCC-SLP)','Pediatric Audiologist (hearing evaluation)','Developmental Pediatrician','ENT Specialist'],
+    hospitals:[
+      { name:'AIIMS Speech & Hearing Clinic', detail:'Comprehensive audiological and speech-language evaluation', icon:'🏥' },
+      { name:'All India Institute of Speech & Hearing (AIISH), Mysore', detail:'Premier speech-language pathology center — evaluation and therapy', icon:'🏥' },
+      { name:'Kokilaben Dhirubhai Ambani Hospital', detail:'Speech therapy department — pediatric and adult programs', icon:'🏥' },
+    ],
+    nextSteps:['Get audiological hearing test immediately (rule out hearing loss)','Start SLP therapy within 2 weeks of diagnosis','Implement language-rich home environment: narrate, read aloud, sing'],
+  },
+  intellectual_disability: {
+    therapies:[
+      { name:'Adaptive Skills Training', detail:'Task analysis, self-care routines, community navigation, and functional literacy. Daily embedded practice.' },
+      { name:'Individualized Education Plan (IEP)', detail:'Differentiated curriculum, smaller class, visual aids, and concrete reinforcement strategies.' },
+      { name:'Occupational Therapy', detail:'Fine motor skills, activities of daily living, vocational readiness, and sensory integration.' },
+      { name:'Behavioral Support Plan (BSP)', detail:'Positive behavioral interventions targeting challenging behaviors in home and school settings.' },
+    ],
+    specialists:['Developmental Pediatrician','Educational Psychologist (IQ testing)','Special Education Teacher','Occupational Therapist'],
+    hospitals:[
+      { name:'NIMHANS Intellectual Disability Clinic', detail:'IQ/adaptive behavior assessment (WISC-V, Vineland) and family guidance', icon:'🏥' },
+      { name:'National Institute for Empowerment of Persons with ID (NIEPID)', detail:'Government center — assessment, therapy, vocational training', icon:'🏥' },
+      { name:'Asha Kiran Society, Bangalore', detail:'Residential and day-care services for persons with intellectual disabilities', icon:'🏥' },
+    ],
+    nextSteps:['Request IQ + adaptive behavior assessment (WISC-V + Vineland-3)','Apply for Disability Certificate (Person with Disabilities Act)','Contact National Trust India for benefits and legal support'],
+  },
+  spd: {
+    therapies:[
+      { name:'Ayres Sensory Integration Therapy (ASI)', detail:'Clinician-directed sensory gym work balancing vestibular, proprioceptive, tactile input. 2x/week.' },
+      { name:'Sensory Diet Implementation', detail:'Customized schedule of proprioceptive heavy work, compression, noise-dampening, oral-motor tools.' },
+      { name:'Wilbarger Deep Pressure Protocol', detail:'Structured brushing and joint compression technique for tactile defensiveness.' },
+      { name:'Environmental Modification Therapy', detail:'Classroom/home sensory accommodations — noise-canceling headphones, fidgets, lighting control.' },
+    ],
+    specialists:['Pediatric OT (Sensory Integration Certified, SIPT)','Pediatric Physical Therapist','Child Neurologist (rule out comorbid ASD)'],
+    hospitals:[
+      { name:'Occupational Therapy India (OTI)', detail:'Certified ASI centers across Bangalore, Mumbai, Delhi', icon:'🏥' },
+      { name:'Fortis Hospital OT Dept', detail:'Pediatric sensory integration assessment and therapy programs', icon:'🏥' },
+      { name:'Rainbow Children\'s Hospital', detail:'Comprehensive sensory processing evaluation and multi-disciplinary therapy', icon:'🏥' },
+    ],
+    nextSteps:['Complete Sensory Profile 2 (Winnie Dunn) questionnaire','Schedule SIPT (Sensory Integration & Praxis Test) evaluation','Create sensory-friendly environment at home and school immediately'],
+  },
+};
 
 window.switchUpTab     = switchUpTab;
 window.switchResTab    = switchResTab;
@@ -588,6 +788,36 @@ window.addFiles        = addFiles;
 window.runAnalysis     = runAnalysis;
 window.clearAll        = clearAll;
 window.downloadPDF     = downloadPDF;
+window.selectDisorder  = selectDisorder;
+
+function selectDisorder(d, btn) {
+  selectedDisorder = d;
+  document.querySelectorAll('.disorder-sel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cfg = DISORDER_CONFIG[d];
+  const info = DISORDER_INFO[d];
+  // Update info bar
+  document.getElementById('disorderInfoBar').innerHTML = `🔬 <strong>${cfg.icon} ${cfg.label}</strong> — ${info.replace(/^[🔬🧩⚡📖😰🗣️🧠✋]\s*/,'')}`;
+  // Update ALL analyze buttons text
+  const btnText = `${cfg.icon} ${cfg.analyzeText}`;
+  document.querySelectorAll('.analyze-btn .btn-text span:last-child, .mrb-btn, .action-analyze-btn, .summary-analyze-btn, .dz-analyze-btn').forEach(el => {
+    if (el.id === 'summaryAnalyzeBtn') return;
+    if (el.classList.contains('mrb-btn')) { el.innerHTML = `<span style="font-size:1.2rem">${cfg.icon}</span> ${cfg.analyzeText}`; return; }
+    if (el.classList.contains('action-analyze-btn')) { el.innerHTML = `<span class="action-analyze-sym">${cfg.icon}</span> ${cfg.analyzeText}`; return; }
+    if (el.classList.contains('summary-analyze-btn')) return;
+    el.textContent = cfg.analyzeText;
+  });
+  // Update main analyze btn
+  const mainBtnSpan = document.querySelector('.analyze-btn .btn-text span:last-child');
+  if (mainBtnSpan) mainBtnSpan.textContent = cfg.analyzeText;
+  // Update all mrb buttons
+  document.querySelectorAll('.mrb-btn').forEach(b => { b.innerHTML = `<span style="font-size:1.2rem">${cfg.icon}</span> ${cfg.analyzeText}`; });
+  document.querySelectorAll('.action-analyze-btn').forEach(b => { b.innerHTML = `<span class="action-analyze-sym">${cfg.icon}</span> ${cfg.analyzeText}`; });
+  document.querySelectorAll('.dz-analyze-btn').forEach(b => { b.innerHTML = `<span style="font-size:1.15rem;margin-right:6px">${cfg.icon}</span> ${cfg.analyzeText}`; });
+  // Update summary btn
+  const sb = document.getElementById('summaryAnalyzeBtn');
+  if (sb) sb.innerHTML = `<span style="font-size:1.05rem">${cfg.icon}</span> ${cfg.analyzeText} (<span id="summary-total-files">${files.img.length+files.vid.length+files.aud.length}</span>)`;
+}
 
 // ── UPLOAD TAB SWITCHING ───────────────────────────────────────
 function switchUpTab(type) {
@@ -886,6 +1116,12 @@ async function runAnalysis() {
   document.getElementById('resultPlaceholder').style.display = 'none';
   document.getElementById('resultContent').style.display = 'none';
   document.getElementById('analyzingOverlay').classList.add('show');
+  // Update overlay with selected disorder
+  const cfg = DISORDER_CONFIG[selectedDisorder] || DISORDER_CONFIG.all;
+  const titleEl = document.getElementById('analyzingTitle');
+  const subEl   = document.getElementById('analyzingSub');
+  if (titleEl) titleEl.textContent = `${cfg.icon} Analyzing for ${cfg.label}…`;
+  if (subEl)   subEl.textContent   = `Running multi-modal analysis for ${cfg.label} indicators`;
 
   // Extract client features and media frames
   const { mediaPayloads, clientMetrics } = await extractMediaFeaturesAndPayloads();
@@ -917,6 +1153,7 @@ async function runAnalysis() {
   renderBehaviorOutput(results);
   renderClinicalOutput(results);
   renderGraphOutput(results);
+  renderRecommendations(results);
 
   // Save to MongoDB
   try {
@@ -948,6 +1185,8 @@ async function runAnalysis() {
   // Hide overlay, show results
   document.getElementById('analyzingOverlay').classList.remove('show');
   document.getElementById('resultContent').style.display = 'block';
+  const rt = document.getElementById('resultsCompleteTitle');
+  if (rt) rt.textContent = `✅ ${cfg.icon} ${cfg.label} Analysis Complete`;
 
   btn.classList.remove('loading');
   btn.disabled = false;
@@ -957,6 +1196,8 @@ async function runAnalysis() {
 
 function buildFileDescription() {
   const parts = [];
+  const cfg = DISORDER_CONFIG[selectedDisorder] || DISORDER_CONFIG.all;
+  parts.push(`Analyzing for: ${cfg.label}`);
   if (files.img.length) parts.push(`${files.img.length} image(s): ${files.img.map(f => f.name).join(', ')}`);
   if (files.vid.length) parts.push(`${files.vid.length} video(s): ${files.vid.map(f => f.name + ' (' + (f.size/1024/1024).toFixed(1) + 'MB, ' + f.type + ')').join(', ')}`);
   if (files.aud.length) parts.push(`${files.aud.length} audio file(s): ${files.aud.map(f => f.name + ' (' + (f.size/1024/1024).toFixed(1) + 'MB, ' + f.type + ')').join(', ')}`);
@@ -1218,6 +1459,95 @@ function drawBarChart(r) {
     ctx.font = 'bold 10px sans-serif';
     ctx.fillText(v + '%', x + barW/2, y - 4);
   });
+}
+
+// ── RECOMMENDATIONS ────────────────────────────────────────────
+function renderRecommendations(r) {
+  // Determine which disorders to show recs for
+  let disorders = selectedDisorder === 'all'
+    ? Object.keys(RECOMMENDATIONS_DB)
+    : [selectedDisorder];
+
+  // If analyzing all, prioritize by probability
+  if (selectedDisorder === 'all' && r.probabilities) {
+    const probs = r.probabilities;
+    disorders = Object.keys(RECOMMENDATIONS_DB).sort((a,b) => (probs[b]||0) - (probs[a]||0));
+  }
+
+  const container = document.getElementById('recsContent');
+  if (!container) return;
+
+  const topDisorder = disorders[0];
+  const topRec = RECOMMENDATIONS_DB[topDisorder];
+  const cfg = DISORDER_CONFIG[topDisorder] || DISORDER_CONFIG.asd;
+
+  let html = `
+    <div style="background:linear-gradient(135deg,#1b4d3e,#2d6a4f);color:#fff;border-radius:var(--r-sm);padding:16px;margin-bottom:16px">
+      <div style="font-size:.7rem;opacity:.75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Primary Finding</div>
+      <div style="font-size:1.1rem;font-weight:800">${cfg.icon} ${cfg.label}</div>
+      <div style="font-size:.8rem;opacity:.85;margin-top:4px">${r.risk_level || 'Moderate'} Risk · ${r.probabilities?.[topDisorder] || r.probabilities?.asd || 0}% probability</div>
+    </div>`;
+
+  disorders.slice(0, selectedDisorder === 'all' ? 3 : 1).forEach(d => {
+    const rec = RECOMMENDATIONS_DB[d];
+    const dcfg = DISORDER_CONFIG[d] || {};
+    if (!rec) return;
+    const prob = r.probabilities?.[d] || 0;
+    if (selectedDisorder === 'all' && prob < 25 && d !== disorders[0]) return;
+
+    html += `
+      <div style="margin-bottom:20px">
+        ${selectedDisorder === 'all' ? `<div style="font-size:.82rem;font-weight:800;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--green-bg);border-radius:var(--r-sm)">${dcfg.icon||'🔬'} ${dcfg.label||d} — ${prob}% probability</div>` : ''}
+
+        <div class="rec-section">
+          <div class="rec-section-title">💊 Recommended Therapies</div>
+          ${rec.therapies.map(t => `
+            <div class="rec-card">
+              <div class="rec-card-title">${t.name}</div>
+              <div class="rec-card-detail">${t.detail}</div>
+              <span class="rec-tag therapy">Evidence-Based</span>
+            </div>`).join('')}
+        </div>
+
+        <div class="rec-section">
+          <div class="rec-section-title">👨‍⚕️ Specialist Referrals</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+            ${rec.specialists.map(s => `<span class="rec-tag specialist">👤 ${s}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="rec-section">
+          <div class="rec-section-title">🏥 Recommended Hospitals & Clinics (India)</div>
+          ${rec.hospitals.map(h => `
+            <div class="rec-hospital-item">
+              <span class="rec-hospital-icon">${h.icon}</span>
+              <div>
+                <div class="rec-hospital-name">${h.name}</div>
+                <div class="rec-hospital-detail">${h.detail}</div>
+                <span class="rec-tag hospital">Clinical Center</span>
+              </div>
+            </div>`).join('')}
+        </div>
+
+        <div class="rec-section">
+          <div class="rec-section-title">✅ Immediate Next Steps</div>
+          ${rec.nextSteps.map((s,i) => `
+            <div style="display:flex;gap:10px;padding:9px 12px;background:var(--bg);border-radius:var(--r-sm);margin-bottom:6px;font-size:.82rem">
+              <span style="background:var(--primary);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0">${i+1}</span>
+              <span>${s}</span>
+            </div>`).join('')}
+        </div>
+
+        ${d !== disorders[disorders.length-1] ? '<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">' : ''}
+      </div>`;
+  });
+
+  html += `
+    <div style="background:#fff8e1;border-radius:var(--r-sm);padding:12px 14px;font-size:.76rem;color:#7a5c00;border-left:3px solid #e9c46a;margin-top:8px">
+      ⚠️ These recommendations are educational and based on AI screening only. Always consult qualified specialists for formal diagnosis and treatment planning.
+    </div>`;
+
+  container.innerHTML = html;
 }
 
 // ── RESULT TAB SWITCHING ───────────────────────────────────────
