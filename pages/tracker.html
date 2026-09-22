@@ -257,6 +257,15 @@ function renderAll(assessments) {
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('chartsArea').style.display = 'block';
 
+  // Populate radar assessment selector
+  const sel = document.getElementById('radarAssessSelect');
+  if (sel) {
+    sel.innerHTML = assessments.map((a, i) =>
+      `<option value="${i}">${new Date(a.created_at).toLocaleDateString()} (Age ${a.age||'?'})</option>`
+    ).join('');
+    sel.value = String(assessments.length - 1);
+  }
+
   renderProfiles(assessments);
   renderOverview(assessments);
   renderRadarChart(assessments[assessments.length - 1]);
@@ -484,6 +493,14 @@ function renderTimeline(assessments) {
 
 window.addNewProfile = function() {
   window.location.href = 'assess.html';
+};
+
+window.updateRadar = function() {
+  const select = document.getElementById('radarAssessSelect');
+  if (!select || allAssessments.length === 0) return;
+  const idx = parseInt(select.value, 10);
+  const assessment = allAssessments[isNaN(idx) ? allAssessments.length - 1 : idx];
+  if (assessment) renderRadarChart(assessment);
 };
 </script>
 </body>
