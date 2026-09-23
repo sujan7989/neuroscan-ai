@@ -113,7 +113,7 @@
     <div>
       <div class="hero-badge">Advanced AI Neurological Assessment</div>
       <h1 class="hero-title">Detect. Understand.<br><span class="accent">Support.</span></h1>
-      <p class="hero-desc">NeuroScan AI screens for 7 neurodevelopmental conditions using an ensemble of Random Forest, XGBoost & Logistic Regression — with SHAP explanations and doctor-style narratives.</p>
+      <p class="hero-desc">NeuroScan AI screens for 5 neurodevelopmental conditions using an ensemble of Random Forest, XGBoost & Logistic Regression — with SHAP explanations and doctor-style narratives.</p>
       <div class="hero-ctas">
         <a href="pages/assess.html" class="cta-primary">🧠 Start AI Assessment</a>
         <a href="pages/multimodal-dashboard.html" class="cta-primary" style="background:#0f766e">🧬 Multimodal AI Hub</a>
@@ -124,7 +124,7 @@
         <a href="pages/doctor-chat.html" class="cta-secondary">👨‍⚕️ AI Doctor Chat</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-num">7</div><div class="hero-stat-label">Disorders</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">5</div><div class="hero-stat-label">Disorders</div></div>
         <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">ML Models</div></div>
         <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Languages</div></div>
         <div class="hero-stat"><div class="hero-stat-num">25+</div><div class="hero-stat-label">Questions</div></div>
@@ -137,10 +137,8 @@
         <div class="orbit-node node-0" style="background:rgba(45,106,79,.3);border-color:rgba(45,106,79,.5)">🧩<div class="orbit-node-label">ASD</div></div>
         <div class="orbit-node node-1" style="background:rgba(231,111,81,.2);border-color:rgba(231,111,81,.4)">⚡<div class="orbit-node-label">ADHD</div></div>
         <div class="orbit-node node-2" style="background:rgba(69,123,157,.2);border-color:rgba(69,123,157,.4)">📖<div class="orbit-node-label">DYS</div></div>
-        <div class="orbit-node node-3" style="background:rgba(155,93,229,.2);border-color:rgba(155,93,229,.4)">😰<div class="orbit-node-label">SAD</div></div>
-        <div class="orbit-node node-4" style="background:rgba(244,162,97,.2);border-color:rgba(244,162,97,.4)">🗣️<div class="orbit-node-label">SLD</div></div>
-        <div class="orbit-node node-5" style="background:rgba(109,104,117,.2);border-color:rgba(109,104,117,.4)">🧠<div class="orbit-node-label">ID</div></div>
-        <div class="orbit-node node-6" style="background:rgba(42,157,143,.2);border-color:rgba(42,157,143,.4)">✋<div class="orbit-node-label">SPD</div></div>
+        <div class="orbit-node node-3" style="background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4)">🗨️<div class="orbit-node-label">DLD</div></div>
+        <div class="orbit-node node-4" style="background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.4)">🌀<div class="orbit-node-label">TS</div></div>
       </div>
       <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px 18px;margin-top:20px">
         <div style="font-size:.68rem;font-weight:800;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">SAMPLE ENSEMBLE OUTPUT</div>
@@ -158,15 +156,13 @@
 <section class="disorders">
   <div class="disorders-inner">
     <div class="section-label">Multi-Disorder Detection</div>
-    <div class="section-title">7 Conditions Screened Simultaneously</div>
+    <div class="section-title">5 Conditions Screened Simultaneously</div>
     <div class="disorders-grid">
       <div class="disorder-tile" style="border-color:#2d6a4f30;background:#f0faf3"><div class="disorder-tile-icon">🧩</div><div class="disorder-tile-name" style="color:#2d6a4f">ASD</div><div class="disorder-tile-icd">F84.0</div><div class="disorder-tile-prob" style="color:#2d6a4f">1 in 36</div></div>
       <div class="disorder-tile" style="border-color:#e76f5130;background:#fff5f2"><div class="disorder-tile-icon">⚡</div><div class="disorder-tile-name" style="color:#e76f51">ADHD</div><div class="disorder-tile-icd">F90.0</div><div class="disorder-tile-prob" style="color:#e76f51">1 in 10</div></div>
       <div class="disorder-tile" style="border-color:#457b9d30;background:#f0f6fb"><div class="disorder-tile-icon">📖</div><div class="disorder-tile-name" style="color:#457b9d">Dyslexia</div><div class="disorder-tile-icd">F81.0</div><div class="disorder-tile-prob" style="color:#457b9d">1 in 5</div></div>
-      <div class="disorder-tile" style="border-color:#9b5de530;background:#f9f0ff"><div class="disorder-tile-icon">😰</div><div class="disorder-tile-name" style="color:#9b5de5">Social Anxiety</div><div class="disorder-tile-icd">F40.1</div><div class="disorder-tile-prob" style="color:#9b5de5">1 in 8</div></div>
-      <div class="disorder-tile" style="border-color:#f4a26130;background:#fffbf5"><div class="disorder-tile-icon">🗣️</div><div class="disorder-tile-name" style="color:#f4a261">Speech Delay</div><div class="disorder-tile-icd">F80.1</div><div class="disorder-tile-prob" style="color:#f4a261">1 in 12</div></div>
-      <div class="disorder-tile" style="border-color:#6d687530;background:#f8f7f9"><div class="disorder-tile-icon">🧠</div><div class="disorder-tile-name" style="color:#6d6875">Intellectual</div><div class="disorder-tile-icd">F70</div><div class="disorder-tile-prob" style="color:#6d6875">1 in 50</div></div>
-      <div class="disorder-tile" style="border-color:#2a9d8f30;background:#f0fbfa"><div class="disorder-tile-icon">✋</div><div class="disorder-tile-name" style="color:#2a9d8f">SPD</div><div class="disorder-tile-icd">F88</div><div class="disorder-tile-prob" style="color:#2a9d8f">1 in 6</div></div>
+      <div class="disorder-tile" style="border-color:#7c3aed30;background:#f5f0ff"><div class="disorder-tile-icon">🗨️</div><div class="disorder-tile-name" style="color:#7c3aed">DLD</div><div class="disorder-tile-icd">F80.9</div><div class="disorder-tile-prob" style="color:#7c3aed">1 in 14</div></div>
+      <div class="disorder-tile" style="border-color:#dc262630;background:#fff5f5"><div class="disorder-tile-icon">🌀</div><div class="disorder-tile-name" style="color:#dc2626">Tourette</div><div class="disorder-tile-icd">F95.2</div><div class="disorder-tile-prob" style="color:#dc2626">1 in 100</div></div>
     </div>
   </div>
 </section>

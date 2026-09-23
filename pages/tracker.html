@@ -213,8 +213,7 @@ import { DISORDERS } from '../js/ai-engine.js';
 
 const DISORDER_COLORS = {
   asd:'#2d6a4f', adhd:'#e76f51', dyslexia:'#457b9d',
-  social_anxiety:'#9b5de5', speech_delay:'#f4a261',
-  intellectual_disability:'#6d6875', spd:'#2a9d8f'
+  dld:'#7c3aed', tourette:'#dc2626'
 };
 
 let allAssessments = [];
@@ -241,10 +240,10 @@ function loadDemoData() {
   const now = Date.now();
   const day = 86400000;
   allAssessments = [
-    { id:'d1', created_at: new Date(now - 90*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.72}, adhd:{probability:.58}, dyslexia:{probability:.31}, social_anxiety:{probability:.25}, speech_delay:{probability:.45}, intellectual_disability:{probability:.18}, spd:{probability:.61} } },
-    { id:'d2', created_at: new Date(now - 60*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.65}, adhd:{probability:.52}, dyslexia:{probability:.28}, social_anxiety:{probability:.22}, speech_delay:{probability:.38}, intellectual_disability:{probability:.16}, spd:{probability:.55} } },
-    { id:'d3', created_at: new Date(now - 30*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.58}, adhd:{probability:.45}, dyslexia:{probability:.24}, social_anxiety:{probability:.18}, speech_delay:{probability:.30}, intellectual_disability:{probability:.14}, spd:{probability:.48} } },
-    { id:'d4', created_at: new Date(now - 7*day).toISOString(), name:'Demo Child', age:8, disorder_results: { asd:{probability:.51}, adhd:{probability:.40}, dyslexia:{probability:.20}, social_anxiety:{probability:.15}, speech_delay:{probability:.22}, intellectual_disability:{probability:.12}, spd:{probability:.42} } },
+    { id:'d1', created_at: new Date(now - 90*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.72}, adhd:{probability:.58}, dyslexia:{probability:.31}, dld:{probability:.45}, tourette:{probability:.22} } },
+    { id:'d2', created_at: new Date(now - 60*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.65}, adhd:{probability:.52}, dyslexia:{probability:.28}, dld:{probability:.38}, tourette:{probability:.18} } },
+    { id:'d3', created_at: new Date(now - 30*day).toISOString(), name:'Demo Child', age:7, disorder_results: { asd:{probability:.58}, adhd:{probability:.45}, dyslexia:{probability:.24}, dld:{probability:.30}, tourette:{probability:.15} } },
+    { id:'d4', created_at: new Date(now -  7*day).toISOString(), name:'Demo Child', age:8, disorder_results: { asd:{probability:.51}, adhd:{probability:.40}, dyslexia:{probability:.20}, dld:{probability:.22}, tourette:{probability:.12} } },
   ];
   renderAll(allAssessments);
   // Show demo indicator

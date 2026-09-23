@@ -548,8 +548,8 @@ async function fetchMetrics() {
 
     if (data.multi_disorder_models && data.multi_disorder_models.disorders) {
       const suite = data.multi_disorder_models.disorders;
-      const colors = {asd:'#2d6a4f',adhd:'#e76f51',dyslexia:'#457b9d',social_anxiety:'#9b5de5',speech_delay:'#f4a261',intellectual_disability:'#6d6875',spd:'#2a9d8f'};
-      const icons  = {asd:'🧩',adhd:'⚡',dyslexia:'📖',social_anxiety:'😰',speech_delay:'🗣️',intellectual_disability:'🧠',spd:'✋'};
+      const colors = {asd:'#2d6a4f',adhd:'#e76f51',dyslexia:'#457b9d',dld:'#7c3aed',tourette:'#dc2626'};
+      const icons  = {asd:'🧩',adhd:'⚡',dyslexia:'📖',dld:'🗨️',tourette:'🌀'};
       const html = Object.entries(suite).map(([key, info]) => {
         const cv = info.cv_metrics || {};
         const balAcc = ((cv.balanced_accuracy || 0.90) * 100).toFixed(1);

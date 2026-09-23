@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --asd:#2d6a4f; --adhd:#e76f51; --dys:#457b9d; --sad:#9b5de5;
-      --sld:#f4a261; --id:#6d6875; --spd:#2a9d8f;
+      --asd:#2d6a4f; --adhd:#e76f51; --dys:#457b9d;
+      --dld:#7c3aed; --ts:#dc2626;
     }
 
     /* ── PAGE HEADER ── */
@@ -254,18 +254,16 @@
 <div class="assess-header">
   <div class="assess-header-inner">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-      <span style="background:rgba(255,255,255,.12);padding:6px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2)">🔬 Experimental Research Prototype — 7 Disorders</span>
+      <span style="background:rgba(255,255,255,.12);padding:6px 14px;border-radius:50px;font-size:.75rem;font-weight:700;border:1px solid rgba(255,255,255,.2)">🔬 Experimental Research Prototype — 5 Disorders</span>
     </div>
     <h1>NeuroScan Multi-Disorder Assessment</h1>
-    <p>Adaptive questionnaire screening across 7 neurodevelopmental conditions. Powered by calibrated Scikit-Learn ensemble models (Random Forest, Gradient Boosting, Logistic Regression) with real-time SHAP explanations.</p>
+    <p>Adaptive questionnaire screening across 5 neurodevelopmental conditions. Powered by calibrated Scikit-Learn ensemble models (Random Forest, Gradient Boosting, Logistic Regression) with real-time SHAP explanations.</p>
     <div class="disorder-badges">
       <span class="disorder-badge">🧩 ASD</span>
       <span class="disorder-badge">⚡ ADHD</span>
       <span class="disorder-badge">📖 Dyslexia</span>
-      <span class="disorder-badge">😰 Social Anxiety</span>
-      <span class="disorder-badge">🗣️ Speech Delay</span>
-      <span class="disorder-badge">🧠 Intellectual Disability</span>
-      <span class="disorder-badge">✋ Sensory Processing</span>
+      <span class="disorder-badge">🗨️ DLD</span>
+      <span class="disorder-badge">🌀 Tourette</span>
     </div>
   </div>
 </div>
@@ -273,10 +271,26 @@
 <div class="assess-layout">
   <!-- LEFT: FORM -->
   <div>
+    <!-- Disorder Filter -->
+    <div style="background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px 20px;margin-bottom:16px">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">&#x1F4CB; Select Disorder to Screen</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="disorderFilterRow">
+        <button type="button" class="dis-filter-btn active" data-dis="all" style="padding:7px 16px;border-radius:50px;border:1.5px solid var(--primary);background:var(--primary);color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F52C; All Disorders</button>
+        <button type="button" class="dis-filter-btn" data-dis="asd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #2d6a4f;background:#f0faf3;color:#2d6a4f;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F9E9; ASD</button>
+        <button type="button" class="dis-filter-btn" data-dis="adhd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #e76f51;background:#fff5f2;color:#e76f51;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x26A1; ADHD</button>
+        <button type="button" class="dis-filter-btn" data-dis="dyslexia" style="padding:7px 16px;border-radius:50px;border:1.5px solid #457b9d;background:#f0f6fb;color:#457b9d;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F4D6; Dyslexia</button>
+        <button type="button" class="dis-filter-btn" data-dis="dld" style="padding:7px 16px;border-radius:50px;border:1.5px solid #7c3aed;background:#f5f0ff;color:#7c3aed;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F5E8; DLD</button>
+        <button type="button" class="dis-filter-btn" data-dis="tourette" style="padding:7px 16px;border-radius:50px;border:1.5px solid #dc2626;background:#fff5f5;color:#dc2626;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F300; Tourette</button>
+      </div>
+      <div id="disorderFilterInfo" style="margin-top:10px;font-size:.8rem;color:var(--primary);font-weight:600;padding:8px 12px;background:#edf7f2;border-radius:var(--r-sm);border:1px solid var(--primary-l)">
+        &#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, DLD, and Tourette
+      </div>
+    </div>
+
     <!-- Progress -->
     <div class="progress-track">
       <div class="progress-header">
-        <span class="progress-title">Assessment Progress</span>
+        <span class="progress-title" id="progressTitle">Assessment Progress</span>
         <span class="progress-count" id="progressCount">0 / 0 answered</span>
       </div>
       <div class="step-indicator" id="stepIndicator"></div>
@@ -464,8 +478,7 @@ let ageGroup = 'child'; // toddler / child / adolescent / adult
 
 const DISORDER_COLORS = {
   asd:'#2d6a4f', adhd:'#e76f51', dyslexia:'#457b9d',
-  social_anxiety:'#9b5de5', speech_delay:'#f4a261',
-  intellectual_disability:'#6d6875', spd:'#2a9d8f'
+  dld:'#7c3aed', tourette:'#dc2626'
 };
 
 // Expose to window for inline onclick
@@ -474,6 +487,96 @@ window.onAgeChange = onAgeChange;
 window.runAnalysis = runAnalysis;
 window.showTab = showTab;
 window.generateReport = generateReport;
+window.selectAnswer = window.selectAnswer || function() {};
+window.highlightSHAP = window.highlightSHAP || function() {};
+
+// ── DISORDER FILTER ────────────────────────────────────────────
+let activeDisorderFilter = 'all';
+
+const DISORDER_FILTER_INFO = {
+  all:      '🧪 <strong>Screening all disorders</strong> — questions cover ASD, ADHD, Dyslexia, DLD, and Tourette',
+  asd:      '🧩 <strong>ASD-focused screening</strong> — eye contact, social communication, repetitive behaviors, sensory responses',
+  adhd:     '⚡ <strong>ADHD-focused screening</strong> — attention span, hyperactivity, impulse control, task completion',
+  dyslexia: '📖 <strong>Dyslexia-focused screening</strong> — reading, spelling, phonological awareness, letter reversals',
+  dld:      '🗨️ <strong>DLD-focused screening</strong> — vocabulary, sentence structure, narrative skills, instruction following',
+  tourette: '🌀 <strong>Tourette-focused screening</strong> — motor tics, vocal tics, premonitory urge, stress-triggered tics',
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.dis-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeDisorderFilter = btn.dataset.dis;
+      // Update button styles
+      document.querySelectorAll('.dis-filter-btn').forEach(b => {
+        const isActive = b.dataset.dis === activeDisorderFilter;
+        if (b.dataset.dis === 'all') {
+          b.style.background = isActive ? 'var(--primary)' : 'var(--bg)';
+          b.style.color = isActive ? '#fff' : 'var(--primary)';
+        }
+        b.style.fontWeight = isActive ? '800' : '700';
+        b.style.boxShadow = isActive ? '0 0 0 2px rgba(0,0,0,.15)' : 'none';
+      });
+      // Update info bar
+      const info = document.getElementById('disorderFilterInfo');
+      if (info) info.innerHTML = DISORDER_FILTER_INFO[activeDisorderFilter] || DISORDER_FILTER_INFO.all;
+      // Update progress title
+      const titles = { all:'Assessment Progress', asd:'ASD Screening Progress', adhd:'ADHD Screening Progress', dyslexia:'Dyslexia Screening Progress', dld:'DLD Screening Progress', tourette:'Tourette Screening Progress' };
+      const pt = document.getElementById('progressTitle');
+      if (pt) pt.textContent = titles[activeDisorderFilter] || 'Assessment Progress';
+      // Re-render questions filtered for this disorder
+      renderFilteredQuestions();
+    });
+  });
+});
+
+function getFilteredQuestions() {
+  const all = getActiveQuestions();
+  if (activeDisorderFilter === 'all') return all;
+  // Include disorder-specific question sets
+  const specific = ADAPTIVE_QUESTIONS[activeDisorderFilter + '_specific'] || [];
+  // Filter universal questions relevant to this disorder, plus specific ones
+  const filtered = all.filter(q => q.disorder && q.disorder.includes(activeDisorderFilter));
+  // Add specific questions that aren't already in filtered
+  specific.forEach(q => {
+    if (!filtered.find(fq => fq.id === q.id)) filtered.push(q);
+  });
+  return filtered.length > 0 ? filtered : all;
+}
+
+function renderFilteredQuestions() {
+  const questions = getFilteredQuestions();
+  const container = document.getElementById('questionsContainer');
+  if (!container) return;
+
+  // Update progress dots
+  const stepInd = document.getElementById('stepIndicator');
+  if (stepInd) {
+    stepInd.innerHTML = questions.map((_, i) =>
+      `<div class="step-dot ${answers[questions[i].id] !== undefined ? 'done' : ''}" id="dot-${i}"></div>`
+    ).join('');
+  }
+
+  let html = '';
+  questions.forEach((q, idx) => {
+    const selected = answers[q.id];
+    const t = typeof q.question === 'object' ? (q.question[currentLang] || q.question.en) : q.question;
+    const opts = Array.isArray(q.options) ? q.options : (q.options[currentLang] || q.options.en || []);
+    html += `<div class="question-card">
+      <div class="q-header">
+        <div class="q-num">${idx + 1}</div>
+        <div class="q-text">${t}</div>
+      </div>
+      <div class="q-options">
+        ${opts.map((opt, i) => `
+          <button type="button" class="q-option ${selected === i ? 'selected' : ''}" onclick="selectAnswer('${q.id}', ${i}, this.closest('.q-options'))">
+            <div class="q-option-radio"></div>${typeof opt === 'object' ? (opt[currentLang] || opt.en) : opt}
+          </button>`).join('')}
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  updateProgress(questions);
+}
 
 // ── RENDER QUESTIONS ──────────────────────────────────────────
 function getAgeGroup(age) {
@@ -499,6 +602,7 @@ function getActiveQuestions() {
 }
 
 function renderQuestions() {
+  if (typeof renderFilteredQuestions === "function" && activeDisorderFilter !== undefined) { renderFilteredQuestions(); return; }
   const questions = getActiveQuestions();
   const container = document.getElementById('questionsContainer');
 
@@ -938,7 +1042,7 @@ async function generateReport() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-renderQuestions();
+renderFilteredQuestions();
 </script>
 <div id="footer-ph"></div>
 </body>

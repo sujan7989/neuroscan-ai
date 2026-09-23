@@ -1,4 +1,4 @@
-// ================================================================
+﻿// ================================================================
 //  NeuroScan AI — Express Backend Server
 //  Supports MongoDB with seamless in-memory fallback for local dev & demo.
 //  Firebase Auth still supported for client authentication.
@@ -138,9 +138,8 @@ function seedInitialMemoryData() {
       ADHD: { score: 65, risk: 'Moderate', prob: '65%' },
       SPD: { score: 58, risk: 'Moderate', prob: '58%' },
       Dyslexia: { score: 28, risk: 'Low', prob: '28%' },
-      Social_Anxiety: { score: 44, risk: 'Moderate', prob: '44%' },
-      Speech_Delay: { score: 18, risk: 'Low', prob: '18%' },
-      Intellectual: { score: 12, risk: 'Low', prob: '12%' }
+      DLD: { score: 44, risk: 'Moderate', prob: '44%' },
+      Tourette: { score: 18, risk: 'Low', prob: '18%' },
     },
     probability: 72,
     aq10_sum: 7,
@@ -164,9 +163,8 @@ function seedInitialMemoryData() {
       ADHD: { score: 52, risk: 'Moderate', prob: '52%' },
       SPD: { score: 48, risk: 'Moderate', prob: '48%' },
       Dyslexia: { score: 24, risk: 'Low', prob: '24%' },
-      Social_Anxiety: { score: 38, risk: 'Low', prob: '38%' },
-      Speech_Delay: { score: 15, risk: 'Low', prob: '15%' },
-      Intellectual: { score: 10, risk: 'Low', prob: '10%' }
+      DLD: { score: 38, risk: 'Low', prob: '38%' },
+      Tourette: { score: 15, risk: 'Low', prob: '15%' },
     },
     probability: 64,
     aq10_sum: 6,
@@ -1477,8 +1475,8 @@ Return ONLY a valid JSON object strictly following this schema (no markdown, no 
   "probabilities": {
     "asd": 64,
     "adhd": 38,
-    "normal": 26,
-    "speech_delay": 32
+    "tourette": 26,
+    "dld": 32
   },
   "simple_metrics": {
     "eye_contact": { "value": "32%", "label": "Reduced direct gaze stability", "severity": "warn" },
@@ -1636,8 +1634,8 @@ Return ONLY a valid JSON object strictly following this schema (no markdown, no 
       probabilities: {
         asd: asdProb,
         adhd: adhdProb,
-        normal: normalProb,
-        speech_delay: speechProb
+        dld: speechProb,
+        tourette: normalProb
       },
       simple_metrics: {
         eye_contact: {
@@ -1778,7 +1776,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
   ],
   "clinical_interpretation": "Comprehensive SLP clinical narrative explaining the speech metrics and conversational observations...",
   "disorder_indicators": {
-    "speech_delay": 20,
+    "dld": 20,
     "asd": 25,
     "dyslexia": 15,
     "adhd": 18
@@ -1814,7 +1812,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
           }
           if (!parsed.disorder_indicators) {
             parsed.disorder_indicators = {
-              speech_delay: (parsed.metrics.fluency || 70) < 60 ? 42 : 18,
+              dld: (parsed.metrics.fluency || 70) < 60 ? 42 : 18,
               asd: (parsed.metrics.repetitiveness || 25) > 35 ? 36 : 22,
               dyslexia: (parsed.metrics.articulation || 70) < 60 ? 32 : 15,
               adhd: parsed.metrics.speech_rate === 'fast' ? 38 : 16
@@ -1904,7 +1902,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
       ],
       clinical_interpretation: `Speech screening evaluation of ${sampleDuration}s response (${wordCount} words, ${measuredWpm} WPM) reflects a fluency index of ${fluencyScore}/100 and vocabulary complexity of ${vocabScore}/100. ${pauseFrequency === 'elevated' ? 'Elevated inter-phrase pause latency was noted.' : 'Speech pacing was steady and continuous.'} Expressive communication demonstrates ${fluencyScore >= 70 ? 'strong' : 'mildly sub-optimal'} communicative pragmatics.`,
       disorder_indicators: {
-        speech_delay: speechDelayProb,
+        dld: speechDelayProb,
         asd: asdProb,
         dyslexia: dyslexiaProb,
         adhd: adhdProb
