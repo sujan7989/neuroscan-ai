@@ -1262,36 +1262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     alert('PDF export coming soon! Results saved to your profile.');
   });
 });
-
-  /* Analyze triggers */
-  document.querySelectorAll('.analyze-trigger').forEach(btn => {
-    btn.addEventListener('click', runAnalysis);
-  });
-
-  /* Result tabs */
-  document.querySelectorAll('.result-tab').forEach(tab => {
-    tab.addEventListener('click', () => switchResultTab(tab.dataset.pane));
-  });
-
-  /* Clear button */
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    files = { img: [], vid: [], aud: [] };
-    ['img','vid','aud'].forEach(t => {
-      renderPreviews(t);
-      updateUI(t);
-    });
-    analysisResults = null;
-    document.getElementById('resultsPlaceholder').style.display = 'block';
-    document.getElementById('resultPanesWrapper').style.display = 'none';
-    document.getElementById('analyzingOverlay').classList.remove('show');
-  });
-
-  /* PDF button (placeholder) */
-  document.getElementById('pdfBtn').addEventListener('click', () => {
-    if (!analysisResults) return;
-    alert('PDF export coming soon! Results saved to your profile.');
-  });
-});
 </script>
 
 </body>
