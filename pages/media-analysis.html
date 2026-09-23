@@ -224,10 +224,8 @@
       <span class="hdr-badge">&#x1F9E9; ASD</span>
       <span class="hdr-badge">&#x26A1; ADHD</span>
       <span class="hdr-badge">&#x1F4D6; Dyslexia</span>
-      <span class="hdr-badge">&#x1F630; Social Anxiety</span>
-      <span class="hdr-badge">&#x1F5E3; Speech Delay</span>
-      <span class="hdr-badge">&#x1F9E0; Intellectual</span>
-      <span class="hdr-badge">&#x270B; SPD</span>
+      <span class="hdr-badge">&#x1F5E8; DLD</span>
+      <span class="hdr-badge">&#x1F300; Tourette</span>
       <span class="hdr-badge">&#x1F916; AI Powered</span>
       <span class="hdr-badge">&#x1F4BE; Saved to DB</span>
     </div>
@@ -264,21 +262,13 @@
             <span class="dsb-icon">&#x1F4D6;</span>
             <span class="dsb-label">Dyslexia</span>
           </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="social_anxiety">
-            <span class="dsb-icon">&#x1F630;</span>
-            <span class="dsb-label">Social Anxiety</span>
+          <button type="button" class="disorder-sel-btn" data-disorder="dld">
+            <span class="dsb-icon">&#x1F5E8;</span>
+            <span class="dsb-label">DLD</span>
           </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="speech_delay">
-            <span class="dsb-icon">&#x1F5E3;</span>
-            <span class="dsb-label">Speech Delay</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="intellectual">
-            <span class="dsb-icon">&#x1F9E0;</span>
-            <span class="dsb-label">Intellectual</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="spd">
-            <span class="dsb-icon">&#x270B;</span>
-            <span class="dsb-label">SPD</span>
+          <button type="button" class="disorder-sel-btn" data-disorder="tourette">
+            <span class="dsb-icon">&#x1F300;</span>
+            <span class="dsb-label">Tourette</span>
           </button>
         </div>
         <div id="disorderInfoBar">
@@ -638,92 +628,48 @@ const RECOMMENDATIONS_DB = {
       'Explore assistive technology (e.g., NaturalReader, Kurzweil, Google Read&Write).'
     ]
   },
-  social_anxiety: {
-    label: 'Social Anxiety',
-    icon: '&#x1F630;',
+  dld: {
+    label: 'Developmental Language Disorder',
+    icon: '&#x1F5E8;',
     therapies: [
-      { name: 'CBT with Exposure', detail: 'Cognitive restructuring combined with graded exposure to feared social situations — highest evidence base for social anxiety.' },
-      { name: 'Social Skills Group', detail: 'Structured group therapy building conversational skills, assertiveness, and confidence in social settings.' },
-      { name: 'ERP (Exposure & Response Prevention)', detail: 'Systematic desensitization to social triggers while preventing avoidance behaviors.' },
-      { name: 'Mindfulness-Based Therapy', detail: 'Mindfulness practices reducing anticipatory anxiety and self-focused attention in social contexts.' }
+      { name: 'Speech-Language Therapy (SLT)', detail: 'Intensive individualised therapy targeting vocabulary, sentence structure, narrative skills, and phonological awareness.' },
+      { name: 'Narrative Intervention', detail: 'Structured story-telling and retelling activities to build discourse-level language and sequencing.' },
+      { name: 'Vocabulary-Focused Instruction', detail: 'Explicit word learning using semantic mapping, rich exposure, and spaced retrieval practice.' },
+      { name: 'Classroom Language Support', detail: 'Collaborative teacher-SLP programmes with modified language demands, visual scaffolds, and extended response time.' }
     ],
-    specialists: ['Clinical Psychologist', 'CBT Therapist', 'Child Psychiatrist'],
+    specialists: ['Speech-Language Pathologist (SLP)', 'Educational Psychologist', 'Developmental Paediatrician', 'Child Neurologist'],
     hospitals: [
-      { name: 'NIMHANS OPD', detail: 'Outpatient anxiety disorders clinic with CBT specialists and group therapy programs.' },
-      { name: 'iCall TISS Mumbai', detail: 'Low-cost psychotherapy services by Tata Institute of Social Sciences including CBT for anxiety.' },
-      { name: 'Vandrevala Foundation', detail: 'Pan-India mental health helpline and counseling services — 1860-2662-345.' }
+      { name: 'NIMHANS Bangalore', detail: 'Premier institute for child language and neurodevelopmental disorders with dedicated SLP units.' },
+      { name: 'AIISH Mysore', detail: 'All India Institute of Speech and Hearing offering comprehensive DLD assessment and therapy.' },
+      { name: 'Sri Ramachandra Institute Chennai', detail: 'Paediatric SLP services with evidence-based language intervention protocols.' }
     ],
     nextSteps: [
-      'Begin a structured CBT program with a licensed clinical psychologist.',
-      'Practice gradual exposure starting with low-anxiety social situations.',
-      'Use relaxation techniques: diaphragmatic breathing, progressive muscle relaxation.',
-      'Consider joining a social anxiety support group for peer modeling.'
+      'Request a comprehensive speech-language evaluation by a certified SLP.',
+      'Obtain psychoeducational testing to assess working memory and phonological processing.',
+      'Discuss an Individualised Education Plan with your child school.',
+      'Enroll in a structured language enrichment programme at least 2 to 3 sessions per week.'
     ]
   },
-  speech_delay: {
-    label: 'Speech Delay',
-    icon: '&#x1F5E3;',
+  tourette: {
+    label: 'Tourette Syndrome / Tic Disorders',
+    icon: '&#x1F300;',
     therapies: [
-      { name: 'SLP Therapy', detail: 'One-on-one speech-language pathology targeting articulation, vocabulary, sentence structure, and pragmatics.' },
-      { name: 'PROMPT Therapy', detail: 'Prompts for Restructuring Oral Muscular Phonetic Targets — tactile-kinesthetic approach for motor speech disorders.' },
-      { name: 'AAC Communication', detail: 'Augmentative and Alternative Communication using picture boards, speech-generating devices, or apps.' },
-      { name: 'DIR Floortime', detail: 'Developmental, Individual Difference, Relationship-based model promoting communication through child-led play.' }
+      { name: 'CBIT Comprehensive Behavioral Intervention for Tics', detail: 'First-line evidence-based therapy using habit reversal and function-based strategies to reduce tic frequency and intensity.' },
+      { name: 'Exposure and Response Prevention (ERP)', detail: 'Reduces premonitory urges by gradually exposing patients to urge sensations without executing the tic response.' },
+      { name: 'Relaxation and Mindfulness Training', detail: 'Progressive muscle relaxation, deep breathing and mindfulness to reduce stress-triggered tic exacerbation.' },
+      { name: 'Pharmacotherapy when indicated', detail: 'Alpha-2 agonists clonidine or guanfacine or aripiprazole under neurologist supervision for severe motor and vocal tics.' }
     ],
-    specialists: ['SLP-CCC (Certificate of Clinical Competence)', 'Pediatric Audiologist', 'Developmental Pediatrician'],
+    specialists: ['Child and Adolescent Neurologist', 'Paediatric Psychiatrist', 'CBIT-trained Behavioural Therapist', 'Developmental Paediatrician'],
     hospitals: [
-      { name: 'AIISH Mysore', detail: 'All India Institute of Speech and Hearing — premier institution for speech, language, and hearing disorders.' },
-      { name: 'AIIMS Speech Clinic', detail: 'Comprehensive speech-language evaluation and therapy services for children and adults.' },
-      { name: 'Kokilaben Hospital Mumbai', detail: 'Speech-language pathology department with pediatric specialists and AAC services.' }
+      { name: 'NIMHANS Bangalore', detail: 'Comprehensive movement disorder and child neuropsychiatry unit with tic disorder expertise.' },
+      { name: 'Apollo Hospitals Child Neurology', detail: 'Dedicated paediatric neurology services including tic disorder evaluation and CBIT referral pathway.' },
+      { name: 'Christian Medical College Vellore', detail: 'Leading tertiary paediatric neurology centre in South India with Tourette and movement disorder care.' }
     ],
     nextSteps: [
-      'Obtain a hearing test (audiological evaluation) to rule out hearing loss.',
-      'Begin speech-language therapy — early intervention (before age 3) yields best outcomes.',
-      'Practice language-rich activities at home: narrating, reading aloud, responsive conversation.',
-      'Ask SLP about AAC options if verbal communication is significantly delayed.'
-    ]
-  },
-  intellectual: {
-    label: 'Intellectual Disability',
-    icon: '&#x1F9E0;',
-    therapies: [
-      { name: 'Adaptive Skills Training', detail: 'Teaching daily living skills: self-care, hygiene, community navigation, and independent functioning.' },
-      { name: 'Individualized Education Program (IEP)', detail: 'Legally mandated personalized education plan with modified curriculum, accommodations, and goals.' },
-      { name: 'Occupational Therapy', detail: 'Improves fine motor skills, sensory processing, and functional independence in school and home.' },
-      { name: 'Behavioral Support Plan (BSP)', detail: 'Function-based plan addressing challenging behaviors using positive behavioral supports.' }
-    ],
-    specialists: ['Developmental Pediatrician', 'Educational Psychologist', 'Special Education Teacher'],
-    hospitals: [
-      { name: 'NIMHANS ID Clinic', detail: 'Dedicated Intellectual Disability clinic offering evaluation, genetic testing, and multidisciplinary care.' },
-      { name: 'NIEPID Government Center', detail: 'National Institute for Empowerment of Persons with Intellectual Disabilities — Secunderabad.' },
-      { name: 'Asha Kiran Bangalore', detail: 'Government residential and day-care center for people with intellectual disabilities in Karnataka.' }
-    ],
-    nextSteps: [
-      'Obtain a formal IQ and adaptive behavior assessment (Vineland-3 or ABAS-3).',
-      'Enroll in a special education program with an Individualized Education Program (IEP).',
-      'Connect with the National Trust for Autism, CP, MR & MD for legal entitlements.',
-      'Explore vocational training programs for older children and young adults.'
-    ]
-  },
-  spd: {
-    label: 'Sensory Processing Disorder',
-    icon: '&#x270B;',
-    therapies: [
-      { name: 'Ayres Sensory Integration (ASI)', detail: 'Evidence-based OT approach using structured sensory play to improve sensory modulation and praxis.' },
-      { name: 'Sensory Diet', detail: 'Personalized daily schedule of sensory activities (proprioceptive, vestibular, tactile) to regulate arousal.' },
-      { name: 'Wilbarger Protocol', detail: 'Deep pressure and joint compression protocol reducing tactile defensiveness — delivered by trained OT.' },
-      { name: 'Environmental Modification', detail: 'Adapting home and school environments (lighting, noise, textures) to reduce sensory overwhelm.' }
-    ],
-    specialists: ['Pediatric OT with SIPT Certification', 'Pediatric Physical Therapist', 'Child Neurologist'],
-    hospitals: [
-      { name: 'OTI India Centers', detail: 'Occupational Therapy India network offering ASI therapy across multiple Indian cities.' },
-      { name: 'Fortis OT Department', detail: 'Multi-city Fortis Hospital occupational therapy departments with pediatric sensory integration specialists.' },
-      { name: "Rainbow Children's Hospital", detail: 'Leading pediatric hospital chain in India with OT and sensory integration programs.' }
-    ],
-    nextSteps: [
-      'Seek evaluation from a pediatric OT certified in Sensory Integration and Praxis Tests (SIPT).',
-      "Request a sensory profile assessment (Dunn's Sensory Profile or SPM).",
-      'Implement a sensory diet under OT guidance — consistency is key.',
-      'Educate teachers about sensory triggers and classroom accommodations.'
+      'Obtain a clinical diagnosis from a child neurologist to distinguish simple tics from Tourette Syndrome.',
+      'Start CBIT with a trained behaviour therapist before considering medication.',
+      'Educate school staff about tics to reduce stigma and classroom disruption.',
+      'Monitor co-occurring OCD and ADHD which are present in about 60 percent of Tourette cases.'
     ]
   }
 };
@@ -734,10 +680,8 @@ const DISORDER_LABELS = {
   asd: 'ASD',
   adhd: 'ADHD',
   dyslexia: 'Dyslexia',
-  social_anxiety: 'Social Anxiety',
-  speech_delay: 'Speech Delay',
-  intellectual: 'Intellectual Disability',
-  spd: 'SPD'
+  dld: 'Developmental Language Disorder',
+  tourette: 'Tourette Syndrome / Tic Disorders'
 };
 
 /* Bar colors for probability view */
@@ -745,10 +689,8 @@ const DISORDER_COLORS = {
   asd: '#2d6a4f',
   adhd: '#2563eb',
   dyslexia: '#d97706',
-  social_anxiety: '#dc2626',
-  speech_delay: '#7c3aed',
-  intellectual: '#0891b2',
-  spd: '#ea580c'
+  dld: '#7c3aed',
+  tourette: '#dc2626'
 };
 
 /* ---------------------------------------------------------------
@@ -973,13 +915,59 @@ function runAnalysis() {
    MOCK RESULTS GENERATOR
 --------------------------------------------------------------- */
 function generateMockResults() {
-  const disorders = ['asd', 'adhd', 'dyslexia', 'social_anxiety', 'speech_delay', 'intellectual', 'spd'];
+  const disorders = ['asd', 'adhd', 'dyslexia', 'dld', 'tourette'];
   const probs = {};
 
+  /* Each disorder has distinct biomarker weights per media type so the
+     same upload always produces meaningfully different probabilities
+     depending on which disorder is selected for analysis.              */
+  const BIOMARKER_WEIGHTS = {
+    asd:      { img: 0.82, vid: 0.88, aud: 0.55 },
+    adhd:     { img: 0.48, vid: 0.80, aud: 0.42 },
+    dyslexia: { img: 0.60, vid: 0.40, aud: 0.72 },
+    dld:      { img: 0.35, vid: 0.52, aud: 0.90 },
+    tourette: { img: 0.44, vid: 0.85, aud: 0.38 }
+  };
+
+  /* Seeded noise per analysis run — same disorder, same run = consistent */
+  const seed = Date.now() % 10000;
+  function noise(base, spread) {
+    return Math.min(0.97, Math.max(0.03, base + (Math.sin(seed * base) * spread)));
+  }
+
+  const mediaPresent = {
+    img: files.img.length > 0,
+    vid: files.vid.length > 0,
+    aud: files.aud.length > 0
+  };
+  const anyMedia = mediaPresent.img || mediaPresent.vid || mediaPresent.aud;
+
   if (selectedDisorder !== 'all') {
-    disorders.forEach(d => { probs[d] = d === selectedDisorder ? (0.55 + Math.random() * 0.35) : (Math.random() * 0.3); });
+    disorders.forEach(d => {
+      if (d === selectedDisorder) {
+        /* Primary disorder: weighted high based on uploaded media type */
+        const w = BIOMARKER_WEIGHTS[d] || { img: 0.7, vid: 0.7, aud: 0.7 };
+        let base = 0.30;
+        if (mediaPresent.vid) base = Math.max(base, w.vid);
+        if (mediaPresent.img) base = Math.max(base, w.img);
+        if (mediaPresent.aud) base = Math.max(base, w.aud);
+        probs[d] = noise(base, 0.08);
+      } else {
+        /* Non-selected disorders: low background probability, each unique */
+        const dIdx = disorders.indexOf(d);
+        probs[d] = noise(0.05 + dIdx * 0.04, 0.06);
+      }
+    });
   } else {
-    disorders.forEach(d => { probs[d] = Math.random(); });
+    /* Full spectrum: each disorder gets its own weighted score */
+    disorders.forEach(d => {
+      const w = BIOMARKER_WEIGHTS[d] || { img: 0.5, vid: 0.5, aud: 0.5 };
+      let base = 0.15;
+      if (mediaPresent.vid) base = Math.max(base, w.vid * 0.65);
+      if (mediaPresent.img) base = Math.max(base, w.img * 0.60);
+      if (mediaPresent.aud) base = Math.max(base, w.aud * 0.60);
+      probs[d] = noise(base, 0.12);
+    });
   }
 
   const topDisorder = Object.entries(probs).sort((a,b) => b[1]-a[1])[0];
@@ -989,13 +977,24 @@ function generateMockResults() {
   const riskLevel = topProb > 0.75 ? 'High Risk' : topProb > 0.5 ? 'Moderate Risk' : topProb > 0.3 ? 'Low-Moderate Risk' : 'Low Risk';
   const riskColor = topProb > 0.75 ? { bg:'#ffe5d9', color:'#c44b1b' } : topProb > 0.5 ? { bg:'#fff8e1', color:'#7a5c00' } : { bg:'#dcfce7', color:'#166534' };
 
+  /* Disorder-specific behavioral biomarker descriptions */
+  const BEHAVIOR_PROFILES = {
+    asd:      { eyeContact:'Reduced', motor:'Repetitive patterns', social:'Atypical', speech:'Monotone prosody detected' },
+    adhd:     { eyeContact:'Variable', motor:'Elevated / Hyperactive', social:'Impulsive interactions', speech:'Rapid rate, interruptions' },
+    dyslexia: { eyeContact:'Typical', motor:'Normal', social:'Typical', speech:'Phonological irregularities noted' },
+    dld:      { eyeContact:'Typical', motor:'Normal', social:'Slightly delayed', speech:'Reduced vocabulary, short sentences' },
+    tourette: { eyeContact:'Typical', motor:'Tic movements detected', social:'Typical', speech:'Vocal tic markers present' }
+  };
+  const bp = BEHAVIOR_PROFILES[selectedDisorder !== 'all' ? selectedDisorder : topKey] || BEHAVIOR_PROFILES.asd;
+
   return {
     probs,
     topKey,
     topProb,
     riskLevel,
     riskColor,
-    confidence: Math.round(70 + Math.random() * 25),
+    bp,
+    confidence: Math.round(72 + Math.random() * 20),
     mediaCount: files.img.length + files.vid.length + files.aud.length,
     imgCount: files.img.length,
     vidCount: files.vid.length,
@@ -1041,19 +1040,20 @@ function renderResults(r) {
   document.getElementById('probItems').innerHTML = probHtml;
 
   /* --- Behavior tab --- */
+  const bp = r.bp || {};
   document.getElementById('behMetrics').innerHTML =
-    behItem('Eye Contact', (Math.random() > 0.5 ? 'Reduced' : 'Typical'), 'Gaze tracking analysis') +
-    behItem('Motor Activity', (Math.random() > 0.5 ? 'Elevated' : 'Normal'), 'Movement pattern analysis') +
-    behItem('Social Response', (Math.random() > 0.5 ? 'Atypical' : 'Typical'), 'Social cue processing') +
-    behItem('Attention Span', (Math.random() > 0.5 ? 'Below average' : 'Average'), 'Sustained attention markers');
+    behItem('Eye Contact', bp.eyeContact || 'Typical', 'Gaze tracking analysis') +
+    behItem('Motor Activity', bp.motor || 'Normal', 'Movement pattern analysis') +
+    behItem('Social Response', bp.social || 'Typical', 'Social cue processing') +
+    behItem('Speech Pattern', bp.speech || 'Within normal range', 'Acoustic prosody analysis');
 
   document.getElementById('behObservations').innerHTML = '<div class="ai-explain">'
-    + '<div class="ae-title">&#x1F4CB; Key Behavioral Observations</div>'
+    + '<div class="ae-title">&#x1F4CB; Key Behavioral Observations — ' + (DISORDER_LABELS[r.selectedDisorder !== 'all' ? r.selectedDisorder : r.topKey] || 'Multi-Disorder') + '</div>'
     + '<ul style="margin:0;padding-left:18px;font-size:.82rem;line-height:2">'
-    + '<li>Facial affect variability within normal-to-reduced range</li>'
-    + '<li>Gaze patterns suggest ' + (Math.random() > 0.5 ? 'intermittent' : 'consistent') + ' joint attention</li>'
-    + '<li>Repetitive movement markers: ' + (Math.random() > 0.5 ? 'present' : 'absent') + '</li>'
-    + '<li>Speech prosody: ' + (Math.random() > 0.5 ? 'atypical rhythm detected' : 'within normal range') + '</li>'
+    + '<li>Eye contact pattern: <strong>' + (bp.eyeContact || 'Typical') + '</strong></li>'
+    + '<li>Motor movement: <strong>' + (bp.motor || 'Normal') + '</strong></li>'
+    + '<li>Social cue processing: <strong>' + (bp.social || 'Typical') + '</strong></li>'
+    + '<li>Speech/audio markers: <strong>' + (bp.speech || 'Within normal range') + '</strong></li>'
     + '</ul></div>';
 
   /* --- Clinical tab --- */

@@ -1952,9 +1952,25 @@ app.post('/api/chat', async (req, res) => {
         const contents = buildGeminiContents(messages.slice(-5));
 
         const replyText = await generateWithGeminiFallback(ai, contents, {
-          systemInstruction: `You are NeuroScan AI Assistant, a concise, friendly, and expert developmental guide.
-Explain AQ-10 assessments, ML prediction models (Random Forest, XGBoost, SHAP), speech biomarkers, and developmental tips.
-Format with clean markdown bullets, keep responses concise, and suggest 1-2 actionable follow-up questions.`,
+          systemInstruction: `You are NeuroScan AI Assistant — a knowledgeable, empathetic, and concise clinical guide specialising in neurodevelopmental conditions.
+
+Your expertise covers:
+- ASD (Autism Spectrum Disorder): social communication, eye contact, repetitive behaviours, AQ-10 screening, ABA therapy
+- ADHD: inattention, hyperactivity, impulsivity, executive function, medication options
+- Dyslexia: phonological awareness, reading difficulties, structured literacy programmes
+- DLD (Developmental Language Disorder): vocabulary delays, sentence structure, SLT therapy
+- Tourette Syndrome / Tic Disorders: motor and vocal tics, CBIT therapy, co-occurring ADHD/OCD
+- Speech and Language: milestones, AAC, articulation disorders
+- Sensory Processing: sensory diets, OT, Ayres Sensory Integration
+- NeuroScan AI platform: AQ-10 assessment, multi-disorder ML battery (Random Forest, XGBoost, SHAP), media analysis, speech biomarkers
+
+RESPONSE RULES:
+1. Always answer based on the user's specific question — never give a generic reply.
+2. If the user asks about a specific disorder, provide detailed, accurate information about that disorder.
+3. If the user asks about a test result or probability score, explain what it means clinically.
+4. Format with clean markdown bullets and bold key terms. Keep responses under 300 words.
+5. End with 1-2 relevant follow-up questions the user might want to ask.
+6. Never diagnose — always clarify this is educational screening information only.`,
           temperature: 0.6,
           maxOutputTokens: 450
         }, 15000);
@@ -1968,16 +1984,30 @@ Format with clean markdown bullets, keep responses concise, and suggest 1-2 acti
       }
     }
 
-    let reply = "Hello! I am NeuroScan AI Assistant. I can help you with our screening assessments (AQ-10 and 7-disorder ML battery), speech audio screening, developmental milestones, and tracking your child's progress.";
+    /* Intelligent keyword-based fallback when Gemini is unavailable */
+    let reply = '';
+    const msg = cleanMsg;
 
-    if (cleanMsg.includes('aq-10') || cleanMsg.includes('screening') || cleanMsg.includes('test') || cleanMsg.includes('question')) {
-      reply = "**About the AQ-10 Autism Screening:**\n• The Autism Spectrum Quotient (AQ-10) is a validated 10-item clinical triage instrument developed by Baron-Cohen et al. (Cambridge Autism Research Centre).\n• A score of **6 or above out of 10** indicates significant autistic traits warranting formal multidisciplinary assessment.\n• On NeuroScan AI, your answers are evaluated in real-time by a Python Scikit-Learn ensemble model with SHAP mathematical feature attribution.\n\n*Click **Start Screening** in the navigation bar to run an evaluation.*";
-    } else if (cleanMsg.includes('shap') || cleanMsg.includes('model') || cleanMsg.includes('ml') || cleanMsg.includes('algorithm')) {
-      reply = "**How NeuroScan AI's Machine Learning Works:**\n• **Ensemble Engine**: Combines Random Forest (40%), XGBoost/Gradient Boosting (40%), and calibrated Logistic Regression (20%) trained on verified clinical cohorts.\n• **SHAP (SHapley Additive exPlanations)**: Uses cooperative game theory to measure the exact mathematical contribution (+ or -) of each behavioral response to the final probability.\n• **Zero Black Box**: Every prediction is fully transparent so clinicians and parents can see which specific behaviors elevated the score.";
-    } else if (cleanMsg.includes('speech') || cleanMsg.includes('voice') || cleanMsg.includes('audio')) {
-      reply = "**Voice & Speech Biomarker Analysis:**\n• Our acoustic AI analyzes vocal pitch variation, speech fluency (WPM), pause latencies, and articulation complexity.\n• Speech delays and atypical prosody (monotone or sing-song pitch) are frequently correlated with neurodevelopmental differences.\n• You can record your child's voice or upload an audio file directly in the **Speech Analysis** tab.";
-    } else if (cleanMsg.includes('recommend') || cleanMsg.includes('therapy') || cleanMsg.includes('help')) {
-      reply = "**Evidence-Based Therapy Options:**\n• **Speech-Language Therapy (SLP)**: Enhances expressive language, speech clarity, and pragmatic social communication.\n• **Occupational Therapy (OT)**: Addresses fine motor skills, sensory modulation, and self-care independence.\n• **CBT / Behavioral Intervention**: Helps with emotional regulation, anxiety, and task transitions.\n\n*Check out our **Recommendations** tab for daily routine timelines and sensory diets.*";
+    if (msg.includes('dld') || msg.includes('developmental language') || msg.includes('language disorder')) {
+      reply = "**Developmental Language Disorder (DLD):**\n• DLD is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n• Children with DLD have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n• **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n• Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how DLD differs from ASD?";
+    } else if (msg.includes('tourette') || msg.includes('tic') || msg.includes('tics')) {
+      reply = "**Tourette Syndrome & Tic Disorders:**\n• Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n• Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n• **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) — more effective than medication for most children.\n• ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n• Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
+    } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit')) {
+      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n• ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n• Three types: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n• **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n• NeuroScan's ADHD screening uses video movement analysis and attention biomarkers.\n\nWould you like information about ADHD vs ASD differences, or medication options?";
+    } else if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic')) {
+      reply = "**ASD (Autism Spectrum Disorder):**\n• ASD is characterised by differences in social communication, restricted interests, and repetitive behaviours.\n• The AQ-10 is a validated 10-item screening tool — a score of 6+ suggests autism traits warranting formal assessment.\n• **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech therapy, and occupational therapy.\n• Early diagnosis (before age 3) leads to significantly better outcomes.\n• NeuroScan AI analyses facial expressions, eye contact, and movement patterns for ASD biomarkers.\n\nWould you like to know about the AQ-10 assessment or early signs of autism by age?";
+    } else if (msg.includes('dyslexia') || msg.includes('reading') || msg.includes('phonolog')) {
+      reply = "**Dyslexia:**\n• Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, with normal intelligence.\n• Core deficit: phonological processing — difficulty connecting letters to sounds.\n• **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention — explicit, multisensory reading instruction.\n• Dyslexia is NOT related to vision problems or intelligence — it is neurobiological.\n• NeuroScan analyses reading-related audio patterns and phonemic articulation biomarkers.\n\nWould you like information about structured literacy programmes or how dyslexia is diagnosed?";
+    } else if (msg.includes('speech') || msg.includes('language') || msg.includes('talking') || msg.includes('words')) {
+      reply = "**Speech & Language Development:**\n• Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n• If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n• **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n• NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
+    } else if (msg.includes('therap') || msg.includes('treatment') || msg.includes('help') || msg.includes('intervention')) {
+      reply = "**Evidence-Based Therapy Options:**\n• **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID — most evidence-based.\n• **SLT (Speech-Language Therapy):** For DLD, speech delay, stuttering, and autism-related communication.\n• **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n• **CBIT:** Best treatment for tics and Tourette Syndrome.\n• **Structured Literacy:** For dyslexia — phonics-based, multisensory reading instruction.\n• **Parent Training:** Highly effective for ADHD and ASD — teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
+    } else if (msg.includes('result') || msg.includes('score') || msg.includes('probability') || msg.includes('percent') || msg.includes('%')) {
+      reply = "**Understanding Your NeuroScan Results:**\n• Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers — they are **screening indicators, not diagnoses**.\n• **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n• **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n• **Low Risk (<50%):** Traits present but not strongly predictive — continue monitoring milestones.\n• Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
+    } else if (msg.includes('shap') || msg.includes('model') || msg.includes('machine learning') || msg.includes('ai') || msg.includes('ml')) {
+      reply = "**NeuroScan AI Machine Learning Models:**\n• **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n• **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n• **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n• **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
+    } else {
+      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome.\n\nI can help you with:\n• **Disorder information** — symptoms, causes, and diagnostic criteria\n• **Screening results** — interpreting your NeuroScan probability scores\n• **Therapy options** — evidence-based interventions for each condition\n• **NeuroScan tools** — how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
     }
 
     setCachedResponse(cacheKey, reply);
