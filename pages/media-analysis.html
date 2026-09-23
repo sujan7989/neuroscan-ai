@@ -25,23 +25,16 @@
     .card-header{padding:18px 22px;border-bottom:1px solid var(--border,#e2e8f0);display:flex;align-items:center;justify-content:space-between}
     .card-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:9px}
 
-    /* ===== DISORDER SELECTOR ===== */
-    #disorderGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-    .disorder-sel-btn{padding:10px 6px;border-radius:var(--r-sm,8px);border:1.5px solid var(--border,#e2e8f0);background:var(--bg,#f8fafc);cursor:pointer;text-align:center;transition:all .2s;color:var(--text,#0f172a);display:flex;flex-direction:column;align-items:center;gap:3px}
-    .disorder-sel-btn:hover{border-color:var(--primary,#1b4d3e);background:#edf7f2}
-    .disorder-sel-btn.active{border-color:var(--primary,#1b4d3e);background:#edf7f2;color:var(--primary,#1b4d3e);box-shadow:0 0 0 2px rgba(45,106,79,.15)}
-    .disorder-sel-btn .dsb-icon{font-size:1.2rem;line-height:1}
-    .disorder-sel-btn .dsb-label{font-size:.7rem;font-weight:700}
-    #disorderInfoBar{border-radius:var(--r-sm,8px);padding:10px 14px;font-size:.8rem;color:var(--primary,#1b4d3e);font-weight:600;border:1px solid;background:#edf7f2;border-color:var(--primary-light,#52b788)}
+    /* ===== DISORDER SELECTOR (hidden — always all-disorders mode) ===== */
+    #disorderGrid{display:none}
+    .disorder-sel-btn{display:none}
+    #disorderInfoBar{display:none!important}
 
-    /* ===== UPLOAD TABS ===== */
-    .upload-tabs{display:flex;gap:0;border-bottom:1px solid var(--border,#e2e8f0);background:var(--bg,#f8fafc)}
-    .upload-tab{flex:1;padding:13px 8px;background:none;border:none;font-size:.82rem;font-weight:700;color:var(--muted,#475569);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
-    .upload-tab.active{color:var(--primary,#1b4d3e);border-bottom-color:var(--primary,#1b4d3e);background:var(--card,#fff)}
-    .tab-count{background:var(--primary,#1b4d3e);color:#fff;border-radius:50%;width:17px;height:17px;font-size:.62rem;display:none;align-items:center;justify-content:center}
-    .upload-tab.has-files .tab-count{display:flex}
-    .upload-pane{display:none;padding:20px 22px}
-    .upload-pane.active{display:block;animation:fadeUp .25s ease}
+    /* ===== UPLOAD TABS (removed — unified zone) ===== */
+    .upload-tabs{display:none}
+    .upload-tab{display:none}
+    .tab-count{display:none}
+    .upload-pane{display:none!important}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
     /* ===== DROP ZONE ===== */
@@ -238,158 +231,79 @@
   <!-- ========== LEFT COLUMN ========== -->
   <div>
 
-    <!-- DISORDER SELECTOR CARD -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">&#x1F52C; Select Disorder to Analyze</div>
-        <div style="font-size:.78rem;color:var(--muted,#475569)">Choose one or analyze all 7</div>
-      </div>
-      <div style="padding:16px 20px">
-        <div id="disorderGrid">
-          <button type="button" class="disorder-sel-btn active" data-disorder="all">
-            <span class="dsb-icon">&#x1F52C;</span>
-            <span class="dsb-label">All 7</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="asd">
-            <span class="dsb-icon">&#x1F9E9;</span>
-            <span class="dsb-label">ASD</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="adhd">
-            <span class="dsb-icon">&#x26A1;</span>
-            <span class="dsb-label">ADHD</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="dyslexia">
-            <span class="dsb-icon">&#x1F4D6;</span>
-            <span class="dsb-label">Dyslexia</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="dld">
-            <span class="dsb-icon">&#x1F5E8;</span>
-            <span class="dsb-label">DLD</span>
-          </button>
-          <button type="button" class="disorder-sel-btn" data-disorder="tourette">
-            <span class="dsb-icon">&#x1F300;</span>
-            <span class="dsb-label">Tourette</span>
-          </button>
-        </div>
-        <div id="disorderInfoBar">
-          &#x1F9EA; <strong>Analyzing all 7 disorders</strong> &mdash; eye contact, behavior, speech, attention, sensory, reading &amp; social patterns
-        </div>
-      </div>
-    </div><!-- /disorder selector -->
+    <!-- Hidden state holder — always analyze all disorders -->
+    <div id="disorderInfoBar" style="display:none"></div>
 
-    <!-- UPLOAD CARD -->
+    <!-- UNIFIED UPLOAD CARD -->
     <div class="card">
       <div class="card-header">
         <div class="card-title">&#x1F4E4; Upload Media Files</div>
-        <div style="font-size:.78rem;color:var(--muted,#475569)">Images, Videos or Audio</div>
+        <div style="font-size:.78rem;color:var(--muted,#475569)">Images, Videos &amp; Audio — all in one</div>
       </div>
 
-      <!-- Upload tabs -->
-      <div class="upload-tabs">
-        <button class="upload-tab active" id="tab-img">
-          &#x1F5BC; Images
-          <span class="tab-count" id="cnt-img">0</span>
-        </button>
-        <button class="upload-tab" id="tab-vid">
-          &#x1F3A5; Videos
-          <span class="tab-count" id="cnt-vid">0</span>
-        </button>
-        <button class="upload-tab" id="tab-aud">
-          &#x1F399; Audio
-          <span class="tab-count" id="cnt-aud">0</span>
-        </button>
-      </div>
-
-      <!-- Image pane -->
-      <div class="upload-pane active" id="pane-img">
-        <div class="drop-zone" id="dz-img">
-          <span class="dz-icon">&#x1F5BC;</span>
-          <div class="dz-title">Drag &amp; drop images or click to browse</div>
-          <div class="dz-sub">JPG, PNG, WebP, GIF &middot; Max 10 MB per file<br>Analyzed for: facial expressions &middot; eye contact &middot; emotional response</div>
+      <!-- Single unified drop zone -->
+      <div style="padding:18px 20px">
+        <div class="drop-zone" id="dz-unified">
+          <span class="dz-icon">&#x1F4F7;</span>
+          <div class="dz-title">Drag &amp; drop or click to browse</div>
+          <div class="dz-sub">
+            Images (JPG, PNG, WebP) &middot; Videos (MP4, MOV, WebM) &middot; Audio (MP3, WAV, M4A)<br>
+            Max 100 MB per file &middot; Multiple files supported
+          </div>
           <div class="dz-btn-row">
-            <button class="dz-btn" type="button" id="browse-img">&#x1F4C2; Choose Images</button>
-            <button class="dz-btn dz-analyze-btn analyze-trigger" type="button" id="dz-analyze-img" style="display:none">
-              &#x1F52C; <span class="analyze-btn-label">Analyze for Neurodevelopmental Disorders</span>
-            </button>
+            <button class="dz-btn" type="button" id="browse-unified">&#x1F4C2; Choose Files</button>
           </div>
         </div>
-        <input type="file" id="input-img" class="file-input" accept="image/*" multiple/>
-        <div class="preview-grid" id="preview-img"></div>
-        <div id="ready-banner-img" class="media-ready-banner" style="display:none">
+        <!-- Hidden inputs for all types -->
+        <input type="file" id="input-unified" class="file-input" accept="image/*,video/*,audio/*" multiple/>
+        <!-- Invisible compat inputs so existing JS updateUI still works -->
+        <input type="file" id="input-img" class="file-input" accept="image/*" multiple style="display:none"/>
+        <input type="file" id="input-vid" class="file-input" accept="video/*" multiple style="display:none"/>
+        <input type="file" id="input-aud" class="file-input" accept="audio/*" multiple style="display:none"/>
+
+        <!-- Unified preview grid -->
+        <div class="preview-grid" id="preview-unified" style="margin-top:14px"></div>
+        <!-- Hidden legacy preview grids for JS compat -->
+        <div id="preview-img" style="display:none"></div>
+        <div id="preview-vid" style="display:none"></div>
+        <div id="preview-aud" style="display:none"></div>
+
+        <!-- File count badge -->
+        <div id="unified-ready-banner" class="media-ready-banner" style="display:none;margin-top:12px">
           <div class="mrb-info">
             <span class="mrb-icon">&#x2705;</span>
             <div>
-              <div class="mrb-title"><span id="mrb-cnt-img">0</span> image(s) ready</div>
-              <div class="mrb-sub">Click Analyze to detect neurodevelopmental markers</div>
+              <div class="mrb-title" id="unified-file-count">0 file(s) ready</div>
+              <div class="mrb-sub">AI will analyze all uploaded media for neurodevelopmental biomarkers</div>
             </div>
           </div>
-          <button class="mrb-btn analyze-trigger" type="button">&#x1F52C; <span class="analyze-btn-label">Analyze</span></button>
+          <button class="mrb-btn analyze-trigger" type="button" id="mrb-analyze-btn">&#x1F52C; Analyze Now</button>
         </div>
-      </div>
 
-      <!-- Video pane -->
-      <div class="upload-pane" id="pane-vid">
-        <div class="drop-zone" id="dz-vid">
-          <span class="dz-icon">&#x1F3A5;</span>
-          <div class="dz-title">Drag &amp; drop videos or click to browse</div>
-          <div class="dz-sub">MP4, MOV, WebM &middot; Max 100 MB per file<br>Analyzed for: behavior patterns &middot; movement &middot; social interaction</div>
-          <div class="dz-btn-row">
-            <button class="dz-btn" type="button" id="browse-vid">&#x1F4C2; Choose Videos</button>
-            <button class="dz-btn dz-analyze-btn analyze-trigger" type="button" id="dz-analyze-vid" style="display:none">
-              &#x1F52C; <span class="analyze-btn-label">Analyze for Neurodevelopmental Disorders</span>
-            </button>
-          </div>
+        <!-- Hidden legacy banners for JS compat -->
+        <div id="ready-banner-img" style="display:none"><span id="mrb-cnt-img">0</span></div>
+        <div id="ready-banner-vid" style="display:none"><span id="mrb-cnt-vid">0</span></div>
+        <div id="ready-banner-aud" style="display:none"><span id="mrb-cnt-aud">0</span></div>
+        <!-- Hidden legacy tabs for JS compat -->
+        <div id="tab-img" style="display:none"></div>
+        <div id="tab-vid" style="display:none"></div>
+        <div id="tab-aud" style="display:none"></div>
+        <div id="cnt-img" style="display:none">0</div>
+        <div id="cnt-vid" style="display:none">0</div>
+        <div id="cnt-aud" style="display:none">0</div>
+        <div id="fileSummary" style="display:none">
+          <span id="pill-img" style="display:none"><span id="pill-img-n">0</span></span>
+          <span id="pill-vid" style="display:none"><span id="pill-vid-n">0</span></span>
+          <span id="pill-aud" style="display:none"><span id="pill-aud-n">0</span></span>
         </div>
-        <input type="file" id="input-vid" class="file-input" accept="video/*" multiple/>
-        <div class="preview-grid" id="preview-vid"></div>
-        <div id="ready-banner-vid" class="media-ready-banner" style="display:none">
-          <div class="mrb-info">
-            <span class="mrb-icon">&#x2705;</span>
-            <div>
-              <div class="mrb-title"><span id="mrb-cnt-vid">0</span> video(s) ready</div>
-              <div class="mrb-sub">Click Analyze to detect behavioral biomarkers</div>
-            </div>
-          </div>
-          <button class="mrb-btn analyze-trigger" type="button">&#x1F52C; <span class="analyze-btn-label">Analyze</span></button>
-        </div>
-      </div>
-
-      <!-- Audio pane -->
-      <div class="upload-pane" id="pane-aud">
-        <div class="drop-zone" id="dz-aud">
-          <span class="dz-icon">&#x1F3A7;</span>
-          <div class="dz-title">Drag &amp; drop audio files or click to browse</div>
-          <div class="dz-sub">MP3, WAV, OGG, M4A &middot; Max 50 MB per file<br>Analyzed for: speech patterns &middot; prosody &middot; language markers</div>
-          <div class="dz-btn-row">
-            <button class="dz-btn" type="button" id="browse-aud">&#x1F4C2; Choose Audio</button>
-            <button class="dz-btn dz-analyze-btn analyze-trigger" type="button" id="dz-analyze-aud" style="display:none">
-              &#x1F52C; <span class="analyze-btn-label">Analyze for Neurodevelopmental Disorders</span>
-            </button>
-          </div>
-        </div>
-        <input type="file" id="input-aud" class="file-input" accept="audio/*" multiple/>
-        <div class="preview-grid" id="preview-aud"></div>
-        <div id="ready-banner-aud" class="media-ready-banner" style="display:none">
-          <div class="mrb-info">
-            <span class="mrb-icon">&#x2705;</span>
-            <div>
-              <div class="mrb-title"><span id="mrb-cnt-aud">0</span> audio file(s) ready</div>
-              <div class="mrb-sub">Click Analyze to detect speech &amp; language biomarkers</div>
-            </div>
-          </div>
-          <button class="mrb-btn analyze-trigger" type="button">&#x1F52C; <span class="analyze-btn-label">Analyze</span></button>
-        </div>
-      </div>
-
-      <!-- File summary bar -->
-      <div class="file-summary" id="fileSummary" style="display:none">
-        <span class="file-pill fp-img" id="pill-img" style="display:none">&#x1F5BC; <span id="pill-img-n">0</span> images</span>
-        <span class="file-pill fp-vid" id="pill-vid" style="display:none">&#x1F3A5; <span id="pill-vid-n">0</span> videos</span>
-        <span class="file-pill fp-aud" id="pill-aud" style="display:none">&#x1F399; <span id="pill-aud-n">0</span> audio</span>
+        <!-- Legacy dz analyze buttons for compat -->
+        <button id="dz-analyze-img" style="display:none" class="analyze-trigger"></button>
+        <button id="dz-analyze-vid" style="display:none" class="analyze-trigger"></button>
+        <button id="dz-analyze-aud" style="display:none" class="analyze-trigger"></button>
       </div>
 
       <!-- Main analyze button -->
-      <div class="analyze-area">
+      <div class="analyze-area" style="padding-top:0">
         <button class="analyze-btn analyze-trigger" id="mainAnalyzeBtn" type="button" disabled>
           <div class="spinner"></div>
           <span class="btn-text">&#x1F52C; <span class="analyze-btn-label">Analyze for Neurodevelopmental Disorders</span></span>
@@ -476,14 +390,15 @@
       <!-- Placeholder (shown before analysis) -->
       <div id="resultsPlaceholder">
         <div class="results-placeholder">
-          <div class="rph-icon">&#x1F52C;</div>
+          <div class="rph-icon">&#x1F4F7;</div>
           <div class="rph-title">No Analysis Yet</div>
-          <div class="rph-desc">Upload media files and click Analyze to see AI-powered neurodevelopmental disorder detection results.</div>
+          <div class="rph-desc">Upload any media file and click Analyze to see AI-powered neurodevelopmental disorder detection across all 5 conditions.</div>
           <div class="rph-list">
-            <div>&#x1F5BC; Images &rarr; facial expressions, eye contact</div>
-            <div>&#x1F3A5; Videos &rarr; behavior, movement, gaze tracking</div>
-            <div>&#x1F399; Audio &rarr; speech patterns, prosody, language</div>
-            <div>&#x1F4CA; Results saved to your profile automatically</div>
+            <div>&#x1F9E9; ASD &rarr; facial expressions, eye contact, social gaze</div>
+            <div>&#x26A1; ADHD &rarr; movement patterns, attention, hyperactivity</div>
+            <div>&#x1F4D6; Dyslexia &rarr; speech phonology, articulation, reading</div>
+            <div>&#x1F5E8; DLD &rarr; language structure, vocabulary, fluency</div>
+            <div>&#x1F300; Tourette &rarr; motor tics, vocal patterns, repetitive movement</div>
           </div>
         </div>
       </div>
@@ -698,7 +613,116 @@ const DISORDER_COLORS = {
 --------------------------------------------------------------- */
 let selectedDisorder = 'all';
 let files = { img: [], vid: [], aud: [] };
+let unifiedFiles = [];   /* master list of all uploaded files regardless of type */
 let analysisResults = null;
+
+/* ---------------------------------------------------------------
+   UNIFIED FILE HANDLING
+--------------------------------------------------------------- */
+function getFileType(file) {
+  const t = file.type.toLowerCase();
+  if (t.startsWith('image/')) return 'img';
+  if (t.startsWith('video/')) return 'vid';
+  if (t.startsWith('audio/')) return 'aud';
+  /* Fallback: by extension */
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)) return 'img';
+  if (['mp4','mov','avi','webm','mkv','flv'].includes(ext)) return 'vid';
+  return 'aud';
+}
+
+function addUnifiedFiles(newFiles) {
+  Array.from(newFiles).forEach(f => {
+    if (!unifiedFiles.find(x => x.name === f.name && x.size === f.size)) {
+      unifiedFiles.push(f);
+      const t = getFileType(f);
+      files[t].push(f);
+    }
+  });
+  renderUnifiedPreviews();
+  updateUnifiedUI();
+}
+
+function removeUnifiedFile(idx) {
+  const removed = unifiedFiles[idx];
+  if (removed) {
+    const t = getFileType(removed);
+    files[t] = files[t].filter(f => !(f.name === removed.name && f.size === removed.size));
+  }
+  unifiedFiles.splice(idx, 1);
+  renderUnifiedPreviews();
+  updateUnifiedUI();
+}
+
+function renderUnifiedPreviews() {
+  const grid = document.getElementById('preview-unified');
+  if (!grid) return;
+  grid.innerHTML = '';
+  unifiedFiles.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'preview-item';
+    const t = getFileType(f);
+
+    if (t === 'img') {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(f);
+      img.alt = f.name;
+      item.appendChild(img);
+      const footer = document.createElement('div');
+      footer.className = 'preview-footer';
+      footer.innerHTML = '<span class="preview-name">' + escHtml(f.name) + '</span><span style="font-size:.62rem;background:#e8f5e9;color:#2d6a4f;padding:1px 5px;border-radius:4px">IMG</span>';
+      item.appendChild(footer);
+    } else if (t === 'vid') {
+      const vid = document.createElement('video');
+      vid.src = URL.createObjectURL(f);
+      vid.controls = false;
+      item.appendChild(vid);
+      const footer = document.createElement('div');
+      footer.className = 'preview-footer';
+      footer.innerHTML = '<span class="preview-name">' + escHtml(f.name) + '</span><span style="font-size:.62rem;background:#e3f2fd;color:#1565c0;padding:1px 5px;border-radius:4px">VID</span>';
+      item.appendChild(footer);
+    } else {
+      const inner = document.createElement('div');
+      inner.className = 'preview-audio';
+      inner.innerHTML = '<div class="preview-audio-icon">&#x1F399;</div>'
+        + '<div class="preview-audio-name">' + escHtml(f.name) + '</div>'
+        + '<audio controls src="' + URL.createObjectURL(f) + '"></audio>';
+      item.appendChild(inner);
+    }
+
+    const rm = document.createElement('button');
+    rm.className = 'preview-remove';
+    rm.type = 'button';
+    rm.title = 'Remove';
+    rm.textContent = '\xd7';
+    rm.addEventListener('click', () => removeUnifiedFile(i));
+    item.appendChild(rm);
+    grid.appendChild(item);
+  });
+}
+
+function updateUnifiedUI() {
+  const total = unifiedFiles.length;
+  const banner = document.getElementById('unified-ready-banner');
+  const countEl = document.getElementById('unified-file-count');
+  const mainBtn = document.getElementById('mainAnalyzeBtn');
+
+  if (banner) banner.style.display = total > 0 ? 'flex' : 'none';
+  if (countEl) {
+    const imgs = unifiedFiles.filter(f => getFileType(f) === 'img').length;
+    const vids = unifiedFiles.filter(f => getFileType(f) === 'vid').length;
+    const auds = unifiedFiles.filter(f => getFileType(f) === 'aud').length;
+    const parts = [];
+    if (imgs) parts.push(imgs + ' image' + (imgs > 1 ? 's' : ''));
+    if (vids) parts.push(vids + ' video' + (vids > 1 ? 's' : ''));
+    if (auds) parts.push(auds + ' audio file' + (auds > 1 ? 's' : ''));
+    countEl.textContent = parts.join(', ') + ' ready for analysis';
+  }
+  if (mainBtn) {
+    mainBtn.disabled = total === 0;
+    mainBtn.classList.toggle('ready-pulse', total > 0);
+  }
+}
 
 /* ---------------------------------------------------------------
    DISORDER SELECTOR
@@ -987,6 +1011,10 @@ function generateMockResults() {
   };
   const bp = BEHAVIOR_PROFILES[selectedDisorder !== 'all' ? selectedDisorder : topKey] || BEHAVIOR_PROFILES.asd;
 
+  const totalFiles = unifiedFiles.length || (files.img.length + files.vid.length + files.aud.length);
+  const imgCnt = unifiedFiles.filter ? unifiedFiles.filter(f => getFileType(f) === 'img').length : files.img.length;
+  const vidCnt = unifiedFiles.filter ? unifiedFiles.filter(f => getFileType(f) === 'vid').length : files.vid.length;
+  const audCnt = unifiedFiles.filter ? unifiedFiles.filter(f => getFileType(f) === 'aud').length : files.aud.length;
   return {
     probs,
     topKey,
@@ -995,10 +1023,10 @@ function generateMockResults() {
     riskColor,
     bp,
     confidence: Math.round(72 + Math.random() * 20),
-    mediaCount: files.img.length + files.vid.length + files.aud.length,
-    imgCount: files.img.length,
-    vidCount: files.vid.length,
-    audCount: files.aud.length,
+    mediaCount: totalFiles,
+    imgCount: imgCnt,
+    vidCount: vidCnt,
+    audCount: audCnt,
     selectedDisorder
   };
 }
@@ -1175,30 +1203,64 @@ function behItem(label, value, detail) {
    INIT
 --------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
-  /* Drop zones */
-  setupDropZone('dz-img', 'img');
-  setupDropZone('dz-vid', 'vid');
-  setupDropZone('dz-aud', 'aud');
+  /* Always analyze all disorders */
+  selectedDisorder = 'all';
 
-  /* File inputs */
-  document.getElementById('input-img').addEventListener('change', function() { addFiles('img', this.files); this.value = ''; });
-  document.getElementById('input-vid').addEventListener('change', function() { addFiles('vid', this.files); this.value = ''; });
-  document.getElementById('input-aud').addEventListener('change', function() { addFiles('aud', this.files); this.value = ''; });
+  /* ---- Unified drop zone ---- */
+  const dzUnified = document.getElementById('dz-unified');
+  if (dzUnified) {
+    dzUnified.addEventListener('dragover', e => { e.preventDefault(); dzUnified.classList.add('dragover'); });
+    dzUnified.addEventListener('dragleave', () => dzUnified.classList.remove('dragover'));
+    dzUnified.addEventListener('drop', e => {
+      e.preventDefault();
+      dzUnified.classList.remove('dragover');
+      addUnifiedFiles(e.dataTransfer.files);
+    });
+    dzUnified.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      document.getElementById('input-unified').click();
+    });
+  }
+  const browseUnified = document.getElementById('browse-unified');
+  if (browseUnified) {
+    browseUnified.addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('input-unified').click();
+    });
+  }
+  const inputUnified = document.getElementById('input-unified');
+  if (inputUnified) {
+    inputUnified.addEventListener('change', function() { addUnifiedFiles(this.files); this.value = ''; });
+  }
 
-  /* Browse buttons */
-  document.getElementById('browse-img').addEventListener('click', e => { e.stopPropagation(); document.getElementById('input-img').click(); });
-  document.getElementById('browse-vid').addEventListener('click', e => { e.stopPropagation(); document.getElementById('input-vid').click(); });
-  document.getElementById('browse-aud').addEventListener('click', e => { e.stopPropagation(); document.getElementById('input-aud').click(); });
-
-  /* Upload tabs */
-  document.getElementById('tab-img').addEventListener('click', () => switchUpTab('img'));
-  document.getElementById('tab-vid').addEventListener('click', () => switchUpTab('vid'));
-  document.getElementById('tab-aud').addEventListener('click', () => switchUpTab('aud'));
-
-  /* Disorder selector */
-  document.querySelectorAll('.disorder-sel-btn').forEach(btn => {
-    btn.addEventListener('click', () => selectDisorder(btn.dataset.disorder, btn));
+  /* Analyze triggers */
+  document.querySelectorAll('.analyze-trigger').forEach(btn => {
+    btn.addEventListener('click', runAnalysis);
   });
+
+  /* Result tabs */
+  document.querySelectorAll('.result-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchResultTab(tab.dataset.pane));
+  });
+
+  /* Clear button */
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    files = { img: [], vid: [], aud: [] };
+    unifiedFiles = [];
+    renderUnifiedPreviews();
+    updateUnifiedUI();
+    analysisResults = null;
+    document.getElementById('resultsPlaceholder').style.display = 'block';
+    document.getElementById('resultPanesWrapper').style.display = 'none';
+    document.getElementById('analyzingOverlay').classList.remove('show');
+  });
+
+  /* PDF button */
+  document.getElementById('pdfBtn').addEventListener('click', () => {
+    if (!analysisResults) return;
+    alert('PDF export coming soon! Results saved to your profile.');
+  });
+});
 
   /* Analyze triggers */
   document.querySelectorAll('.analyze-trigger').forEach(btn => {
