@@ -251,11 +251,13 @@
             Max 100 MB per file &middot; Multiple files supported
           </div>
           <div class="dz-btn-row">
-            <button class="dz-btn" type="button" id="browse-unified">&#x1F4C2; Choose Files</button>
+            <!-- label acts as the button — clicking it natively opens file dialog, no JS needed -->
+            <label for="input-unified" class="dz-btn" style="cursor:pointer" id="browse-unified">&#x1F4C2; Choose Files</label>
           </div>
         </div>
-        <!-- Hidden inputs for all types -->
-        <input type="file" id="input-unified" class="file-input" accept="image/*,video/*,audio/*" multiple/>
+        <!-- File input: NOT display:none — use opacity:0 + position:absolute so .click() always works -->
+        <input type="file" id="input-unified" accept="image/*,video/*,audio/*" multiple
+               style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none"/>
         <!-- Invisible compat inputs so existing JS updateUI still works -->
         <input type="file" id="input-img" class="file-input" accept="image/*" multiple style="display:none"/>
         <input type="file" id="input-vid" class="file-input" accept="video/*" multiple style="display:none"/>
@@ -1208,29 +1210,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---- Unified drop zone ---- */
   const dzUnified = document.getElementById('dz-unified');
-  if (dzUnified) {
+  const inputUnified = document.getElementById('input-unified');
+
+  if (dzUnified && inputUnified) {
     dzUnified.addEventListener('dragover', e => { e.preventDefault(); dzUnified.classList.add('dragover'); });
-    dzUnified.addEventListener('dragleave', () => dzUnified.classList.remove('dragover'));
+    dzUnified.addEventListener('dragleave', e => { if (!dzUnified.contains(e.relatedTarget)) dzUnified.classList.remove('dragover'); });
     dzUnified.addEventListener('drop', e => {
       e.preventDefault();
       dzUnified.classList.remove('dragover');
       addUnifiedFiles(e.dataTransfer.files);
     });
+    /* Drop zone click — skip if user clicked the label (it opens picker natively) */
     dzUnified.addEventListener('click', e => {
-      if (e.target.closest('button')) return;
-      document.getElementById('input-unified').click();
+      if (e.target.tagName === 'LABEL' || e.target.closest('label')) return;
+      inputUnified.click();
     });
   }
-  const browseUnified = document.getElementById('browse-unified');
-  if (browseUnified) {
-    browseUnified.addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('input-unified').click();
-    });
-  }
-  const inputUnified = document.getElementById('input-unified');
+
   if (inputUnified) {
-    inputUnified.addEventListener('change', function() { addUnifiedFiles(this.files); this.value = ''; });
+    inputUnified.addEventListener('change', function() {
+      if (this.files && this.files.length) addUnifiedFiles(this.files);
+      this.value = '';
+    });
   }
 
   /* Analyze triggers */
