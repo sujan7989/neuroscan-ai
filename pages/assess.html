@@ -487,47 +487,19 @@ window.onAgeChange = onAgeChange;
 window.runAnalysis = runAnalysis;
 window.showTab = showTab;
 window.generateReport = generateReport;
-window.selectAnswer = window.selectAnswer || function() {};
-window.highlightSHAP = window.highlightSHAP || function() {};
 
-// ── DISORDER FILTER ────────────────────────────────────────────
+// ── DISORDER FILTER STATE ──────────────────────────────────────
 let activeDisorderFilter = 'all';
 
 const DISORDER_FILTER_INFO = {
-  all:      '🧪 <strong>Screening all disorders</strong> — questions cover ASD, ADHD, Dyslexia, DLD, and Tourette',
-  asd:      '🧩 <strong>ASD-focused screening</strong> — eye contact, social communication, repetitive behaviors, sensory responses',
-  adhd:     '⚡ <strong>ADHD-focused screening</strong> — attention span, hyperactivity, impulse control, task completion',
-  dyslexia: '📖 <strong>Dyslexia-focused screening</strong> — reading, spelling, phonological awareness, letter reversals',
-  dld:      '🗨️ <strong>DLD-focused screening</strong> — vocabulary, sentence structure, narrative skills, instruction following',
-  tourette: '🌀 <strong>Tourette-focused screening</strong> — motor tics, vocal tics, premonitory urge, stress-triggered tics',
+  all:      '&#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, DLD, and Tourette',
+  asd:      '&#x1F9E9; <strong>ASD-focused screening</strong> &mdash; eye contact, social communication, repetitive behaviors, sensory responses',
+  adhd:     '&#x26A1; <strong>ADHD-focused screening</strong> &mdash; attention span, hyperactivity, impulse control, task completion',
+  dyslexia: '&#x1F4D6; <strong>Dyslexia-focused screening</strong> &mdash; reading, spelling, phonological awareness, letter reversals',
+  dld:      '&#x1F5E8; <strong>DLD-focused screening</strong> &mdash; vocabulary, sentence structure, narrative skills, instruction following',
+  tourette: '&#x1F300; <strong>Tourette-focused screening</strong> &mdash; motor tics, vocal tics, premonitory urge, stress-triggered tics',
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.dis-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeDisorderFilter = btn.dataset.dis;
-      // Update button styles
-      document.querySelectorAll('.dis-filter-btn').forEach(b => {
-        const isActive = b.dataset.dis === activeDisorderFilter;
-        if (b.dataset.dis === 'all') {
-          b.style.background = isActive ? 'var(--primary)' : 'var(--bg)';
-          b.style.color = isActive ? '#fff' : 'var(--primary)';
-        }
-        b.style.fontWeight = isActive ? '800' : '700';
-        b.style.boxShadow = isActive ? '0 0 0 2px rgba(0,0,0,.15)' : 'none';
-      });
-      // Update info bar
-      const info = document.getElementById('disorderFilterInfo');
-      if (info) info.innerHTML = DISORDER_FILTER_INFO[activeDisorderFilter] || DISORDER_FILTER_INFO.all;
-      // Update progress title
-      const titles = { all:'Assessment Progress', asd:'ASD Screening Progress', adhd:'ADHD Screening Progress', dyslexia:'Dyslexia Screening Progress', dld:'DLD Screening Progress', tourette:'Tourette Screening Progress' };
-      const pt = document.getElementById('progressTitle');
-      if (pt) pt.textContent = titles[activeDisorderFilter] || 'Assessment Progress';
-      // Re-render questions filtered for this disorder
-      renderFilteredQuestions();
-    });
-  });
-});
 
 function getFilteredQuestions() {
   const all = getActiveQuestions();
@@ -673,10 +645,12 @@ function updateProgress(questions) {
 window.selectAnswer = function(qId, idx, container) {
   answers[qId] = idx;
   // Update UI
-  container.querySelectorAll('.q-option').forEach((btn, i) => {
-    btn.classList.toggle('selected', i === idx);
-  });
-  updateProgress(getActiveQuestions());
+  if (container) {
+    container.querySelectorAll('.q-option').forEach((btn, i) => {
+      btn.classList.toggle('selected', i === idx);
+    });
+  }
+  updateProgress(getFilteredQuestions());
 };
 
 // ── ANALYSIS ──────────────────────────────────────────────────
@@ -1042,6 +1016,49 @@ async function generateReport() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
+// Expose highlightSHAP after it's defined
+window.highlightSHAP = function(disorderId) {
+  const shapValues = computeSHAP(answers, disorderId);
+  renderSHAP(shapValues);
+  showTab('shap');
+};
+
+// Wire disorder filter buttons DIRECTLY (no extra DOMContentLoaded needed —
+// module scripts run after DOM is ready, so document.querySelectorAll works here)
+document.querySelectorAll('.dis-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeDisorderFilter = btn.dataset.dis;
+
+    // Visual: update all button states
+    document.querySelectorAll('.dis-filter-btn').forEach(b => {
+      const active = b.dataset.dis === activeDisorderFilter;
+      // Reset every button to its base style first
+      b.style.boxShadow = active ? '0 0 0 3px rgba(0,0,0,.18)' : 'none';
+      b.style.fontWeight = active ? '800' : '700';
+      b.style.transform = active ? 'scale(1.05)' : 'scale(1)';
+    });
+
+    // Update info bar text
+    const info = document.getElementById('disorderFilterInfo');
+    if (info) info.innerHTML = DISORDER_FILTER_INFO[activeDisorderFilter] || DISORDER_FILTER_INFO.all;
+
+    // Update progress title
+    const TITLES = {
+      all: 'Assessment Progress',
+      asd: 'ASD Screening Progress',
+      adhd: 'ADHD Screening Progress',
+      dyslexia: 'Dyslexia Screening Progress',
+      dld: 'DLD Screening Progress',
+      tourette: 'Tourette Screening Progress'
+    };
+    const pt = document.getElementById('progressTitle');
+    if (pt) pt.textContent = TITLES[activeDisorderFilter] || 'Assessment Progress';
+
+    // Re-render questions for selected disorder
+    renderFilteredQuestions();
+  });
+});
+
 renderFilteredQuestions();
 </script>
 <div id="footer-ph"></div>
