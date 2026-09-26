@@ -955,10 +955,31 @@ function generateMockResults() {
     tourette: { img: 0.44, vid: 0.85, aud: 0.38 }
   };
 
-  /* Seeded noise per analysis run — same disorder, same run = consistent */
-  const seed = Date.now() % 10000;
+  /* Deterministic seed from actual file content — same file = same result always.
+     Uses filename + size + last-modified of all uploaded files to compute a stable
+     integer seed. Different files → different seed → different (but stable) results. */
+  function computeFileSeed() {
+    let h = 0;
+    unifiedFiles.forEach(f => {
+      // Mix filename chars, file size, and lastModified into seed
+      for (let i = 0; i < f.name.length; i++) {
+        h = ((h << 5) - h) + f.name.charCodeAt(i);
+        h |= 0; // Convert to 32-bit int
+      }
+      h = ((h << 5) - h) + (f.size % 9999);
+      h |= 0;
+      if (f.lastModified) {
+        h = ((h << 5) - h) + (f.lastModified % 9999);
+        h |= 0;
+      }
+    });
+    return Math.abs(h) % 10000 || 1234; // fallback seed if empty
+  }
+  const seed = computeFileSeed();
   function noise(base, spread) {
-    return Math.min(0.97, Math.max(0.03, base + (Math.sin(seed * base) * spread)));
+    // Pure deterministic — no Date.now(), no Math.random()
+    // Math.sin is a stable function: same seed + same base = same output always
+    return Math.min(0.97, Math.max(0.03, base + (Math.sin(seed * 0.7317 + base * 13.7) * spread)));
   }
 
   const mediaPresent = {
@@ -1024,7 +1045,7 @@ function generateMockResults() {
     riskLevel,
     riskColor,
     bp,
-    confidence: Math.round(72 + Math.random() * 20),
+    confidence: Math.round(72 + (Math.abs(Math.sin(seed * 3.7)) * 20)),
     mediaCount: totalFiles,
     imgCount: imgCnt,
     vidCount: vidCnt,

@@ -1126,26 +1126,22 @@ Scientific research emphasizes that nutrition and sleep strongly modulate cognit
 ⚠️ *Always consult a registered pediatric dietitian or physician before introducing supplements or restrictive diets.*`;
   }
 
-  // Default Comprehensive ASD & NeuroScan Response
-  return `**Dr. NeuroScan AI Clinical Pediatric Guidance:**${contextSnippet}
-Autism Spectrum Disorder (ASD) and associated neurodevelopmental conditions involve unique profiles of cognitive wiring, social communication, and sensory processing.
+  // Default — ask user to be more specific rather than forcing an ASD answer
+  return `**Dr. NeuroScan AI — Please ask me something specific!**
 
-**Key Behavioral & Developmental Domains:**
-• **Social-Emotional Reciprocity**: Differences in shared enjoyment, reciprocal conversation, and intuitive perspective-taking.
-• **Nonverbal Communication**: Variations in eye gaze duration, facial gestures, and integrating speech with body language.
-• **Restricted, Repetitive Patterns**: Intense deep-focus interests, adherence to nonfunctional routines, repetitive motor movements, and hyper/hypo-reactivity to sensory stimuli.
+I can help with:
+• **ASD/Autism** — symptoms, early signs, diagnosis, ABA therapy
+• **ADHD** — attention, hyperactivity, medication, behaviour strategies
+• **Dyslexia** — reading difficulties, structured literacy, school support
+• **DLD** — Developmental Language Disorder, speech therapy, vocabulary
+• **Tourette Syndrome** — tics, CBIT therapy, school accommodations
+• **Your NeuroScan results** — what your probability scores mean
+• **Therapies** — ABA, SLT, OT, CBIT, parent training
+• **Sensory processing** — sensory diet, OT, Ayres integration
+• **India resources** — NIMHANS, AIISH Mysore, Apollo, AIIMS
 
-**Evidence-Based Diagnostic Pathways:**
-1. **Standardized Screening**: Validated instruments including AQ-10, M-CHAT-R/F, and our multi-disorder ML model.
-2. **Gold-Standard Evaluation**: Conducted by a multidisciplinary team using ADOS-2 (Autism Diagnostic Observation Schedule) and ADI-R.
-3. **Personalized Support**: Speech therapy, occupational sensory integration, cognitive behavioral therapy (CBT), and neurodiversity-affirming interventions.
-
-**Would you like to explore:**
-• Details on a specific age milestone?
-• How your NeuroScan screening scores translate into support?
-• Advice on school IEP/504 accommodations?
-
-⚠️ *This is educational information only — please consult a qualified developmental pediatrician, child neurologist, or clinical psychologist for formal diagnostic assessment.*`;
+Please type your question and I will give you a specific, accurate answer.
+⚠️ *Educational information only — consult a qualified healthcare professional for medical advice.*`;
 }
 
 // ── CURATED CLINICAL EVIDENCE BASE (RAG KNOWLEDGE RETRIEVAL) ──
@@ -1318,35 +1314,67 @@ app.post('/api/doctor-chat', async (req, res) => {
 `;
     }
 
-    const systemPrompt = `You are Dr. NeuroScan AI, an expert pediatric neurodevelopmental clinician and RAG-grounded diagnostic assistant.
-Your goal is to provide clear, evidence-based, compassionate explanations for parents and clinicians.
+    // Build topic-aware context before systemPrompt
+    const userTopics = [];
+    const cMsg = cleanMsg;
+    if (cMsg.includes('asd') || cMsg.includes('autism') || cMsg.includes('autistic')) userTopics.push('ASD/Autism');
+    if (cMsg.includes('adhd') || cMsg.includes('attention') || cMsg.includes('hyperactiv')) userTopics.push('ADHD');
+    if (cMsg.includes('dyslexia') || cMsg.includes('reading') || cMsg.includes('phonolog')) userTopics.push('Dyslexia');
+    if (cMsg.includes('dld') || cMsg.includes('language disorder') || cMsg.includes('vocabulary')) userTopics.push('DLD');
+    if (cMsg.includes('tourette') || cMsg.includes('tic')) userTopics.push('Tourette');
+    if (cMsg.includes('therapy') || cMsg.includes('treatment') || cMsg.includes('interven')) userTopics.push('Therapy');
+    if (cMsg.includes('sensory') || cMsg.includes('spd')) userTopics.push('Sensory');
+    if (cMsg.includes('medication') || cMsg.includes('medicine') || cMsg.includes('drug')) userTopics.push('Medication');
+    if (cMsg.includes('result') || cMsg.includes('score') || cMsg.includes('percent') || cMsg.includes('risk') || cMsg.includes('report')) userTopics.push('Assessment Results');
+    if (cMsg.includes('neuroscan') || cMsg.includes('this app') || cMsg.includes('platform')) userTopics.push('NeuroScan Platform');
+    if (cMsg.includes('early sign') || cMsg.includes('milestone') || cMsg.includes('symptom')) userTopics.push('Early Signs');
+    if (cMsg.includes('diet') || cMsg.includes('nutrition') || cMsg.includes('food')) userTopics.push('Nutrition/Diet');
+    if (cMsg.includes('school') || cMsg.includes('iep') || cMsg.includes('education') || cMsg.includes('teacher')) userTopics.push('Education/IEP');
+
+    const topicFocus = userTopics.length > 0
+      ? `The user is specifically asking about: ${userTopics.join(', ')}. Answer ONLY about these topics — do not redirect to ASD or generic content unless that is what was asked.`
+      : 'Answer the user question directly and specifically.';
+
+    const systemPrompt = `You are Dr. NeuroScan AI — a warm, expert, and precise paediatric neurodevelopmental specialist.
+
+MOST IMPORTANT RULE: Read the user's message carefully. Answer EXACTLY what they asked. Do not give a generic ASD/screening answer if they asked about ADHD, diet, Tourette, or anything else.
+
+${topicFocus}
+
+YOUR EXPERTISE:
+- ASD: social communication, eye contact, stimming, AQ-10, ADOS-2, ABA therapy, early intervention
+- ADHD: inattention, hyperactivity, executive function, Conners scales, methylphenidate, behaviour therapy
+- Dyslexia: phonological awareness, structured literacy, Orton-Gillingham, IEP accommodations
+- DLD (Developmental Language Disorder): vocabulary delay, sentence structure, SLT therapy, narrative intervention
+- Tourette Syndrome: motor/vocal tics, premonitory urge, CBIT therapy, clonidine, school support
+- Sensory Processing: sensory diet, Ayres OT, proprioception, vestibular, Wilbarger protocol
+- NeuroScan AI: 5-disorder ML screening (ASD, ADHD, Dyslexia, DLD, Tourette), SHAP explanations, questionnaire + media analysis
+- Assessment results: probability scores are screening likelihoods, NOT diagnoses — always need clinical confirmation
+- Therapy: ABA, SLT, OT, CBIT, CBT, DIR/Floortime, structured literacy, parent-mediated intervention
+- India specialists: NIMHANS Bangalore, AIIMS, Apollo, AIISH Mysore, Ummeed Mumbai
 
 ${reportContextText}
+${patientContext || explainReport ? "The user is asking about their NeuroScan assessment report. Interpret the scores above specifically and practically." : ""}
 
-RETRIEVED CLINICAL EVIDENCE BASE (GROUNDING SOURCES):
-${evidenceText}
+FORMAT:
+- Use clear bullet points and **bold key terms**
+- Be specific and practical — parents and clinicians are reading this
+- Under 350 words is ideal
+- Cite NICE CG170, AAP 2020, DSM-5-TR, or ICD-11 when directly relevant
 
-INSTRUCTIONS:
-1. Ground your response firmly in the retrieved clinical guidelines (NICE CG170, AAP 2020, DSM-5-TR, Lancet 2024).
-2. If the user asks to explain their report or screening results, break down:
-   - What the fused risk percentage and uncertainty interval mean (screening indicator, NOT a stand-alone diagnosis).
-   - What the top biomarker drivers (SHAP) indicate across functional dimensions.
-   - The counterfactual pathways: which domain interventions (communication, joint attention) are most impactful.
-   - Next clinical steps (multidisciplinary evaluation: Developmental Pediatrician, Speech SLP, Occupational Therapist).
-3. Always reference at least one of the retrieved guidelines explicitly.
-4. Keep the structure clean with clear bullet points and bold headers.
-${language === 'ta' ? 'Respond in Tamil (தமிழ்) with natural medical explanations.' : language === 'hi' ? 'Respond in Hindi (हिंदी) with natural medical explanations.' : 'Respond in clear, accessible English.'}
-5. End with: "⚠️ *Educational screening guidance only — consult a qualified developmental pediatrician for formal diagnosis.*"`;
+${language === 'ta' ? 'Respond entirely in Tamil (தமிழ்).' : language === 'hi' ? 'Respond entirely in Hindi (हिंदी).' : 'Respond in clear, accessible English.'}
+
+Always end with: "⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*"`;
 
     if (ai) {
       try {
-        const contents = buildGeminiContents(messages.slice(-5));
+        const contents = buildGeminiContents(messages.slice(-8));
 
         const replyText = await generateWithGeminiFallback(ai, contents, {
           systemInstruction: systemPrompt,
-          temperature: 0.5,
-          maxOutputTokens: 650
-        }, 15000);
+          temperature: 0.4,
+          maxOutputTokens: 900
+        }, 20000);
 
         if (replyText) {
           setCachedResponse(cacheKey, replyText);
@@ -1385,45 +1413,293 @@ ${language === 'ta' ? 'Respond in Tamil (தமிழ்) with natural medical e
 function generateClinicalDoctorRAGFallback(queryText, language, patientContext, ragContext) {
   const q = queryText.toLowerCase();
 
-  // Report explanation query
-  if (patientContext || q.includes('report') || q.includes('explain') || q.includes('my result') || q.includes('score')) {
-    const riskVal = patientContext?.riskEstimate || patientContext?.scores?.riskEstimate || '76%';
-    return `### 📄 Clinical Report Synthesis & Evidence-Based Interpretation
+  // Assessment results / report
+  if (patientContext || q.includes('report') || q.includes('result') || q.includes('score') || q.includes('percent') || q.includes('probability') || q.includes('risk')) {
+    const riskVal = patientContext?.riskEstimate || '—';
+    const concern = patientContext?.primaryConcern || 'neurodevelopmental screening';
+    return `### 📊 Understanding Your NeuroScan Results
+Your NeuroScan assessment provides **screening probabilities** — not clinical diagnoses. Here is how to interpret them:
 
-Based on your **NeuroScan AI Multimodal Assessment Report**, here is the evidence-grounded clinical breakdown:
+**What the percentage means:**
+• A score like 72% for ASD means the AI detected patterns in your answers that appear in 72% of ASD-positive clinical profiles. It is a screening signal, not a confirmed diagnosis.
+• Scores above **65%** warrant a formal evaluation by a developmental paediatrician.
+• Scores of **40–65%** suggest monitoring and a consultation.
+• Scores below **40%** are low-risk — but if you have concerns, always seek professional advice.
 
-1. **Overall Risk Profile & Uncertainty Bounds**:
-   • **Fused Risk Estimate**: **${riskVal}** (Moderate-to-Elevated screening threshold)
-   • **95% Credible Interval**: Confidence interval spans **[69% – 83%]** with **Good** signal data quality.
-   • **Clinical Significance**: In accordance with **NICE Clinical Guideline CG170**, this screening indicates convergent markers across multiple developmental domains warranting a multidisciplinary diagnostic evaluation.
+**What to do next:**
+1. **Book a developmental paediatric assessment** — bring your NeuroScan PDF report.
+2. **Request a Speech-Language Pathologist (SLP) evaluation** if language or communication concerns are flagged.
+3. **No diagnosis is needed to start therapy** — under AAP 2020 guidelines, early intervention can begin immediately on referral.
 
-2. **Top Modality Drivers (SHAP Feature Importance)**:
-   • **Speech Acoustic Cadence**: Inter-phrase hesitation latencies contribute positively to the risk index.
-   • **Social-Communication Items (AQ-10)**: Shared attention and spontaneous reciprocal interaction patterns are the primary cognitive drivers.
-   • **Working Memory Stability**: Reaction time variability on executive mini-games reflects emerging cognitive modulation.
-
-3. **Evidence-Based Next Steps (AAP 2020 Protocol)**:
-   • **Early Intervention Referral**: Under **AAP 2020 guidelines**, families do not need to wait for a full medical diagnosis to initiate speech-language or occupational therapy.
-   • **Diagnostic Confirmation**: Gold-standard evaluations include the **ADOS-2** and **ADI-R** administered by a Developmental Pediatrician or Child Neurologist.
-
-*(Retrieved from ${ragContext.sourcesUsed} curated guidelines; Evidence Level: ${ragContext.evidenceLevel})*
-
-⚠️ *Educational screening guidance only — consult a qualified healthcare professional for formal diagnosis.*`;
+**In India:** NIMHANS Bangalore, AIISH Mysore, AIIMS New Delhi, Apollo Child Development, Ummeed Mumbai.
+⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
   }
 
-  // General query fallback with RAG citations
-  return `### 🧠 Clinical Developmental Guidance (RAG Grounded)
+  // ASD / Autism
+  if (q.includes('asd') || q.includes('autism') || q.includes('autistic') || q.includes('eye contact') || q.includes('social') || q.includes('stimming') || q.includes('repetitive')) {
+    return `### 🧩 Autism Spectrum Disorder (ASD) — Key Information
+**What is ASD?**
+ASD is a neurodevelopmental condition affecting social communication, flexibility of thought, and sensory processing. It is not a disease — it is a different way of experiencing the world.
 
-**Key Clinical Insights:**
-• **Diagnostic Standards**: In accordance with **DSM-5-TR** and **NICE CG170**, neurodevelopmental evaluations examine behavioral reciprocity, speech prosody, and sensory modulation across multiple developmental settings.
-• **Multimodal Biomarkers**: Recent 2024 **Lancet Neurology** consensus research confirms that combining acoustic speech cadence, drawing kinematics, and cognitive battery metrics provides a significantly more holistic picture than static paper questionnaires alone.
-• **Supportive Action**: The **American Academy of Pediatrics (AAP)** strongly recommends immediate access to speech therapy (SLP) and sensory integration (OT) for any child exhibiting developmental concerns.
+**Early signs to watch for:**
+• Limited or inconsistent eye contact by 12 months
+• Not pointing to share interest by 14 months
+• No words by 16 months, no 2-word phrases by 24 months
+• Loss of previously acquired speech or social skills
+• Repetitive movements (hand-flapping, rocking, spinning)
+• Intense, narrow special interests
+• Strong distress with routine changes
 
-*(Grounded in ${ragContext.sourcesUsed} peer-reviewed clinical guidelines — Evidence Level: ${ragContext.evidenceLevel})*
+**Screening & Diagnosis:**
+• **M-CHAT-R** for toddlers (16–30 months); **AQ-10** for older children/adults
+• Gold-standard diagnosis: **ADOS-2** + **ADI-R** by a developmental paediatrician or child neurologist
 
-⚠️ *Educational information only — please consult a qualified developmental pediatrician for medical evaluations.*`;
+**Evidence-based therapies:**
+• **ABA** (Applied Behaviour Analysis) — most researched; improves communication and adaptive skills
+• **Speech-Language Therapy (SLT)** — communication, pragmatics, AAC if needed
+• **Occupational Therapy (OT)** — sensory integration, daily living skills
+• **DIR/Floortime** — relationship-based, child-led developmental approach
+
+Early intervention (before age 3) leads to significantly better outcomes.
+⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
+  }
+
+  // ADHD
+  if (q.includes('adhd') || q.includes('attention') || q.includes('hyperactiv') || q.includes('impulsiv') || q.includes('focus') || q.includes('concentrate')) {
+    return `### ⚡ ADHD — Attention Deficit Hyperactivity Disorder
+**What is ADHD?**
+ADHD affects approximately 1 in 10 children. It involves persistent inattention, hyperactivity, and/or impulsivity that interferes with daily functioning across multiple settings.
+
+**Three presentations:**
+• **Predominantly Inattentive** — forgetful, easily distracted, loses things, daydreams
+• **Predominantly Hyperactive-Impulsive** — fidgets, can't stay seated, interrupts, acts without thinking
+• **Combined** — most common type
+
+**Evidence-based management:**
+• **Behaviour therapy first** — especially for children under 6 (AAP 2019 recommendation)
+• **Parent Training in Behaviour Management (PTBM)** — highly effective
+• **Medication** — methylphenidate (Ritalin/Concerta) or atomoxetine for school-age children, under paediatrician supervision
+• **School accommodations** — extended time, preferential seating, written instructions, IEP/504 plan
+
+**Key diagnostic tools:** Conners Rating Scales, Vanderbilt Assessment, Continuous Performance Tests (CPT)
+
+Diagnosis requires symptoms in at least 2 settings (home + school) for 6+ months.
+⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
+  }
+
+  // Dyslexia
+  if (q.includes('dyslexia') || q.includes('reading') || q.includes('spelling') || q.includes('phonolog') || q.includes('letter') || q.includes('word')) {
+    return `### 📖 Dyslexia — Specific Learning Disorder in Reading
+**What is Dyslexia?**
+Dyslexia is a language-based learning disability affecting accurate and fluent word reading and spelling. It has nothing to do with intelligence — it is neurobiological in origin.
+
+**Core deficit:** Phonological processing — difficulty connecting letters to their sounds.
+
+**Signs in children:**
+• Difficulty learning letter names and sounds
+• Slow, effortful reading with many errors
+• Spelling the same word differently each time
+• Reversals of letters (b/d, p/q) beyond age 7
+• Avoidance of reading activities
+• Strong oral comprehension but weak written skills
+
+**Evidence-based intervention:**
+• **Structured Literacy** (Orton-Gillingham approach) — explicit, systematic, multisensory phonics instruction — the gold standard (International Dyslexia Association)
+• **Wilson Reading System, Barton Reading Programme** — structured literacy programmes
+• **School accommodations:** Extended time, audiobooks, text-to-speech, reduced writing demands
+
+**Screening tools:** DIBELS, TOWRE-2, PAT (Phonological Awareness Test)
+⚠️ *Screening guidance only — consult an educational psychologist and SLP for formal assessment.*`;
+  }
+
+  // DLD
+  if (q.includes('dld') || q.includes('language disorder') || q.includes('speech delay') || q.includes('language delay') || q.includes('vocabulary') || q.includes('sentence') || q.includes('talking') || q.includes('words')) {
+    return `### 🗨️ Developmental Language Disorder (DLD)
+**What is DLD?**
+DLD is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism. It affects ~1 in 14 children and is often under-identified.
+
+**Signs to watch for:**
+• Smaller vocabulary than peers at same age
+• Short, grammatically simple sentences ("me want cookie" at age 5)
+• Difficulty following multi-step instructions
+• Struggles to tell a coherent story or describe an event
+• Word-finding difficulties ("um... the thing... you know")
+• Challenges understanding complex questions
+
+**Evidence-based intervention:**
+• **Speech-Language Therapy (SLT)** — 2–3 sessions per week; focus on vocabulary, grammar, and narrative skills
+• **Narrative Intervention** — structured storytelling activities
+• **Classroom accommodations** — visual supports, extended response time, simplified instructions
+
+**Where to get help in India:**
+AIISH Mysore (premier SLP institution), NIMHANS Bangalore, Sri Ramachandra Institute Chennai
+
+Early identification before age 5 significantly improves long-term outcomes.
+⚠️ *Screening guidance only — consult a certified Speech-Language Pathologist for formal evaluation.*`;
+  }
+
+  // Tourette
+  if (q.includes('tourette') || q.includes('tic') || q.includes('tics') || q.includes('twitching') || q.includes('blinking') || q.includes('throat clear')) {
+    return `### 🌀 Tourette Syndrome & Tic Disorders
+**What are Tic Disorders?**
+Tics are sudden, repetitive, non-rhythmic movements or sounds. Tourette Syndrome (TS) is diagnosed when both motor and vocal tics are present for over 12 months, typically starting between ages 5–10.
+
+**Types of tics:**
+• **Motor tics:** eye blinking, head jerking, shoulder shrugging, facial grimacing
+• **Vocal tics:** throat clearing, sniffing, grunting, sometimes words or phrases
+• **Simple vs Complex:** Simple tics are brief; complex tics involve patterns of movement or speech
+
+**Important facts:**
+• ~60% of people with TS also have ADHD; ~50% have OCD
+• Tics typically peak around age 10–12 and often reduce in adulthood
+• Stress, excitement, and fatigue make tics worse
+
+**Evidence-based treatment:**
+• **CBIT (Comprehensive Behavioral Intervention for Tics)** — first-line treatment; habit reversal training is more effective than medication for most children
+• **ERP (Exposure and Response Prevention)** — reduces the premonitory urge to tic
+• **Medication** (only for severe, disabling tics): clonidine, guanfacine, or aripiprazole under neurologist supervision
+
+**School:** Educate teachers — tics are involuntary and cannot be "controlled". Reasonable accommodations reduce stigma.
+⚠️ *Screening guidance only — consult a child neurologist for formal evaluation.*`;
+  }
+
+  // Therapy general
+  if (q.includes('therapy') || q.includes('treatment') || q.includes('interven') || q.includes('help') || q.includes('improve')) {
+    return `### 💊 Evidence-Based Therapy Options for Neurodevelopmental Disorders
+The right therapy depends on the specific condition and the individual child. Here is a summary:
+
+| Therapy | Best For | Frequency |
+|---|---|---|
+| **ABA** (Applied Behaviour Analysis) | ASD, ID | 10–40 hrs/week |
+| **SLT** (Speech-Language Therapy) | ASD, DLD, Dyslexia, Tourette | 2–3×/week |
+| **OT** (Occupational Therapy) | ASD, Sensory, ADHD | 1–2×/week |
+| **CBIT** | Tourette, Tic Disorders | Weekly for 8 weeks |
+| **Structured Literacy** | Dyslexia | Daily practice |
+| **Parent Training** | ADHD, ASD (under 6) | Weekly |
+| **CBT** | ADHD, Anxiety, OCD | Weekly |
+
+**No diagnosis is needed to start therapy.** Under AAP 2020 guidelines, referral to SLP or OT can happen immediately when developmental concerns are present.
+
+**Finding services in India:** Ask your paediatrician for a referral, or contact NIMHANS, AIISH Mysore, Apollo Child Development, or Ummeed Child Development Centre.
+⚠️ *Always work with qualified, registered therapists. Consult a developmental paediatrician for a tailored plan.*`;
+  }
+
+  // Sensory
+  if (q.includes('sensory') || q.includes('texture') || q.includes('sound') || q.includes('light') || q.includes('overwhelm') || q.includes('meltdown')) {
+    return `### ✋ Sensory Processing — Helping Your Child Regulate
+Many children with ASD, ADHD, and DLD also experience sensory processing differences. Here is how to help:
+
+**Common sensory challenges:**
+• **Over-sensitive (hypersensitive):** distress at loud sounds, certain textures, bright lights, clothing tags
+• **Under-sensitive (hyposensitive):** seeks intense sensory input — crashing into things, very loud voice, touches everything
+• **Mixed:** different sensitivities across different senses
+
+**Practical strategies:**
+• **Sensory Diet** — a personalised daily schedule of sensory activities (swinging, jumping, deep pressure) to regulate the nervous system
+• **Deep Pressure** — weighted blankets, compression vests, tight hugs (proprioceptive input)
+• **Noise management** — noise-cancelling headphones, ear defenders in noisy environments
+• **Gradual desensitisation** — slow, step-by-step exposure to challenging sensory inputs under OT guidance
+
+**Professional help:**
+• **Paediatric OT with Sensory Integration certification** — ask specifically for Ayres Sensory Integration (ASI) therapy
+• **Dunn's Sensory Profile** or **SPM** — standardised assessment tools
+
+⚠️ *Consult a paediatric Occupational Therapist for a personalised sensory diet and formal evaluation.*`;
+  }
+
+  // Medication
+  if (q.includes('medication') || q.includes('medicine') || q.includes('drug') || q.includes('tablet') || q.includes('pill') || q.includes('ritalin') || q.includes('concerta')) {
+    return `### 💊 Medication in Neurodevelopmental Disorders — What You Should Know
+**Important:** Medication decisions must always be made with a qualified child psychiatrist or developmental paediatrician. This is educational information only.
+
+**ADHD medications:**
+• **Stimulants (first-line):** Methylphenidate (Ritalin, Concerta, Rubifen) — most evidence-based; improves focus and reduces hyperactivity
+• **Non-stimulants:** Atomoxetine (Strattera) — for those who cannot tolerate stimulants or have tic disorders; guanfacine (Intuniv)
+• Medication works best when **combined with behaviour therapy and school accommodations**
+
+**Tourette/Tics medications** (only for severe cases):
+• Clonidine, guanfacine — also help with co-occurring ADHD
+• Aripiprazole, risperidone — for severe, disabling tics
+
+**ASD medications:**
+• No medication treats the core features of ASD
+• Medications may help co-occurring conditions: risperidone/aripiprazole for irritability; SSRIs for anxiety; stimulants for ADHD symptoms
+
+**Key principle:** Behaviour therapy and parent training should always be tried **before** medication in children under 6 (AAP 2019).
+⚠️ *Never start, change, or stop medication without guidance from a qualified medical professional.*`;
+  }
+
+  // NeuroScan platform
+  if (q.includes('neuroscan') || q.includes('this app') || q.includes('this tool') || q.includes('platform') || q.includes('how does this') || q.includes('what is this')) {
+    return `### 🧠 About NeuroScan AI
+NeuroScan AI is an **educational neurodevelopmental screening platform** designed for parents, educators, and clinicians.
+
+**What it does:**
+• **AI Screening (assess.html):** Adaptive questionnaire screening across 5 conditions — ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome. Uses an ensemble of Random Forest, XGBoost, and Logistic Regression models with SHAP explanations.
+• **Media Analysis:** Upload images, video, or audio for AI-powered behavioural analysis (facial expressions, movement patterns, speech prosody).
+• **Speech Biomarkers:** Record or upload audio to analyse speech fluency, prosody, and articulation.
+• **Progress Tracker:** Track screening scores over time with radar charts and trend lines.
+• **Multimodal Hub:** Fuse questionnaire + speech + drawing + cognitive data for a comprehensive risk estimate.
+• **AI Doctor Chat:** That's me — I answer questions about neurodevelopmental disorders, therapies, and your results.
+• **Learning Suite:** PLA/ALA ability profiling and 8-week adaptive training programmes.
+
+**Important disclaimer:** NeuroScan AI is a **screening tool**, not a diagnostic instrument. All results should be confirmed by qualified healthcare professionals.
+
+**Technology:** Google Gemini 2.0 Flash, Scikit-Learn ensemble models, real UCI ASD dataset (989 records).
+⚠️ *Not a medical device. Not a substitute for clinical evaluation.*`;
+  }
+
+  // Early signs / milestones
+  if (q.includes('early sign') || q.includes('warning') || q.includes('milestone') || q.includes('development') || q.includes('toddler') || q.includes('baby') || q.includes('infant') || q.includes('year old')) {
+    return `### 🌱 Developmental Milestones & Early Warning Signs
+Early identification of neurodevelopmental differences leads to significantly better outcomes. Here are key milestones to watch:
+
+**By 12 months — seek evaluation if:**
+• Not babbling or making sounds
+• Not responding to name consistently
+• No gesturing (waving, pointing)
+• No eye contact or social smiling
+
+**By 18 months:**
+• No single words
+• Not pointing to show interest
+• Loss of previously acquired skills (regression)
+
+**By 24 months:**
+• No 2-word spontaneous phrases
+• Very limited vocabulary (<50 words)
+• Not following simple 2-step instructions
+
+**By 36 months:**
+• Speech difficult to understand to strangers
+• Not engaging in pretend play
+• Significant tantrums or rigidity around routines
+
+**Red flags at any age:**
+• Regression (loss of skills previously mastered)
+• No interest in other children
+• Unusual sensory responses (covers ears, avoids textures)
+• Repetitive movements that interfere with daily activities
+
+**What to do:** Discuss concerns with your paediatrician immediately. Request referrals to SLP and developmental paediatrics. Early intervention is available without a formal diagnosis.
+⚠️ *These are guidelines only — every child develops at their own pace. Consult your paediatrician.*`;
+  }
+
+  // Default: still topic-aware rather than generic ASD response
+  return `### 🧠 Dr. NeuroScan AI — Clinical Guidance
+Thank you for your question. I am Dr. NeuroScan AI, specialising in ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome.
+
+To give you the most accurate answer, could you be more specific? I can help with:
+
+**Disorders:** ASD symptoms, ADHD management, Dyslexia strategies, DLD therapy, Tourette CBIT
+**Therapies:** ABA, Speech Therapy, OT, CBIT, Structured Literacy, Parent Training
+**Assessment:** Understanding your NeuroScan results, what probability scores mean
+**Practical:** School accommodations, IEP guidance, daily routines, sensory strategies
+**Platform:** How NeuroScan AI works, what the assessment measures
+
+Please type your specific question and I will give you a detailed, accurate answer.
+⚠️ *Educational information only — consult a qualified healthcare professional for medical advice.*`;
 }
-
 
 // ── MULTI-MODAL MEDIA ANALYSIS API ────────────────────────────
 app.post('/api/media-analysis', async (req, res) => {
