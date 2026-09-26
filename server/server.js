@@ -1728,63 +1728,69 @@ app.post('/api/media-analysis', async (req, res) => {
     // 1. Try Gemini Multimodal Analysis with actual media content
     if (ai) {
       try {
-        const promptText = `You are a clinical neurodevelopmental AI specialist conducting an evidence-based behavioral screening assessment.
-Analyze the provided visual, video, or acoustic media sample for developmental, social, and communicative markers related to Autism Spectrum Disorder (ASD), ADHD, Speech-Language Delay, and Typical Development.
+        // Build a rich instruction-specific prompt for Gemini Vision
+        const hasRealMedia = Array.isArray(mediaPayloads) && mediaPayloads.length > 0;
+        const mediaTypeDesc = hasRealMedia
+          ? mediaPayloads.slice(0,3).map(m => `${m.type || 'media'} (${m.mimeType || 'unknown'})`).join(', ')
+          : description || 'text description only';
 
-Media Context:
-${description}
-${clientMetrics ? `Extracted Sensor Metrics: ${JSON.stringify(clientMetrics)}` : ''}
+        const promptText = `You are a senior clinical neurodevelopmental AI specialist performing an evidence-based behavioural screening assessment for paediatric neurodevelopmental conditions.
 
-Evaluate:
-1. Gaze stability, direct eye contact duration, and visual orientation to camera/stimuli.
-2. Facial affect reciprocity, spontaneous smiling, and emotional expressiveness.
-3. Motor activity: repetitive movements, finger posturing, rocking, or typical motor regulation.
-4. Social engagement, joint attention indicators, response latency.
-5. Acoustic characteristics (if audio present): prosody, pitch contour, vocal fluency, pauses.
+MEDIA PROVIDED: ${mediaTypeDesc}
+DESCRIPTION: ${description}
+${clientMetrics && Object.keys(clientMetrics).length > 0 ? `CLIENT-EXTRACTED METRICS: ${JSON.stringify(clientMetrics)}` : ''}
 
-Return ONLY a valid JSON object strictly following this schema (no markdown, no backticks, no wrapping text):
+TASK: Analyse the provided media (images, video frames, and/or audio) for indicators of these five neurodevelopmental conditions:
+1. ASD (Autism Spectrum Disorder) — social communication, eye contact, repetitive movements, sensory responses
+2. ADHD — hyperactivity, inattention, impulsivity, motor regulation
+3. Dyslexia — reading-related speech patterns, phonological markers
+4. DLD (Developmental Language Disorder) — vocabulary, sentence structure, fluency, pauses, word-finding
+5. Tourette Syndrome / Tic Disorders — involuntary repetitive movements, vocal patterns, tic signatures
+
+ANALYSE CAREFULLY:
+- Eye contact stability and gaze patterns
+- Facial affect range and reciprocal smiling
+- Motor movements: repetitive, purposeful, or stereotyped
+- Social engagement and joint attention indicators
+- Speech prosody, rate, fluency, pause frequency (if audio present)
+- Any observable tic-like or involuntary movements
+
+Return ONLY a valid JSON object (no markdown fences, no extra text). Use EXACTLY this schema:
 {
-  "subject_name": "Multimodal Behavioral Assessment",
-  "risk_level": "Moderate",
-  "confidence": 84,
-  "behavior_score": 68,
-  "probabilities": {
-    "asd": 64,
-    "adhd": 38,
-    "tourette": 26,
-    "dld": 32
+  "probs": {
+    "asd": <integer 0-100>,
+    "adhd": <integer 0-100>,
+    "dyslexia": <integer 0-100>,
+    "dld": <integer 0-100>,
+    "tourette": <integer 0-100>
   },
-  "simple_metrics": {
-    "eye_contact": { "value": "32%", "label": "Reduced direct gaze stability", "severity": "warn" },
-    "emotion_response": { "value": "Constrained", "label": "Diminished reciprocal smiling", "severity": "warn" },
-    "speech_pattern": { "value": "Delayed", "label": "Atypical prosody / hesitation pauses", "severity": "danger" },
-    "repetitive_behavior": { "value": "Detected", "label": "Repetitive motor stereotypy observed", "severity": "warn" },
-    "social_engagement": { "value": "Sub-threshold", "label": "Limited social initiation", "severity": "warn" },
-    "response_latency": { "value": "2.4s", "label": "Mild orientation latency", "severity": "warn" }
+  "topKey": "<disorder_id with highest probability e.g. asd>",
+  "topProb": <decimal 0.0-1.0 e.g. 0.72>,
+  "riskLevel": "<one of: High Risk | Moderate Risk | Low-Moderate Risk | Low Risk>",
+  "riskColor": { "bg": "<hex color>", "color": "<hex color>" },
+  "confidence": <integer 70-95>,
+  "bp": {
+    "eyeContact": "<brief observed eye contact description>",
+    "motor": "<brief observed motor pattern description>",
+    "social": "<brief observed social engagement description>",
+    "speech": "<brief observed speech or vocal pattern description>"
   },
-  "behavior_details": {
-    "eye_contact_duration": "2.1s average duration",
-    "hand_movement": "Observed motor posturing or repetitive finger movements",
-    "social_response_time": "2.4s average latency",
-    "observations": [
-      { "text": "Specific observational finding from the media", "positive": false },
-      { "text": "Another specific behavioral finding", "positive": false },
-      { "text": "Preserved exploratory engagement or strength", "positive": true }
-    ]
-  },
-  "clinical_parameters": [
-    { "parameter": "Direct Gaze Reciprocity", "result": "Intermittent (32%)", "status": "high" },
-    { "parameter": "Facial Affect Range", "result": "Constrained Modulation", "status": "high" },
-    { "parameter": "Motor Stereotypies", "result": "Repetitive Patterns", "status": "detected" },
-    { "parameter": "Vocal Prosody & Rhythm", "result": "Monotone / Delayed", "status": "high" },
-    { "parameter": "Joint Attention Initiation", "result": "Sub-threshold", "status": "high" },
-    { "parameter": "Latency to Name Call", "result": "Extended (>2.0s)", "status": "high" },
-    { "parameter": "Object Exploration Style", "result": "Intensely Focused", "status": "detected" },
-    { "parameter": "Social Interaction Seeking", "result": "Infrequent", "status": "high" }
+  "observations": [
+    "<specific behavioural finding 1>",
+    "<specific behavioural finding 2>",
+    "<positive strength or preserved skill>"
   ],
-  "recommendation": "Detailed clinical evaluation recommendation...",
-  "explanation": "Thorough clinical interpretation synthesizing the visual and acoustic evidence..."
-}`;
+  "clinicalNotes": "<2-3 sentence clinical interpretation referencing specific observations from the media>",
+  "recommendation": "<specific actionable next step for this result>",
+  "analysedBy": "gemini-vision"
+}
+
+RULES:
+- probs values MUST be integers (72 not 0.72)
+- topProb MUST be a decimal (0.72 not 72)
+- riskColor: High Risk = {"bg":"#ffe5d9","color":"#c44b1b"}, Moderate Risk = {"bg":"#fff8e1","color":"#7a5c00"}, Low Risk = {"bg":"#dcfce7","color":"#166534"}
+- If no actual media images are attached (text description only), base analysis on the fileDesc and clientMetrics
+- Be specific — reference what you actually observe in the media, not generic descriptions`
 
         const parts = [{ text: promptText }];
 
@@ -1812,14 +1818,57 @@ Return ONLY a valid JSON object strictly following this schema (no markdown, no 
           }
         });
 
-        const text = response.text?.trim() || '';
-        const parsed = JSON.parse(text);
-        if (!parsed.disorder_risks && parsed.probabilities) {
-          parsed.disorder_risks = parsed.probabilities;
+        const rawText = response.text?.trim() || '';
+        // Strip any accidental markdown fences Gemini sometimes adds
+        const cleanText = rawText.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/,'').trim();
+        const parsed = JSON.parse(cleanText);
+
+        // Normalise: ensure probs is always a 0-100 integer map
+        if (!parsed.probs && parsed.probabilities) {
+          parsed.probs = parsed.probabilities;
         }
-        if (!parsed.observed_signals && parsed.behavior_details?.observations) {
-          parsed.observed_signals = parsed.behavior_details.observations.map(o => typeof o === 'string' ? o : o.text);
+        if (parsed.probs) {
+          for (const k of Object.keys(parsed.probs)) {
+            const v = parsed.probs[k];
+            // Convert decimal (0.72) to integer (72) if needed
+            parsed.probs[k] = v <= 1.0 ? Math.round(v * 100) : Math.round(v);
+          }
         }
+        // Ensure topKey + topProb
+        if (!parsed.topKey && parsed.probs) {
+          const top = Object.entries(parsed.probs).sort((a,b) => b[1]-a[1])[0];
+          parsed.topKey = top[0];
+          parsed.topProb = top[1] / 100;
+        } else if (parsed.topProb > 1.0) {
+          parsed.topProb = parsed.topProb / 100;
+        }
+        // Ensure riskLevel + riskColor
+        if (!parsed.riskLevel) {
+          const p = (parsed.topProb || 0) * 100;
+          parsed.riskLevel = p > 75 ? 'High Risk' : p > 50 ? 'Moderate Risk' : p > 30 ? 'Low-Moderate Risk' : 'Low Risk';
+        }
+        if (!parsed.riskColor) {
+          const rl = parsed.riskLevel || '';
+          parsed.riskColor = rl.includes('High') ? {bg:'#ffe5d9',color:'#c44b1b'}
+            : rl.includes('Moderate') ? {bg:'#fff8e1',color:'#7a5c00'}
+            : {bg:'#dcfce7',color:'#166534'};
+        }
+        // Ensure bp (behaviour profile)
+        if (!parsed.bp) {
+          parsed.bp = {
+            eyeContact: parsed.observations?.[0] || 'Assessed from media',
+            motor: parsed.observations?.[1] || 'Assessed from media',
+            social: parsed.observations?.[2] || 'Assessed from media',
+            speech: parsed.clinicalNotes || 'Assessed from media'
+          };
+        }
+        // Add media counts from request
+        parsed.mediaCount = totalFiles;
+        parsed.imgCount = imgCount;
+        parsed.vidCount = vidCount;
+        parsed.audCount = audCount;
+        parsed.selectedDisorder = options.selectedDisorder || 'all';
+        parsed.analysedBy = 'gemini-vision';
         return res.json(parsed);
       } catch (geminiErr) {
         console.warn('Gemini multimodal analysis error, activating dynamic clinical synthesis engine:', geminiErr.message);
