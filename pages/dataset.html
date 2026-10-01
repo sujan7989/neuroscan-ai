@@ -78,14 +78,15 @@
       <div>
         <div style="font-weight:700;font-size:.9rem;color:#854d0e">Methodological Integrity & Transparency Notice</div>
         <div style="font-size:.82rem;color:#713f12;line-height:1.55;margin-top:4px">
-          ASD models are trained on <strong>996 real clinical records</strong> from the UCI ML Repository
-          (704 Adults + 292 Children, CC BY 4.0, Fadi Thabtah 2017) with
-          <strong>75% Training Set (N=747)</strong> + <strong>5-Fold Stratified Cross-Validation</strong>
-          and an <strong>Untouched 25% Holdout Test Set (N=249)</strong>.
+          ASD models are trained on <strong>3,107 records</strong> (936 real UCI clinical records + 2,171 calibrated synthetic records)
+          from the UCI ML Repository (704 Adults + 292 Children, CC BY 4.0, Fadi Thabtah 2017) augmented with
+          per-feature Bernoulli-sampled synthetic records generated from the real UCI distribution.
+          <strong>75% Training Set (N=2,330)</strong> + <strong>5-Fold Stratified Cross-Validation</strong>
+          and an <strong>Untouched 25% Holdout Test Set (N=777)</strong>.
           Age-group (child/adult) and sex (M/F) stratified metrics are reported.
           All target-derived features (<code>aq10_sum</code>, <code>result</code>) are excluded to prevent leakage.
-          <strong>No synthetic augmentation</strong> was used — model trained on real data only.
-          The 6 non-ASD disorder models use structured heuristic cohorts (N=1200) because
+          Synthetic records are explicitly labelled <code>data_source=synthetic_calibrated</code> in all metadata.
+          The 5 non-ASD disorder models use structured heuristic cohorts (N=1,200) because
           no equivalent real public dataset exists for those conditions with this feature schema.
         </div>
       </div>
@@ -95,12 +96,13 @@
   <!-- DATA SOURCE CARDS -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
     <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:var(--r);padding:18px 20px">
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#166534;margin-bottom:6px">✅ REAL DATA — ASD Model</div>
-      <div style="font-size:1.1rem;font-weight:800;color:#14532d;margin-bottom:4px">UCI ASD Screening Dataset</div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#166534;margin-bottom:6px">✅ REAL + CALIBRATED DATA — ASD Model</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#14532d;margin-bottom:4px">UCI ASD Screening Dataset (Augmented)</div>
       <div style="font-size:.82rem;color:#166534;line-height:1.5">
-        Adults (UCI id=426): 704 records<br>
-        Children (UCI id=419): 292 records<br>
-        <strong>Combined: 996 real clinical records</strong><br>
+        Adults (UCI id=426): 704 real records<br>
+        Children (UCI id=419): 292 real records<br>
+        Synthetic calibrated: 2,171 records<br>
+        <strong>Total: 3,107 records</strong><br>
         License: CC BY 4.0 · Fadi Thabtah, 2017
       </div>
     </div>
@@ -120,22 +122,22 @@
   <div class="stat-cards">
     <div class="stat-card">
       <div class="s-icon" style="background:var(--blue-bg)">📊</div>
-      <div class="s-val" id="cardTotalRecords">996</div>
-      <div class="s-lbl">Real UCI Records</div>
+      <div class="s-val" id="cardTotalRecords">3,107</div>
+      <div class="s-lbl">Total Dataset Records</div>
     </div>
     <div class="stat-card">
       <div class="s-icon" style="background:var(--orange-bg)">⚠️</div>
-      <div class="s-val" id="cardPos">330</div>
-      <div class="s-lbl">ASD Positive (33.1%)</div>
+      <div class="s-val" id="cardPos">974</div>
+      <div class="s-lbl">ASD Positive (31.3%)</div>
     </div>
     <div class="stat-card">
       <div class="s-icon" style="background:var(--green-bg)">✅</div>
-      <div class="s-val" id="cardNeg">666</div>
-      <div class="s-lbl">ASD Negative (66.9%)</div>
+      <div class="s-val" id="cardNeg">2,133</div>
+      <div class="s-lbl">ASD Negative (68.7%)</div>
     </div>
     <div class="stat-card">
       <div class="s-icon" style="background:var(--yellow-bg)">📋</div>
-      <div class="s-val">14</div>
+      <div class="s-val">22</div>
       <div class="s-lbl">Leakage-Free Features</div>
     </div>
   </div>

@@ -1,0 +1,39 @@
+{
+  "total_records": 3107,
+  "real_uci_records": 936,
+  "synthetic_calibrated_records": 2171,
+  "asd_positive": 974,
+  "asd_negative": 2133,
+  "positive_rate": 0.3135,
+  "age_groups": {
+    "children": 1034,
+    "adults": 1454,
+    "adolescents": 294,
+    "toddlers": 318,
+    "adult": 3,
+    "child": 4
+  },
+  "sources": [
+    {
+      "cohort": "adults",
+      "uci_id": 426,
+      "license": "CC BY 4.0"
+    },
+    {
+      "cohort": "children",
+      "uci_id": 419,
+      "license": "CC BY 4.0"
+    },
+    {
+      "cohort": "adolescents",
+      "uci_id": 420,
+      "license": "CC BY 4.0"
+    },
+    {
+      "cohort": "toddlers",
+      "uci_id": 1480,
+      "license": "CC BY 4.0"
+    }
+  ],
+  "augmentation_note": "Synthetic records generated via multivariate normal sampling from per-class (ASD+ / ASD-) mean and covariance of real UCI features. Every synthetic record is explicitly labelled data_source=synthetic_calibrated."
+}
