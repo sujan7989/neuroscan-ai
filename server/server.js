@@ -822,10 +822,10 @@ app.get('/api/ml/metrics', async (_req, res) => {
     let multiMetrics = null;
 
     if (fs.existsSync(asdMetricsPath)) {
-      asdMetrics = JSON.parse(fs.readFileSync(asdMetricsPath, 'utf-8'));
+      asdMetrics = JSON.parse(fs.readFileSync(asdMetricsPath, 'utf-8').replace(/^\uFEFF/, ''));
     }
     if (fs.existsSync(multiMetricsPath)) {
-      multiMetrics = JSON.parse(fs.readFileSync(multiMetricsPath, 'utf-8'));
+      multiMetrics = JSON.parse(fs.readFileSync(multiMetricsPath, 'utf-8').replace(/^\uFEFF/, ''));
     }
 
     res.json({
