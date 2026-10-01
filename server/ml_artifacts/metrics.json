@@ -1,943 +1,943 @@
-﻿{
-    "model_suite":  "NeuroScan AI ASD Screening ML Suite",
-    "status":  "RESEARCH_PROTOTYPE",
-    "is_experimental":  true,
-    "is_validated_clinical_model":  false,
-    "dataset_info":  {
-                         "dataset_name":  "UCI ASD Screening Dataset (Adults + Children combined)",
-                         "sources":  [
-                                         {
-                                             "records":  704,
-                                             "name":  "UCI ASD Adults",
-                                             "license":  "CC BY 4.0",
-                                             "uci_id":  426
-                                         },
-                                         {
-                                             "records":  292,
-                                             "name":  "UCI ASD Children",
-                                             "license":  "CC BY 4.0",
-                                             "uci_id":  419
-                                         },
-                                         {
-                                             "records":  2171,
-                                             "name":  "Synthetic Calibrated",
-                                             "license":  "Generated from UCI distributions",
-                                             "uci_id":  null
-                                         }
-                                     ],
-                         "citation":  "Thabtah, F. (2017). UCI ML Repository. CC BY 4.0.",
-                         "dataset_sha256":  "514627933b9a262ffef5dfda0fb47eebc5e799be99fba23d16742c753140fcab",
-                         "total_real_records":  936,
-                         "total_records":  3107,
-                         "positive_asd":  327,
-                         "negative_asd":  662,
-                         "positive_rate":  0.3306,
-                         "age_groups":  {
-                                            "adult":  681,
-                                            "adolescent":  18,
-                                            "child":  290
-                                        },
-                         "sex_distribution":  {
-                                                  "asd_positive":  {
-                                                                       "m":  186,
-                                                                       "f":  141
-                                                                   },
-                                                  "asd_negative":  {
-                                                                       "m":  383,
-                                                                       "f":  279
-                                                                   }
-                                              },
-                         "age_range":  [
-                                           4,
-                                           64
-                                       ],
-                         "training_records":  2330,
-                         "test_records":  777,
-                         "train_test_split":  "75% train / 25% test (stratified)",
-                         "features":  [
-                                          "A1_Score",
-                                          "A2_Score",
-                                          "A3_Score",
-                                          "A4_Score",
-                                          "A5_Score",
-                                          "A6_Score",
-                                          "A7_Score",
-                                          "A8_Score",
-                                          "A9_Score",
-                                          "A10_Score",
-                                          "age",
-                                          "gender_num",
-                                          "jaundice_num",
-                                          "austim_num",
-                                          "arm_flapping",
-                                          "head_banging",
-                                          "spinning",
-                                          "rocking",
-                                          "gaze_avoidance",
-                                          "echolalia",
-                                          "hypo_gaze",
-                                          "social_isolate"
-                                      ],
-                         "n_features":  22,
-                         "target_variable":  "Class_ASD",
-                         "video_features":  [
-                                                "arm_flapping",
-                                                "head_banging",
-                                                "spinning",
-                                                "rocking",
-                                                "gaze_avoidance",
-                                                "echolalia",
-                                                "hypo_gaze",
-                                                "social_isolate"
-                                            ],
-                         "video_feature_source":  "SSBD behavioral correlations (Rajagopalan et al. 2013, ICCV)",
-                         "video_feature_method":  "AQ-10 proxy derivation using published ASD behavioral phenotype correlations",
-                         "augmentation_note":  "NO synthetic augmentation — 989 real UCI records + SSBD-derived video features",
-                         "synthetic_calibrated_records":  2171,
-                         "augmentation_method":  "Per-feature Bernoulli sampling from real UCI distribution (seed=2024)",
-                         "dataset_note":  "936 real UCI ASD screening records (Adults 704 + Children 292) + 2171 calibrated synthetic records. All records labelled with data_source field."
-                     },
-    "leakage_prevention":  [
-                               "result column (AQ-10 raw sum) excluded from feature matrix",
-                               "aq10_sum excluded from feature matrix",
-                               "Class_ASD label excluded from feature matrix",
-                               "StandardScaler fit strictly within CV training folds",
-                               "Holdout test set isolated before any model fitting"
-                           ],
-    "ensemble_weights":  {
-                             "random_forest":  0.4,
-                             "gradient_boosting":  0.4,
-                             "logistic_regression":  0.2
-                         },
-    "metrics":  {
-                    "logistic_regression":  {
-                                                "model_name":  "logistic_regression",
-                                                "cross_validation_folds":  {
-                                                                               "fold_1":  {
-                                                                                              "n":  149,
-                                                                                              "accuracy":  1.0,
-                                                                                              "sensitivity":  1.0,
-                                                                                              "specificity":  1.0,
-                                                                                              "f1_score":  1.0,
-                                                                                              "balanced_accuracy":  1.0,
-                                                                                              "roc_auc":  1.0,
-                                                                                              "pr_auc":  1.0,
-                                                                                              "brier_score":  0.0072,
-                                                                                              "confusion_matrix":  {
-                                                                                                                       "TN":  100,
-                                                                                                                       "FP":  0,
-                                                                                                                       "FN":  0,
-                                                                                                                       "TP":  49
-                                                                                                                   }
-                                                                                          },
-                                                                               "fold_2":  {
-                                                                                              "n":  148,
-                                                                                              "accuracy":  1.0,
-                                                                                              "sensitivity":  1.0,
-                                                                                              "specificity":  1.0,
-                                                                                              "f1_score":  1.0,
-                                                                                              "balanced_accuracy":  1.0,
-                                                                                              "roc_auc":  1.0,
-                                                                                              "pr_auc":  1.0,
-                                                                                              "brier_score":  0.0059,
-                                                                                              "confusion_matrix":  {
-                                                                                                                       "TN":  99,
-                                                                                                                       "FP":  0,
-                                                                                                                       "FN":  0,
-                                                                                                                       "TP":  49
-                                                                                                                   }
-                                                                                          },
-                                                                               "fold_3":  {
-                                                                                              "n":  148,
-                                                                                              "accuracy":  1.0,
-                                                                                              "sensitivity":  1.0,
-                                                                                              "specificity":  1.0,
-                                                                                              "f1_score":  1.0,
-                                                                                              "balanced_accuracy":  1.0,
-                                                                                              "roc_auc":  1.0,
-                                                                                              "pr_auc":  1.0,
-                                                                                              "brier_score":  0.0048,
-                                                                                              "confusion_matrix":  {
-                                                                                                                       "TN":  99,
-                                                                                                                       "FP":  0,
-                                                                                                                       "FN":  0,
-                                                                                                                       "TP":  49
-                                                                                                                   }
-                                                                                          },
-                                                                               "fold_4":  {
-                                                                                              "n":  148,
-                                                                                              "accuracy":  1.0,
-                                                                                              "sensitivity":  1.0,
-                                                                                              "specificity":  1.0,
-                                                                                              "f1_score":  1.0,
-                                                                                              "balanced_accuracy":  1.0,
-                                                                                              "roc_auc":  1.0,
-                                                                                              "pr_auc":  1.0,
-                                                                                              "brier_score":  0.0061,
-                                                                                              "confusion_matrix":  {
-                                                                                                                       "TN":  99,
-                                                                                                                       "FP":  0,
-                                                                                                                       "FN":  0,
-                                                                                                                       "TP":  49
-                                                                                                                   }
-                                                                                          },
-                                                                               "fold_5":  {
-                                                                                              "n":  148,
-                                                                                              "accuracy":  1.0,
-                                                                                              "sensitivity":  1.0,
-                                                                                              "specificity":  1.0,
-                                                                                              "f1_score":  1.0,
-                                                                                              "balanced_accuracy":  1.0,
-                                                                                              "roc_auc":  1.0,
-                                                                                              "pr_auc":  1.0,
-                                                                                              "brier_score":  0.0076,
-                                                                                              "confusion_matrix":  {
-                                                                                                                       "TN":  99,
-                                                                                                                       "FP":  0,
-                                                                                                                       "FN":  0,
-                                                                                                                       "TP":  49
-                                                                                                                   }
-                                                                                          }
-                                                                           },
-                                                "cv_metrics_summary":  {
-                                                                           "mean_accuracy":  1.0,
-                                                                           "std_accuracy":  0.0,
-                                                                           "mean_sensitivity":  1.0,
-                                                                           "mean_specificity":  1.0,
-                                                                           "mean_f1_score":  1.0,
-                                                                           "mean_balanced_accuracy":  1.0,
-                                                                           "mean_roc_auc":  1.0,
-                                                                           "mean_pr_auc":  1.0,
-                                                                           "mean_brier_score":  0.0063,
-                                                                           "mean_ece":  0.0345
-                                                                       },
-                                                "test_metrics":  {
-                                                                     "n":  248,
-                                                                     "accuracy":  1.0,
-                                                                     "sensitivity":  1.0,
-                                                                     "specificity":  1.0,
-                                                                     "f1_score":  1.0,
-                                                                     "balanced_accuracy":  1.0,
-                                                                     "roc_auc":  1.0,
-                                                                     "pr_auc":  1.0,
-                                                                     "brier_score":  0.0037,
-                                                                     "ece":  0.0254,
-                                                                     "confusion_matrix":  {
-                                                                                              "TN":  166,
-                                                                                              "FP":  0,
-                                                                                              "FN":  0,
-                                                                                              "TP":  82
-                                                                                          },
-                                                                     "bootstrap_95ci":  {
-                                                                                            "accuracy_95ci":  {
-                                                                                                                  "ci_lower_95":  1.0,
-                                                                                                                  "ci_upper_95":  1.0
-                                                                                                              },
-                                                                                            "roc_auc_95ci":  {
-                                                                                                                 "ci_lower_95":  1.0,
-                                                                                                                 "ci_upper_95":  1.0
-                                                                                                             },
-                                                                                            "pr_auc_95ci":  {
-                                                                                                                "ci_lower_95":  1.0,
-                                                                                                                "ci_upper_95":  1.0
-                                                                                                            },
-                                                                                            "brier_score_95ci":  {
-                                                                                                                     "ci_lower_95":  0.0025,
-                                                                                                                     "ci_upper_95":  0.005
-                                                                                                                 }
-                                                                                        }
-                                                                 },
-                                                "age_stratified_metrics":  {
-                                                                               "child":  {
-                                                                                             "subgroup":  "child",
-                                                                                             "n":  75,
-                                                                                             "positive_rate":  0.5333,
-                                                                                             "accuracy":  1.0,
-                                                                                             "sensitivity":  1.0,
-                                                                                             "specificity":  1.0,
-                                                                                             "roc_auc":  1.0,
-                                                                                             "f1_score":  1.0
-                                                                                         },
-                                                                               "adult":  {
-                                                                                             "subgroup":  "adult",
-                                                                                             "n":  168,
-                                                                                             "positive_rate":  0.2381,
-                                                                                             "accuracy":  1.0,
-                                                                                             "sensitivity":  1.0,
-                                                                                             "specificity":  1.0,
-                                                                                             "roc_auc":  1.0,
-                                                                                             "f1_score":  1.0
-                                                                                         }
-                                                                           },
-                                                "sex_stratified_metrics":  {
-                                                                               "m":  {
-                                                                                         "subgroup":  "m",
-                                                                                         "n":  147,
-                                                                                         "positive_rate":  0.3605,
-                                                                                         "accuracy":  1.0,
-                                                                                         "sensitivity":  1.0,
-                                                                                         "specificity":  1.0,
-                                                                                         "roc_auc":  1.0,
-                                                                                         "f1_score":  1.0
-                                                                                     },
-                                                                               "f":  {
-                                                                                         "subgroup":  "f",
-                                                                                         "n":  101,
-                                                                                         "positive_rate":  0.2871,
-                                                                                         "accuracy":  1.0,
-                                                                                         "sensitivity":  1.0,
-                                                                                         "specificity":  1.0,
-                                                                                         "roc_auc":  1.0,
-                                                                                         "f1_score":  1.0
-                                                                                     }
-                                                                           },
-                                                "feature_importance":  {
-                                                                           "A1_Score":  0.9608,
-                                                                           "A2_Score":  0.5358,
-                                                                           "A3_Score":  1.0437,
-                                                                           "A4_Score":  1.056,
-                                                                           "A5_Score":  1.3745,
-                                                                           "A6_Score":  1.185,
-                                                                           "A7_Score":  0.2603,
-                                                                           "A8_Score":  1.8692,
-                                                                           "A9_Score":  0.8519,
-                                                                           "A10_Score":  1.6716,
-                                                                           "age":  -0.0392,
-                                                                           "gender_num":  -0.2105,
-                                                                           "jaundice_num":  -0.0757,
-                                                                           "austim_num":  0.0,
-                                                                           "arm_flapping":  0.5222,
-                                                                           "head_banging":  0.7074,
-                                                                           "spinning":  1.0292,
-                                                                           "rocking":  0.7051,
-                                                                           "gaze_avoidance":  1.0384,
-                                                                           "echolalia":  1.369,
-                                                                           "hypo_gaze":  0.5855,
-                                                                           "social_isolate":  1.0491
-                                                                       },
-                                                "artifact_path":  "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\logistic_regression.joblib"
-                                            },
-                    "random_forest":  {
-                                          "model_name":  "random_forest",
-                                          "cross_validation_folds":  {
-                                                                         "fold_1":  {
-                                                                                        "n":  149,
-                                                                                        "accuracy":  0.9329,
-                                                                                        "sensitivity":  0.9184,
-                                                                                        "specificity":  0.94,
-                                                                                        "f1_score":  0.9,
-                                                                                        "balanced_accuracy":  0.9292,
-                                                                                        "roc_auc":  0.9865,
-                                                                                        "pr_auc":  0.9766,
-                                                                                        "brier_score":  0.0482,
-                                                                                        "confusion_matrix":  {
-                                                                                                                 "TN":  94,
-                                                                                                                 "FP":  6,
-                                                                                                                 "FN":  4,
-                                                                                                                 "TP":  45
-                                                                                                             }
-                                                                                    },
-                                                                         "fold_2":  {
-                                                                                        "n":  148,
-                                                                                        "accuracy":  0.9054,
-                                                                                        "sensitivity":  0.8776,
-                                                                                        "specificity":  0.9192,
-                                                                                        "f1_score":  0.86,
-                                                                                        "balanced_accuracy":  0.8984,
-                                                                                        "roc_auc":  0.9885,
-                                                                                        "pr_auc":  0.979,
-                                                                                        "brier_score":  0.0469,
-                                                                                        "confusion_matrix":  {
-                                                                                                                 "TN":  91,
-                                                                                                                 "FP":  8,
-                                                                                                                 "FN":  6,
-                                                                                                                 "TP":  43
-                                                                                                             }
-                                                                                    },
-                                                                         "fold_3":  {
-                                                                                        "n":  148,
-                                                                                        "accuracy":  1.0,
-                                                                                        "sensitivity":  1.0,
-                                                                                        "specificity":  1.0,
-                                                                                        "f1_score":  1.0,
-                                                                                        "balanced_accuracy":  1.0,
-                                                                                        "roc_auc":  1.0,
-                                                                                        "pr_auc":  1.0,
-                                                                                        "brier_score":  0.0307,
-                                                                                        "confusion_matrix":  {
-                                                                                                                 "TN":  99,
-                                                                                                                 "FP":  0,
-                                                                                                                 "FN":  0,
-                                                                                                                 "TP":  49
-                                                                                                             }
-                                                                                    },
-                                                                         "fold_4":  {
-                                                                                        "n":  148,
-                                                                                        "accuracy":  0.9459,
-                                                                                        "sensitivity":  0.9592,
-                                                                                        "specificity":  0.9394,
-                                                                                        "f1_score":  0.9216,
-                                                                                        "balanced_accuracy":  0.9493,
-                                                                                        "roc_auc":  0.9915,
-                                                                                        "pr_auc":  0.983,
-                                                                                        "brier_score":  0.0462,
-                                                                                        "confusion_matrix":  {
-                                                                                                                 "TN":  93,
-                                                                                                                 "FP":  6,
-                                                                                                                 "FN":  2,
-                                                                                                                 "TP":  47
-                                                                                                             }
-                                                                                    },
-                                                                         "fold_5":  {
-                                                                                        "n":  148,
-                                                                                        "accuracy":  0.9324,
-                                                                                        "sensitivity":  0.8776,
-                                                                                        "specificity":  0.9596,
-                                                                                        "f1_score":  0.8958,
-                                                                                        "balanced_accuracy":  0.9186,
-                                                                                        "roc_auc":  0.9868,
-                                                                                        "pr_auc":  0.9751,
-                                                                                        "brier_score":  0.0537,
-                                                                                        "confusion_matrix":  {
-                                                                                                                 "TN":  95,
-                                                                                                                 "FP":  4,
-                                                                                                                 "FN":  6,
-                                                                                                                 "TP":  43
-                                                                                                             }
-                                                                                    }
-                                                                     },
-                                          "cv_metrics_summary":  {
-                                                                     "mean_accuracy":  0.9433,
-                                                                     "std_accuracy":  0.0313,
-                                                                     "mean_sensitivity":  0.9265,
-                                                                     "mean_specificity":  0.9516,
-                                                                     "mean_f1_score":  0.9155,
-                                                                     "mean_balanced_accuracy":  0.9391,
-                                                                     "mean_roc_auc":  0.9907,
-                                                                     "mean_pr_auc":  0.9827,
-                                                                     "mean_brier_score":  0.0451,
-                                                                     "mean_ece":  0.0857
-                                                                 },
-                                          "test_metrics":  {
-                                                               "n":  248,
-                                                               "accuracy":  0.9476,
-                                                               "sensitivity":  0.9024,
-                                                               "specificity":  0.9699,
-                                                               "f1_score":  0.9193,
-                                                               "balanced_accuracy":  0.9362,
-                                                               "roc_auc":  0.9946,
-                                                               "pr_auc":  0.9896,
-                                                               "brier_score":  0.0384,
-                                                               "ece":  0.0664,
-                                                               "confusion_matrix":  {
-                                                                                        "TN":  161,
-                                                                                        "FP":  5,
-                                                                                        "FN":  8,
-                                                                                        "TP":  74
-                                                                                    },
-                                                               "bootstrap_95ci":  {
-                                                                                      "accuracy_95ci":  {
-                                                                                                            "ci_lower_95":  0.9194,
-                                                                                                            "ci_upper_95":  0.9718
-                                                                                                        },
-                                                                                      "roc_auc_95ci":  {
-                                                                                                           "ci_lower_95":  0.9893,
-                                                                                                           "ci_upper_95":  0.9984
-                                                                                                       },
-                                                                                      "pr_auc_95ci":  {
-                                                                                                          "ci_lower_95":  0.9776,
-                                                                                                          "ci_upper_95":  0.997
-                                                                                                      },
-                                                                                      "brier_score_95ci":  {
-                                                                                                               "ci_lower_95":  0.0289,
-                                                                                                               "ci_upper_95":  0.0477
-                                                                                                           }
-                                                                                  }
-                                                           },
-                                          "age_stratified_metrics":  {
-                                                                         "child":  {
-                                                                                       "subgroup":  "child",
-                                                                                       "n":  75,
-                                                                                       "positive_rate":  0.5333,
-                                                                                       "accuracy":  0.92,
-                                                                                       "sensitivity":  0.9,
-                                                                                       "specificity":  0.9429,
-                                                                                       "roc_auc":  0.985,
-                                                                                       "f1_score":  0.9231
-                                                                                   },
-                                                                         "adult":  {
-                                                                                       "subgroup":  "adult",
-                                                                                       "n":  168,
-                                                                                       "positive_rate":  0.2381,
-                                                                                       "accuracy":  0.9643,
-                                                                                       "sensitivity":  0.925,
-                                                                                       "specificity":  0.9766,
-                                                                                       "roc_auc":  0.9971,
-                                                                                       "f1_score":  0.925
-                                                                                   }
-                                                                     },
-                                          "sex_stratified_metrics":  {
-                                                                         "m":  {
-                                                                                   "subgroup":  "m",
-                                                                                   "n":  147,
-                                                                                   "positive_rate":  0.3605,
-                                                                                   "accuracy":  0.9252,
-                                                                                   "sensitivity":  0.8679,
-                                                                                   "specificity":  0.9574,
-                                                                                   "roc_auc":  0.9906,
-                                                                                   "f1_score":  0.8932
-                                                                               },
-                                                                         "f":  {
-                                                                                   "subgroup":  "f",
-                                                                                   "n":  101,
-                                                                                   "positive_rate":  0.2871,
-                                                                                   "accuracy":  0.9802,
-                                                                                   "sensitivity":  0.9655,
-                                                                                   "specificity":  0.9861,
-                                                                                   "roc_auc":  0.999,
-                                                                                   "f1_score":  0.9655
-                                                                               }
-                                                                     },
-                                          "feature_importance":  {
-                                                                     "A1_Score":  0.0177,
-                                                                     "A2_Score":  0.0145,
-                                                                     "A3_Score":  0.0299,
-                                                                     "A4_Score":  0.0376,
-                                                                     "A5_Score":  0.0893,
-                                                                     "A6_Score":  0.0853,
-                                                                     "A7_Score":  0.0049,
-                                                                     "A8_Score":  0.0258,
-                                                                     "A9_Score":  0.1019,
-                                                                     "A10_Score":  0.0238,
-                                                                     "age":  0.0166,
-                                                                     "gender_num":  0.004,
-                                                                     "jaundice_num":  0.0035,
-                                                                     "austim_num":  0.0,
-                                                                     "arm_flapping":  0.0782,
-                                                                     "head_banging":  0.0677,
-                                                                     "spinning":  0.0487,
-                                                                     "rocking":  0.035,
-                                                                     "gaze_avoidance":  0.0412,
-                                                                     "echolalia":  0.1084,
-                                                                     "hypo_gaze":  0.0937,
-                                                                     "social_isolate":  0.0725
-                                                                 },
-                                          "artifact_path":  "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\random_forest.joblib"
-                                      },
-                    "gradient_boosting":  {
-                                              "model_name":  "gradient_boosting",
-                                              "cross_validation_folds":  {
-                                                                             "fold_1":  {
-                                                                                            "n":  149,
-                                                                                            "accuracy":  0.9463,
-                                                                                            "sensitivity":  0.898,
-                                                                                            "specificity":  0.97,
-                                                                                            "f1_score":  0.9167,
-                                                                                            "balanced_accuracy":  0.934,
-                                                                                            "roc_auc":  0.9939,
-                                                                                            "pr_auc":  0.9885,
-                                                                                            "brier_score":  0.0318,
-                                                                                            "confusion_matrix":  {
-                                                                                                                     "TN":  97,
-                                                                                                                     "FP":  3,
-                                                                                                                     "FN":  5,
-                                                                                                                     "TP":  44
-                                                                                                                 }
-                                                                                        },
-                                                                             "fold_2":  {
-                                                                                            "n":  148,
-                                                                                            "accuracy":  0.9527,
-                                                                                            "sensitivity":  0.898,
-                                                                                            "specificity":  0.9798,
-                                                                                            "f1_score":  0.9263,
-                                                                                            "balanced_accuracy":  0.9389,
-                                                                                            "roc_auc":  0.9895,
-                                                                                            "pr_auc":  0.9809,
-                                                                                            "brier_score":  0.0379,
-                                                                                            "confusion_matrix":  {
-                                                                                                                     "TN":  97,
-                                                                                                                     "FP":  2,
-                                                                                                                     "FN":  5,
-                                                                                                                     "TP":  44
-                                                                                                                 }
-                                                                                        },
-                                                                             "fold_3":  {
-                                                                                            "n":  148,
-                                                                                            "accuracy":  1.0,
-                                                                                            "sensitivity":  1.0,
-                                                                                            "specificity":  1.0,
-                                                                                            "f1_score":  1.0,
-                                                                                            "balanced_accuracy":  1.0,
-                                                                                            "roc_auc":  1.0,
-                                                                                            "pr_auc":  1.0,
-                                                                                            "brier_score":  0.0189,
-                                                                                            "confusion_matrix":  {
-                                                                                                                     "TN":  99,
-                                                                                                                     "FP":  0,
-                                                                                                                     "FN":  0,
-                                                                                                                     "TP":  49
-                                                                                                                 }
-                                                                                        },
-                                                                             "fold_4":  {
-                                                                                            "n":  148,
-                                                                                            "accuracy":  0.9595,
-                                                                                            "sensitivity":  0.9592,
-                                                                                            "specificity":  0.9596,
-                                                                                            "f1_score":  0.94,
-                                                                                            "balanced_accuracy":  0.9594,
-                                                                                            "roc_auc":  0.9957,
-                                                                                            "pr_auc":  0.9915,
-                                                                                            "brier_score":  0.0285,
-                                                                                            "confusion_matrix":  {
-                                                                                                                     "TN":  95,
-                                                                                                                     "FP":  4,
-                                                                                                                     "FN":  2,
-                                                                                                                     "TP":  47
-                                                                                                                 }
-                                                                                        },
-                                                                             "fold_5":  {
-                                                                                            "n":  148,
-                                                                                            "accuracy":  0.9189,
-                                                                                            "sensitivity":  0.7959,
-                                                                                            "specificity":  0.9798,
-                                                                                            "f1_score":  0.8667,
-                                                                                            "balanced_accuracy":  0.8879,
-                                                                                            "roc_auc":  0.9901,
-                                                                                            "pr_auc":  0.981,
-                                                                                            "brier_score":  0.044,
-                                                                                            "confusion_matrix":  {
-                                                                                                                     "TN":  97,
-                                                                                                                     "FP":  2,
-                                                                                                                     "FN":  10,
-                                                                                                                     "TP":  39
-                                                                                                                 }
-                                                                                        }
-                                                                         },
-                                              "cv_metrics_summary":  {
-                                                                         "mean_accuracy":  0.9555,
-                                                                         "std_accuracy":  0.0262,
-                                                                         "mean_sensitivity":  0.9102,
-                                                                         "mean_specificity":  0.9778,
-                                                                         "mean_f1_score":  0.9299,
-                                                                         "mean_balanced_accuracy":  0.944,
-                                                                         "mean_roc_auc":  0.9938,
-                                                                         "mean_pr_auc":  0.9884,
-                                                                         "mean_brier_score":  0.0322,
-                                                                         "mean_ece":  0.0568
-                                                                     },
-                                              "test_metrics":  {
-                                                                   "n":  248,
-                                                                   "accuracy":  0.9718,
-                                                                   "sensitivity":  0.9268,
-                                                                   "specificity":  0.994,
-                                                                   "f1_score":  0.956,
-                                                                   "balanced_accuracy":  0.9604,
-                                                                   "roc_auc":  0.9988,
-                                                                   "pr_auc":  0.9975,
-                                                                   "brier_score":  0.0242,
-                                                                   "ece":  0.0641,
-                                                                   "confusion_matrix":  {
-                                                                                            "TN":  165,
-                                                                                            "FP":  1,
-                                                                                            "FN":  6,
-                                                                                            "TP":  76
-                                                                                        },
-                                                                   "bootstrap_95ci":  {
-                                                                                          "accuracy_95ci":  {
-                                                                                                                "ci_lower_95":  0.9516,
-                                                                                                                "ci_upper_95":  0.9879
-                                                                                                            },
-                                                                                          "roc_auc_95ci":  {
-                                                                                                               "ci_lower_95":  0.9962,
-                                                                                                               "ci_upper_95":  1.0
-                                                                                                           },
-                                                                                          "pr_auc_95ci":  {
-                                                                                                              "ci_lower_95":  0.9926,
-                                                                                                              "ci_upper_95":  1.0
-                                                                                                          },
-                                                                                          "brier_score_95ci":  {
-                                                                                                                   "ci_lower_95":  0.016,
-                                                                                                                   "ci_upper_95":  0.0339
-                                                                                                               }
-                                                                                      }
-                                                               },
-                                              "age_stratified_metrics":  {
-                                                                             "child":  {
-                                                                                           "subgroup":  "child",
-                                                                                           "n":  75,
-                                                                                           "positive_rate":  0.5333,
-                                                                                           "accuracy":  0.96,
-                                                                                           "sensitivity":  0.925,
-                                                                                           "specificity":  1.0,
-                                                                                           "roc_auc":  0.9971,
-                                                                                           "f1_score":  0.961
-                                                                                       },
-                                                                             "adult":  {
-                                                                                           "subgroup":  "adult",
-                                                                                           "n":  168,
-                                                                                           "positive_rate":  0.2381,
-                                                                                           "accuracy":  0.9821,
-                                                                                           "sensitivity":  0.95,
-                                                                                           "specificity":  0.9922,
-                                                                                           "roc_auc":  0.9992,
-                                                                                           "f1_score":  0.962
-                                                                                       }
-                                                                         },
-                                              "sex_stratified_metrics":  {
-                                                                             "m":  {
-                                                                                       "subgroup":  "m",
-                                                                                       "n":  147,
-                                                                                       "positive_rate":  0.3605,
-                                                                                       "accuracy":  0.9592,
-                                                                                       "sensitivity":  0.9057,
-                                                                                       "specificity":  0.9894,
-                                                                                       "roc_auc":  0.9972,
-                                                                                       "f1_score":  0.9412
-                                                                                   },
-                                                                             "f":  {
-                                                                                       "subgroup":  "f",
-                                                                                       "n":  101,
-                                                                                       "positive_rate":  0.2871,
-                                                                                       "accuracy":  0.9901,
-                                                                                       "sensitivity":  0.9655,
-                                                                                       "specificity":  1.0,
-                                                                                       "roc_auc":  1.0,
-                                                                                       "f1_score":  0.9825
-                                                                                   }
-                                                                         },
-                                              "feature_importance":  {
-                                                                         "A1_Score":  0.0137,
-                                                                         "A2_Score":  0.0005,
-                                                                         "A3_Score":  0.0005,
-                                                                         "A4_Score":  0.0117,
-                                                                         "A5_Score":  0.0507,
-                                                                         "A6_Score":  0.0158,
-                                                                         "A7_Score":  0.0,
-                                                                         "A8_Score":  0.0423,
-                                                                         "A9_Score":  0.1405,
-                                                                         "A10_Score":  0.0212,
-                                                                         "age":  0.0038,
-                                                                         "gender_num":  0.001,
-                                                                         "jaundice_num":  0.0001,
-                                                                         "austim_num":  0.0,
-                                                                         "arm_flapping":  0.1516,
-                                                                         "head_banging":  0.0097,
-                                                                         "spinning":  0.0629,
-                                                                         "rocking":  0.0036,
-                                                                         "gaze_avoidance":  0.0541,
-                                                                         "echolalia":  0.2452,
-                                                                         "hypo_gaze":  0.0818,
-                                                                         "social_isolate":  0.0892
-                                                                     },
-                                              "artifact_path":  "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\gradient_boosting.joblib"
-                                          },
-                    "xgboost":  {
-                                    "model_name":  "xgboost",
-                                    "cross_validation_folds":  {
-                                                                   "fold_1":  {
-                                                                                  "n":  149,
-                                                                                  "accuracy":  0.9463,
-                                                                                  "sensitivity":  0.9592,
-                                                                                  "specificity":  0.94,
-                                                                                  "f1_score":  0.9216,
-                                                                                  "balanced_accuracy":  0.9496,
-                                                                                  "roc_auc":  0.9931,
-                                                                                  "pr_auc":  0.9865,
-                                                                                  "brier_score":  0.0377,
-                                                                                  "confusion_matrix":  {
-                                                                                                           "TN":  94,
-                                                                                                           "FP":  6,
-                                                                                                           "FN":  2,
-                                                                                                           "TP":  47
-                                                                                                       }
-                                                                              },
-                                                                   "fold_2":  {
-                                                                                  "n":  148,
-                                                                                  "accuracy":  0.9392,
-                                                                                  "sensitivity":  0.898,
-                                                                                  "specificity":  0.9596,
-                                                                                  "f1_score":  0.9072,
-                                                                                  "balanced_accuracy":  0.9288,
-                                                                                  "roc_auc":  0.9913,
-                                                                                  "pr_auc":  0.9843,
-                                                                                  "brier_score":  0.0384,
-                                                                                  "confusion_matrix":  {
-                                                                                                           "TN":  95,
-                                                                                                           "FP":  4,
-                                                                                                           "FN":  5,
-                                                                                                           "TP":  44
-                                                                                                       }
-                                                                              },
-                                                                   "fold_3":  {
-                                                                                  "n":  148,
-                                                                                  "accuracy":  0.973,
-                                                                                  "sensitivity":  1.0,
-                                                                                  "specificity":  0.9596,
-                                                                                  "f1_score":  0.9608,
-                                                                                  "balanced_accuracy":  0.9798,
-                                                                                  "roc_auc":  1.0,
-                                                                                  "pr_auc":  1.0,
-                                                                                  "brier_score":  0.0235,
-                                                                                  "confusion_matrix":  {
-                                                                                                           "TN":  95,
-                                                                                                           "FP":  4,
-                                                                                                           "FN":  0,
-                                                                                                           "TP":  49
-                                                                                                       }
-                                                                              },
-                                                                   "fold_4":  {
-                                                                                  "n":  148,
-                                                                                  "accuracy":  0.9662,
-                                                                                  "sensitivity":  1.0,
-                                                                                  "specificity":  0.9495,
-                                                                                  "f1_score":  0.9515,
-                                                                                  "balanced_accuracy":  0.9747,
-                                                                                  "roc_auc":  0.9973,
-                                                                                  "pr_auc":  0.9944,
-                                                                                  "brier_score":  0.0321,
-                                                                                  "confusion_matrix":  {
-                                                                                                           "TN":  94,
-                                                                                                           "FP":  5,
-                                                                                                           "FN":  0,
-                                                                                                           "TP":  49
-                                                                                                       }
-                                                                              },
-                                                                   "fold_5":  {
-                                                                                  "n":  148,
-                                                                                  "accuracy":  0.9595,
-                                                                                  "sensitivity":  0.9388,
-                                                                                  "specificity":  0.9697,
-                                                                                  "f1_score":  0.9388,
-                                                                                  "balanced_accuracy":  0.9542,
-                                                                                  "roc_auc":  0.9953,
-                                                                                  "pr_auc":  0.9905,
-                                                                                  "brier_score":  0.0334,
-                                                                                  "confusion_matrix":  {
-                                                                                                           "TN":  96,
-                                                                                                           "FP":  3,
-                                                                                                           "FN":  3,
-                                                                                                           "TP":  46
-                                                                                                       }
-                                                                              }
-                                                               },
-                                    "cv_metrics_summary":  {
-                                                               "mean_accuracy":  0.9568,
-                                                               "std_accuracy":  0.0125,
-                                                               "mean_sensitivity":  0.9592,
-                                                               "mean_specificity":  0.9557,
-                                                               "mean_f1_score":  0.936,
-                                                               "mean_balanced_accuracy":  0.9574,
-                                                               "mean_roc_auc":  0.9954,
-                                                               "mean_pr_auc":  0.9912,
-                                                               "mean_brier_score":  0.033,
-                                                               "mean_ece":  0.0696
-                                                           },
-                                    "test_metrics":  {
-                                                         "n":  248,
-                                                         "accuracy":  0.9718,
-                                                         "sensitivity":  0.9634,
-                                                         "specificity":  0.9759,
-                                                         "f1_score":  0.9576,
-                                                         "balanced_accuracy":  0.9697,
-                                                         "roc_auc":  0.9974,
-                                                         "pr_auc":  0.9947,
-                                                         "brier_score":  0.025,
-                                                         "ece":  0.052,
-                                                         "confusion_matrix":  {
-                                                                                  "TN":  162,
-                                                                                  "FP":  4,
-                                                                                  "FN":  3,
-                                                                                  "TP":  79
-                                                                              },
-                                                         "bootstrap_95ci":  {
-                                                                                "accuracy_95ci":  {
-                                                                                                      "ci_lower_95":  0.9495,
-                                                                                                      "ci_upper_95":  0.9919
-                                                                                                  },
-                                                                                "roc_auc_95ci":  {
-                                                                                                     "ci_lower_95":  0.9934,
-                                                                                                     "ci_upper_95":  0.9997
-                                                                                                 },
-                                                                                "pr_auc_95ci":  {
-                                                                                                    "ci_lower_95":  0.9853,
-                                                                                                    "ci_upper_95":  0.9994
-                                                                                                },
-                                                                                "brier_score_95ci":  {
-                                                                                                         "ci_lower_95":  0.0156,
-                                                                                                         "ci_upper_95":  0.0351
-                                                                                                     }
-                                                                            }
-                                                     },
-                                    "age_stratified_metrics":  {
-                                                                   "child":  {
-                                                                                 "subgroup":  "child",
-                                                                                 "n":  75,
-                                                                                 "positive_rate":  0.5333,
-                                                                                 "accuracy":  0.9467,
-                                                                                 "sensitivity":  0.95,
-                                                                                 "specificity":  0.9429,
-                                                                                 "roc_auc":  0.9936,
-                                                                                 "f1_score":  0.95
-                                                                             },
-                                                                   "adult":  {
-                                                                                 "subgroup":  "adult",
-                                                                                 "n":  168,
-                                                                                 "positive_rate":  0.2381,
-                                                                                 "accuracy":  0.9821,
-                                                                                 "sensitivity":  0.975,
-                                                                                 "specificity":  0.9844,
-                                                                                 "roc_auc":  0.9986,
-                                                                                 "f1_score":  0.963
-                                                                             }
-                                                               },
-                                    "sex_stratified_metrics":  {
-                                                                   "m":  {
-                                                                             "subgroup":  "m",
-                                                                             "n":  147,
-                                                                             "positive_rate":  0.3605,
-                                                                             "accuracy":  0.9592,
-                                                                             "sensitivity":  0.9623,
-                                                                             "specificity":  0.9574,
-                                                                             "roc_auc":  0.9944,
-                                                                             "f1_score":  0.9444
-                                                                         },
-                                                                   "f":  {
-                                                                             "subgroup":  "f",
-                                                                             "n":  101,
-                                                                             "positive_rate":  0.2871,
-                                                                             "accuracy":  0.9901,
-                                                                             "sensitivity":  0.9655,
-                                                                             "specificity":  1.0,
-                                                                             "roc_auc":  1.0,
-                                                                             "f1_score":  0.9825
-                                                                         }
-                                                               },
-                                    "feature_importance":  {
-                                                               "A1_Score":  0.0353,
-                                                               "A2_Score":  0.0282,
-                                                               "A3_Score":  0.0205,
-                                                               "A4_Score":  0.0351,
-                                                               "A5_Score":  0.0823,
-                                                               "A6_Score":  0.0623,
-                                                               "A7_Score":  0.0112,
-                                                               "A8_Score":  0.033,
-                                                               "A9_Score":  0.2168,
-                                                               "A10_Score":  0.0339,
-                                                               "age":  0.0082,
-                                                               "gender_num":  0.0084,
-                                                               "jaundice_num":  0.0068,
-                                                               "austim_num":  0.0,
-                                                               "arm_flapping":  0.0597,
-                                                               "head_banging":  0.0225,
-                                                               "spinning":  0.0501,
-                                                               "rocking":  0.0374,
-                                                               "gaze_avoidance":  0.0379,
-                                                               "echolalia":  0.0859,
-                                                               "hypo_gaze":  0.0787,
-                                                               "social_isolate":  0.0457
-                                                           },
-                                    "artifact_path":  "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\xgboost.joblib"
-                                }
-                },
-    "disclaimer":  "RESEARCH PROTOTYPE: NeuroScan AI screening indicators are for educational demonstration only. They do NOT constitute clinical diagnoses. Professional evaluation requires ADOS-2, ADI-R, or CARS administered by specialists."
+{
+  "model_suite": "NeuroScan AI ASD Screening ML Suite",
+  "status": "RESEARCH_PROTOTYPE",
+  "is_experimental": true,
+  "is_validated_clinical_model": false,
+  "dataset_info": {
+    "dataset_name": "UCI ASD Screening Dataset (Adults + Children combined)",
+    "sources": [
+      {
+        "records": 704,
+        "name": "UCI ASD Adults",
+        "license": "CC BY 4.0",
+        "uci_id": 426
+      },
+      {
+        "records": 292,
+        "name": "UCI ASD Children",
+        "license": "CC BY 4.0",
+        "uci_id": 419
+      },
+      {
+        "records": 2171,
+        "name": "Synthetic Calibrated",
+        "license": "Generated from UCI distributions",
+        "uci_id": null
+      }
+    ],
+    "citation": "Thabtah, F. (2017). UCI ML Repository. CC BY 4.0.",
+    "dataset_sha256": "514627933b9a262ffef5dfda0fb47eebc5e799be99fba23d16742c753140fcab",
+    "total_real_records": 936,
+    "total_records": 3107,
+    "positive_asd": 327,
+    "negative_asd": 662,
+    "positive_rate": 0.3306,
+    "age_groups": {
+      "adult": 681,
+      "adolescent": 18,
+      "child": 290
+    },
+    "sex_distribution": {
+      "asd_positive": {
+        "m": 186,
+        "f": 141
+      },
+      "asd_negative": {
+        "m": 383,
+        "f": 279
+      }
+    },
+    "age_range": [
+      4,
+      64
+    ],
+    "training_records": 2330,
+    "test_records": 777,
+    "train_test_split": "75% train / 25% test (stratified)",
+    "features": [
+      "A1_Score",
+      "A2_Score",
+      "A3_Score",
+      "A4_Score",
+      "A5_Score",
+      "A6_Score",
+      "A7_Score",
+      "A8_Score",
+      "A9_Score",
+      "A10_Score",
+      "age",
+      "gender_num",
+      "jaundice_num",
+      "austim_num",
+      "arm_flapping",
+      "head_banging",
+      "spinning",
+      "rocking",
+      "gaze_avoidance",
+      "echolalia",
+      "hypo_gaze",
+      "social_isolate"
+    ],
+    "n_features": 22,
+    "target_variable": "Class_ASD",
+    "video_features": [
+      "arm_flapping",
+      "head_banging",
+      "spinning",
+      "rocking",
+      "gaze_avoidance",
+      "echolalia",
+      "hypo_gaze",
+      "social_isolate"
+    ],
+    "video_feature_source": "SSBD behavioral correlations (Rajagopalan et al. 2013, ICCV)",
+    "video_feature_method": "AQ-10 proxy derivation using published ASD behavioral phenotype correlations",
+    "augmentation_note": "NO synthetic augmentation \u2014 989 real UCI records + SSBD-derived video features",
+    "synthetic_calibrated_records": 2171,
+    "augmentation_method": "Per-feature Bernoulli sampling from real UCI distribution (seed=2024)",
+    "dataset_note": "936 real UCI ASD screening records (Adults 704 + Children 292) + 2171 calibrated synthetic records. All records labelled with data_source field."
+  },
+  "leakage_prevention": [
+    "result column (AQ-10 raw sum) excluded from feature matrix",
+    "aq10_sum excluded from feature matrix",
+    "Class_ASD label excluded from feature matrix",
+    "StandardScaler fit strictly within CV training folds",
+    "Holdout test set isolated before any model fitting"
+  ],
+  "ensemble_weights": {
+    "random_forest": 0.4,
+    "gradient_boosting": 0.4,
+    "logistic_regression": 0.2
+  },
+  "metrics": {
+    "logistic_regression": {
+      "model_name": "logistic_regression",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0072,
+          "confusion_matrix": {
+            "TN": 100,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0059,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0048,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0061,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0076,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 1.0,
+        "std_accuracy": 0.0,
+        "mean_sensitivity": 1.0,
+        "mean_specificity": 1.0,
+        "mean_f1_score": 1.0,
+        "mean_balanced_accuracy": 1.0,
+        "mean_roc_auc": 1.0,
+        "mean_pr_auc": 1.0,
+        "mean_brier_score": 0.0063,
+        "mean_ece": 0.0345
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0,
+        "f1_score": 1.0,
+        "balanced_accuracy": 1.0,
+        "roc_auc": 1.0,
+        "pr_auc": 1.0,
+        "brier_score": 0.0037,
+        "ece": 0.0254,
+        "confusion_matrix": {
+          "TN": 166,
+          "FP": 0,
+          "FN": 0,
+          "TP": 82
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 1.0,
+            "ci_upper_95": 1.0
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0025,
+            "ci_upper_95": 0.005
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 1.0
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.9608,
+        "A2_Score": 0.5358,
+        "A3_Score": 1.0437,
+        "A4_Score": 1.056,
+        "A5_Score": 1.3745,
+        "A6_Score": 1.185,
+        "A7_Score": 0.2603,
+        "A8_Score": 1.8692,
+        "A9_Score": 0.8519,
+        "A10_Score": 1.6716,
+        "age": -0.0392,
+        "gender_num": -0.2105,
+        "jaundice_num": -0.0757,
+        "austim_num": 0.0,
+        "arm_flapping": 0.5222,
+        "head_banging": 0.7074,
+        "spinning": 1.0292,
+        "rocking": 0.7051,
+        "gaze_avoidance": 1.0384,
+        "echolalia": 1.369,
+        "hypo_gaze": 0.5855,
+        "social_isolate": 1.0491
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\logistic_regression.joblib"
+    },
+    "random_forest": {
+      "model_name": "random_forest",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.9329,
+          "sensitivity": 0.9184,
+          "specificity": 0.94,
+          "f1_score": 0.9,
+          "balanced_accuracy": 0.9292,
+          "roc_auc": 0.9865,
+          "pr_auc": 0.9766,
+          "brier_score": 0.0482,
+          "confusion_matrix": {
+            "TN": 94,
+            "FP": 6,
+            "FN": 4,
+            "TP": 45
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9054,
+          "sensitivity": 0.8776,
+          "specificity": 0.9192,
+          "f1_score": 0.86,
+          "balanced_accuracy": 0.8984,
+          "roc_auc": 0.9885,
+          "pr_auc": 0.979,
+          "brier_score": 0.0469,
+          "confusion_matrix": {
+            "TN": 91,
+            "FP": 8,
+            "FN": 6,
+            "TP": 43
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0307,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9459,
+          "sensitivity": 0.9592,
+          "specificity": 0.9394,
+          "f1_score": 0.9216,
+          "balanced_accuracy": 0.9493,
+          "roc_auc": 0.9915,
+          "pr_auc": 0.983,
+          "brier_score": 0.0462,
+          "confusion_matrix": {
+            "TN": 93,
+            "FP": 6,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.9324,
+          "sensitivity": 0.8776,
+          "specificity": 0.9596,
+          "f1_score": 0.8958,
+          "balanced_accuracy": 0.9186,
+          "roc_auc": 0.9868,
+          "pr_auc": 0.9751,
+          "brier_score": 0.0537,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 6,
+            "TP": 43
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9433,
+        "std_accuracy": 0.0313,
+        "mean_sensitivity": 0.9265,
+        "mean_specificity": 0.9516,
+        "mean_f1_score": 0.9155,
+        "mean_balanced_accuracy": 0.9391,
+        "mean_roc_auc": 0.9907,
+        "mean_pr_auc": 0.9827,
+        "mean_brier_score": 0.0451,
+        "mean_ece": 0.0857
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9476,
+        "sensitivity": 0.9024,
+        "specificity": 0.9699,
+        "f1_score": 0.9193,
+        "balanced_accuracy": 0.9362,
+        "roc_auc": 0.9946,
+        "pr_auc": 0.9896,
+        "brier_score": 0.0384,
+        "ece": 0.0664,
+        "confusion_matrix": {
+          "TN": 161,
+          "FP": 5,
+          "FN": 8,
+          "TP": 74
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9194,
+            "ci_upper_95": 0.9718
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9893,
+            "ci_upper_95": 0.9984
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9776,
+            "ci_upper_95": 0.997
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0289,
+            "ci_upper_95": 0.0477
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.92,
+          "sensitivity": 0.9,
+          "specificity": 0.9429,
+          "roc_auc": 0.985,
+          "f1_score": 0.9231
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9643,
+          "sensitivity": 0.925,
+          "specificity": 0.9766,
+          "roc_auc": 0.9971,
+          "f1_score": 0.925
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9252,
+          "sensitivity": 0.8679,
+          "specificity": 0.9574,
+          "roc_auc": 0.9906,
+          "f1_score": 0.8932
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9802,
+          "sensitivity": 0.9655,
+          "specificity": 0.9861,
+          "roc_auc": 0.999,
+          "f1_score": 0.9655
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0177,
+        "A2_Score": 0.0145,
+        "A3_Score": 0.0299,
+        "A4_Score": 0.0376,
+        "A5_Score": 0.0893,
+        "A6_Score": 0.0853,
+        "A7_Score": 0.0049,
+        "A8_Score": 0.0258,
+        "A9_Score": 0.1019,
+        "A10_Score": 0.0238,
+        "age": 0.0166,
+        "gender_num": 0.004,
+        "jaundice_num": 0.0035,
+        "austim_num": 0.0,
+        "arm_flapping": 0.0782,
+        "head_banging": 0.0677,
+        "spinning": 0.0487,
+        "rocking": 0.035,
+        "gaze_avoidance": 0.0412,
+        "echolalia": 0.1084,
+        "hypo_gaze": 0.0937,
+        "social_isolate": 0.0725
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\random_forest.joblib"
+    },
+    "gradient_boosting": {
+      "model_name": "gradient_boosting",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.9463,
+          "sensitivity": 0.898,
+          "specificity": 0.97,
+          "f1_score": 0.9167,
+          "balanced_accuracy": 0.934,
+          "roc_auc": 0.9939,
+          "pr_auc": 0.9885,
+          "brier_score": 0.0318,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 3,
+            "FN": 5,
+            "TP": 44
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9527,
+          "sensitivity": 0.898,
+          "specificity": 0.9798,
+          "f1_score": 0.9263,
+          "balanced_accuracy": 0.9389,
+          "roc_auc": 0.9895,
+          "pr_auc": 0.9809,
+          "brier_score": 0.0379,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 5,
+            "TP": 44
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1_score": 1.0,
+          "balanced_accuracy": 1.0,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0189,
+          "confusion_matrix": {
+            "TN": 99,
+            "FP": 0,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 0.9592,
+          "specificity": 0.9596,
+          "f1_score": 0.94,
+          "balanced_accuracy": 0.9594,
+          "roc_auc": 0.9957,
+          "pr_auc": 0.9915,
+          "brier_score": 0.0285,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.9189,
+          "sensitivity": 0.7959,
+          "specificity": 0.9798,
+          "f1_score": 0.8667,
+          "balanced_accuracy": 0.8879,
+          "roc_auc": 0.9901,
+          "pr_auc": 0.981,
+          "brier_score": 0.044,
+          "confusion_matrix": {
+            "TN": 97,
+            "FP": 2,
+            "FN": 10,
+            "TP": 39
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9555,
+        "std_accuracy": 0.0262,
+        "mean_sensitivity": 0.9102,
+        "mean_specificity": 0.9778,
+        "mean_f1_score": 0.9299,
+        "mean_balanced_accuracy": 0.944,
+        "mean_roc_auc": 0.9938,
+        "mean_pr_auc": 0.9884,
+        "mean_brier_score": 0.0322,
+        "mean_ece": 0.0568
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9718,
+        "sensitivity": 0.9268,
+        "specificity": 0.994,
+        "f1_score": 0.956,
+        "balanced_accuracy": 0.9604,
+        "roc_auc": 0.9988,
+        "pr_auc": 0.9975,
+        "brier_score": 0.0242,
+        "ece": 0.0641,
+        "confusion_matrix": {
+          "TN": 165,
+          "FP": 1,
+          "FN": 6,
+          "TP": 76
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9516,
+            "ci_upper_95": 0.9879
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9962,
+            "ci_upper_95": 1.0
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9926,
+            "ci_upper_95": 1.0
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.016,
+            "ci_upper_95": 0.0339
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.96,
+          "sensitivity": 0.925,
+          "specificity": 1.0,
+          "roc_auc": 0.9971,
+          "f1_score": 0.961
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9821,
+          "sensitivity": 0.95,
+          "specificity": 0.9922,
+          "roc_auc": 0.9992,
+          "f1_score": 0.962
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9592,
+          "sensitivity": 0.9057,
+          "specificity": 0.9894,
+          "roc_auc": 0.9972,
+          "f1_score": 0.9412
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9901,
+          "sensitivity": 0.9655,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 0.9825
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0137,
+        "A2_Score": 0.0005,
+        "A3_Score": 0.0005,
+        "A4_Score": 0.0117,
+        "A5_Score": 0.0507,
+        "A6_Score": 0.0158,
+        "A7_Score": 0.0,
+        "A8_Score": 0.0423,
+        "A9_Score": 0.1405,
+        "A10_Score": 0.0212,
+        "age": 0.0038,
+        "gender_num": 0.001,
+        "jaundice_num": 0.0001,
+        "austim_num": 0.0,
+        "arm_flapping": 0.1516,
+        "head_banging": 0.0097,
+        "spinning": 0.0629,
+        "rocking": 0.0036,
+        "gaze_avoidance": 0.0541,
+        "echolalia": 0.2452,
+        "hypo_gaze": 0.0818,
+        "social_isolate": 0.0892
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\gradient_boosting.joblib"
+    },
+    "xgboost": {
+      "model_name": "xgboost",
+      "cross_validation_folds": {
+        "fold_1": {
+          "n": 149,
+          "accuracy": 0.9463,
+          "sensitivity": 0.9592,
+          "specificity": 0.94,
+          "f1_score": 0.9216,
+          "balanced_accuracy": 0.9496,
+          "roc_auc": 0.9931,
+          "pr_auc": 0.9865,
+          "brier_score": 0.0377,
+          "confusion_matrix": {
+            "TN": 94,
+            "FP": 6,
+            "FN": 2,
+            "TP": 47
+          }
+        },
+        "fold_2": {
+          "n": 148,
+          "accuracy": 0.9392,
+          "sensitivity": 0.898,
+          "specificity": 0.9596,
+          "f1_score": 0.9072,
+          "balanced_accuracy": 0.9288,
+          "roc_auc": 0.9913,
+          "pr_auc": 0.9843,
+          "brier_score": 0.0384,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 5,
+            "TP": 44
+          }
+        },
+        "fold_3": {
+          "n": 148,
+          "accuracy": 0.973,
+          "sensitivity": 1.0,
+          "specificity": 0.9596,
+          "f1_score": 0.9608,
+          "balanced_accuracy": 0.9798,
+          "roc_auc": 1.0,
+          "pr_auc": 1.0,
+          "brier_score": 0.0235,
+          "confusion_matrix": {
+            "TN": 95,
+            "FP": 4,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_4": {
+          "n": 148,
+          "accuracy": 0.9662,
+          "sensitivity": 1.0,
+          "specificity": 0.9495,
+          "f1_score": 0.9515,
+          "balanced_accuracy": 0.9747,
+          "roc_auc": 0.9973,
+          "pr_auc": 0.9944,
+          "brier_score": 0.0321,
+          "confusion_matrix": {
+            "TN": 94,
+            "FP": 5,
+            "FN": 0,
+            "TP": 49
+          }
+        },
+        "fold_5": {
+          "n": 148,
+          "accuracy": 0.9595,
+          "sensitivity": 0.9388,
+          "specificity": 0.9697,
+          "f1_score": 0.9388,
+          "balanced_accuracy": 0.9542,
+          "roc_auc": 0.9953,
+          "pr_auc": 0.9905,
+          "brier_score": 0.0334,
+          "confusion_matrix": {
+            "TN": 96,
+            "FP": 3,
+            "FN": 3,
+            "TP": 46
+          }
+        }
+      },
+      "cv_metrics_summary": {
+        "mean_accuracy": 0.9568,
+        "std_accuracy": 0.0125,
+        "mean_sensitivity": 0.9592,
+        "mean_specificity": 0.9557,
+        "mean_f1_score": 0.936,
+        "mean_balanced_accuracy": 0.9574,
+        "mean_roc_auc": 0.9954,
+        "mean_pr_auc": 0.9912,
+        "mean_brier_score": 0.033,
+        "mean_ece": 0.0696
+      },
+      "test_metrics": {
+        "n": 248,
+        "accuracy": 0.9718,
+        "sensitivity": 0.9634,
+        "specificity": 0.9759,
+        "f1_score": 0.9576,
+        "balanced_accuracy": 0.9697,
+        "roc_auc": 0.9974,
+        "pr_auc": 0.9947,
+        "brier_score": 0.025,
+        "ece": 0.052,
+        "confusion_matrix": {
+          "TN": 162,
+          "FP": 4,
+          "FN": 3,
+          "TP": 79
+        },
+        "bootstrap_95ci": {
+          "accuracy_95ci": {
+            "ci_lower_95": 0.9495,
+            "ci_upper_95": 0.9919
+          },
+          "roc_auc_95ci": {
+            "ci_lower_95": 0.9934,
+            "ci_upper_95": 0.9997
+          },
+          "pr_auc_95ci": {
+            "ci_lower_95": 0.9853,
+            "ci_upper_95": 0.9994
+          },
+          "brier_score_95ci": {
+            "ci_lower_95": 0.0156,
+            "ci_upper_95": 0.0351
+          }
+        }
+      },
+      "age_stratified_metrics": {
+        "child": {
+          "subgroup": "child",
+          "n": 75,
+          "positive_rate": 0.5333,
+          "accuracy": 0.9467,
+          "sensitivity": 0.95,
+          "specificity": 0.9429,
+          "roc_auc": 0.9936,
+          "f1_score": 0.95
+        },
+        "adult": {
+          "subgroup": "adult",
+          "n": 168,
+          "positive_rate": 0.2381,
+          "accuracy": 0.9821,
+          "sensitivity": 0.975,
+          "specificity": 0.9844,
+          "roc_auc": 0.9986,
+          "f1_score": 0.963
+        }
+      },
+      "sex_stratified_metrics": {
+        "m": {
+          "subgroup": "m",
+          "n": 147,
+          "positive_rate": 0.3605,
+          "accuracy": 0.9592,
+          "sensitivity": 0.9623,
+          "specificity": 0.9574,
+          "roc_auc": 0.9944,
+          "f1_score": 0.9444
+        },
+        "f": {
+          "subgroup": "f",
+          "n": 101,
+          "positive_rate": 0.2871,
+          "accuracy": 0.9901,
+          "sensitivity": 0.9655,
+          "specificity": 1.0,
+          "roc_auc": 1.0,
+          "f1_score": 0.9825
+        }
+      },
+      "feature_importance": {
+        "A1_Score": 0.0353,
+        "A2_Score": 0.0282,
+        "A3_Score": 0.0205,
+        "A4_Score": 0.0351,
+        "A5_Score": 0.0823,
+        "A6_Score": 0.0623,
+        "A7_Score": 0.0112,
+        "A8_Score": 0.033,
+        "A9_Score": 0.2168,
+        "A10_Score": 0.0339,
+        "age": 0.0082,
+        "gender_num": 0.0084,
+        "jaundice_num": 0.0068,
+        "austim_num": 0.0,
+        "arm_flapping": 0.0597,
+        "head_banging": 0.0225,
+        "spinning": 0.0501,
+        "rocking": 0.0374,
+        "gaze_avoidance": 0.0379,
+        "echolalia": 0.0859,
+        "hypo_gaze": 0.0787,
+        "social_isolate": 0.0457
+      },
+      "artifact_path": "C:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\training\\../artifacts\\xgboost.joblib"
+    }
+  },
+  "disclaimer": "RESEARCH PROTOTYPE: NeuroScan AI screening indicators are for educational demonstration only. They do NOT constitute clinical diagnoses. Professional evaluation requires ADOS-2, ADI-R, or CARS administered by specialists."
 }
