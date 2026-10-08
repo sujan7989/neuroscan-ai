@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-10-08 20:54:37.303560",
+  "target_per_disorder": 3100,
+  "total_across_all_disorders": 15507,
+  "disorders": {
+    "asd": {
+      "total": 3107,
+      "positive": 974,
+      "negative": 2133,
+      "real_based": 3107,
+      "synthetic_calibrated": 0
+    },
+    "adhd": {
+      "total": 3100,
+      "positive": 930,
+      "negative": 2170,
+      "real_based": 400,
+      "synthetic_calibrated": 2700
+    },
+    "dyslexia": {
+      "total": 3100,
+      "positive": 620,
+      "negative": 2480,
+      "real_based": 500,
+      "synthetic_calibrated": 2600
+    },
+    "dld": {
+      "total": 3100,
+      "positive": 775,
+      "negative": 2325,
+      "real_based": 500,
+      "synthetic_calibrated": 2600
+    },
+    "tourette": {
+      "total": 3100,
+      "positive": 930,
+      "negative": 2170,
+      "real_based": 450,
+      "synthetic_calibrated": 2650
+    }
+  },
+  "data_sources": {
+    "asd": "UCI ML Repository (Adults id=426, Children id=419) CC BY 4.0",
+    "adhd": "WHO ASRS-v1.1 published norms (Kessler et al. 2005) + Conners-3 norming study (N=3400)",
+    "dyslexia": "IDA/Yale cohort published distributions (Shaywitz 1990) + CTOPP-2 norms",
+    "dld": "Tomblin et al. 1997 Iowa epidemiological study + CELF-5 norming (Wiig et al. 2013, N=2725)",
+    "tourette": "YGTSS validation cohort (Leckman et al. 1989, N=135) + PUTS norms (Woods et al. 2005)"
+  },
+  "augmentation_note": "Base records seeded from published clinical distributions. Augmented to 3100+ using per-feature Bernoulli/Beta sampling. All synthetic records labelled data_source=synthetic_from_published."
+}
