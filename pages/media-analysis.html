@@ -599,8 +599,8 @@ const DISORDER_LABELS = {
   asd: 'ASD',
   adhd: 'ADHD',
   dyslexia: 'Dyslexia',
-  dld: 'Developmental Language Disorder',
-  tourette: 'Tourette Syndrome / Tic Disorders'
+  stuttering: 'Stuttering / Fluency Disorder',
+  ssd: 'Speech Sound Disorder'
 };
 
 /* Bar colors for probability view */
@@ -608,8 +608,8 @@ const DISORDER_COLORS = {
   asd: '#2d6a4f',
   adhd: '#2563eb',
   dyslexia: '#d97706',
-  dld: '#7c3aed',
-  tourette: '#dc2626'
+  stuttering: '#0891b2',
+  ssd: '#7c3aed'
 };
 
 /* ---------------------------------------------------------------
@@ -1252,7 +1252,7 @@ function normaliseGeminiResponse(data, mediaCount, imgCount, vidCount, audCount)
    MOCK RESULTS GENERATOR
 --------------------------------------------------------------- */
 function generateMockResults() {
-  const disorders = ['asd', 'adhd', 'dyslexia', 'dld', 'tourette'];
+  const disorders = ['asd', 'adhd', 'dyslexia', 'stuttering', 'ssd'];
   const probs = {};
 
   /* Each disorder has distinct biomarker weights per media type so the
@@ -1262,8 +1262,8 @@ function generateMockResults() {
     asd:      { img: 0.82, vid: 0.88, aud: 0.55 },
     adhd:     { img: 0.48, vid: 0.80, aud: 0.42 },
     dyslexia: { img: 0.60, vid: 0.40, aud: 0.72 },
-    dld:      { img: 0.35, vid: 0.52, aud: 0.90 },
-    tourette: { img: 0.44, vid: 0.85, aud: 0.38 }
+    stuttering: { img: 0.20, vid: 0.65, aud: 0.95 },
+    ssd:      { img: 0.25, vid: 0.58, aud: 0.92 }
   };
 
   /* Deterministic seed from actual file content — same file = same result always.
@@ -1340,8 +1340,8 @@ function generateMockResults() {
     asd:      { eyeContact:'Reduced', motor:'Repetitive patterns', social:'Atypical', speech:'Monotone prosody detected' },
     adhd:     { eyeContact:'Variable', motor:'Elevated / Hyperactive', social:'Impulsive interactions', speech:'Rapid rate, interruptions' },
     dyslexia: { eyeContact:'Typical', motor:'Normal', social:'Typical', speech:'Phonological irregularities noted' },
-    dld:      { eyeContact:'Typical', motor:'Normal', social:'Slightly delayed', speech:'Reduced vocabulary, short sentences' },
-    tourette: { eyeContact:'Typical', motor:'Tic movements detected', social:'Typical', speech:'Vocal tic markers present' }
+    stuttering: { eyeContact:'Typical', motor:'Normal', social:'Avoidance noted', speech:'Disfluencies, repetitions, blocks detected' },
+    ssd:      { eyeContact:'Typical', motor:'Normal', social:'Typical', speech:'Phoneme errors, articulation deviations detected' }
   };
   const bp = BEHAVIOR_PROFILES[selectedDisorder !== 'all' ? selectedDisorder : topKey] || BEHAVIOR_PROFILES.asd;
 

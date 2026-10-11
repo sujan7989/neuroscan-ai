@@ -1,328 +1,46 @@
 {
-  "suite": "NeuroScan AI Multi-Disorder Suite v4.0",
-  "disorders": {
-    "asd": {
-      "disorder": "ASD",
-      "total_records": 3107,
-      "positive": 974,
-      "negative": 2133,
-      "features": [
-        "A1_Score",
-        "A2_Score",
-        "A3_Score",
-        "A4_Score",
-        "A5_Score",
-        "A6_Score",
-        "A7_Score",
-        "A8_Score",
-        "A9_Score",
-        "A10_Score",
-        "arm_flapping",
-        "head_banging",
-        "spinning",
-        "rocking",
-        "gaze_avoidance",
-        "echolalia",
-        "hypo_gaze",
-        "social_isolate"
-      ],
-      "n_features": 18,
-      "models": {
-        "logistic_regression": {
-          "cv_auc_mean": 0.9836,
-          "cv_auc_std": 0.004,
-          "test_auc": 0.9867,
-          "test_accuracy": 0.9472,
-          "test_balanced_accuracy": 0.9515,
-          "test_f1": 0.9198,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\asd_logistic_regression.joblib"
-        },
-        "random_forest": {
-          "cv_auc_mean": 0.9805,
-          "cv_auc_std": 0.0041,
-          "test_auc": 0.9846,
-          "test_accuracy": 0.9395,
-          "test_balanced_accuracy": 0.9426,
-          "test_f1": 0.908,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\asd_random_forest.joblib"
-        },
-        "gradient_boosting": {
-          "cv_auc_mean": 0.9808,
-          "cv_auc_std": 0.0041,
-          "test_auc": 0.9852,
-          "test_accuracy": 0.9459,
-          "test_balanced_accuracy": 0.9384,
-          "test_f1": 0.9143,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\asd_gradient_boosting.joblib"
-        },
-        "xgboost": {
-          "cv_auc_mean": 0.9805,
-          "cv_auc_std": 0.0044,
-          "test_auc": 0.985,
-          "test_accuracy": 0.9305,
-          "test_balanced_accuracy": 0.9393,
-          "test_f1": 0.8969,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\asd_xgboost.joblib"
-        }
-      }
+  "version": "v2",
+  "disorders": [
+    "dyslexia",
+    "adhd",
+    "stuttering",
+    "ssd"
+  ],
+  "total_all": 12400,
+  "per_disorder": {
+    "dyslexia": {
+      "name": "Dyslexia (Reading + Handwriting)",
+      "total": 3100,
+      "n_features": 16,
+      "best_auc": 1.0,
+      "data_source": "IDA/Yale phonological + MDPI handwriting kinematics + synthetic"
     },
     "adhd": {
-      "disorder": "ADHD",
-      "total_records": 3100,
-      "positive": 930,
-      "negative": 2170,
-      "features": [
-        "asrs_inattention_1",
-        "asrs_inattention_2",
-        "asrs_inattention_3",
-        "asrs_inattention_4",
-        "asrs_inattention_5",
-        "asrs_inattention_6",
-        "asrs_hyperactive_1",
-        "asrs_hyperactive_2",
-        "asrs_hyperactive_3",
-        "asrs_hyperactive_4",
-        "asrs_hyperactive_5",
-        "asrs_hyperactive_6",
-        "conners_inattention",
-        "conners_hyperactivity",
-        "conners_executive",
-        "conners_learning",
-        "family_history_adhd",
-        "sleep_problems",
-        "school_performance_low",
-        "medication_history"
-      ],
-      "n_features": 20,
-      "models": {
-        "logistic_regression": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\adhd_logistic_regression.joblib"
-        },
-        "random_forest": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\adhd_random_forest.joblib"
-        },
-        "gradient_boosting": {
-          "cv_auc_mean": 0.9999,
-          "cv_auc_std": 0.0003,
-          "test_auc": 1.0,
-          "test_accuracy": 0.9961,
-          "test_balanced_accuracy": 0.9935,
-          "test_f1": 0.9935,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\adhd_gradient_boosting.joblib"
-        },
-        "xgboost": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\adhd_xgboost.joblib"
-        }
-      }
+      "name": "ADHD (Questionnaire + Behavioural CPT)",
+      "total": 3100,
+      "n_features": 24,
+      "best_auc": 1.0,
+      "data_source": "WHO ASRS questionnaire + CPT-3 behavioural + synthetic"
     },
-    "dyslexia": {
-      "disorder": "Dyslexia",
-      "total_records": 3100,
-      "positive": 620,
-      "negative": 2480,
-      "features": [
-        "phonological_awareness",
-        "phonological_memory",
-        "rapid_naming_speed",
-        "word_reading_fluency",
-        "nonword_reading",
-        "letter_reversal",
-        "reading_avoidance",
-        "spelling_errors",
-        "slow_reading_rate",
-        "reading_comprehension_low",
-        "rhyming_difficulty",
-        "sequencing_difficulty",
-        "family_history_dyslexia",
-        "iep_reading"
-      ],
+    "stuttering": {
+      "name": "Stuttering (Audio / Acoustic)",
+      "total": 3100,
       "n_features": 14,
-      "models": {
-        "logistic_regression": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dyslexia_logistic_regression.joblib"
-        },
-        "random_forest": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dyslexia_random_forest.joblib"
-        },
-        "gradient_boosting": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dyslexia_gradient_boosting.joblib"
-        },
-        "xgboost": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 0.9974,
-          "test_balanced_accuracy": 0.9984,
-          "test_f1": 0.9936,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dyslexia_xgboost.joblib"
-        }
-      }
+      "best_auc": 1.0,
+      "data_source": "SEP-28k / UCLASS acoustic disfluency (audio-based) + synthetic"
     },
-    "dld": {
-      "disorder": "DLD",
-      "total_records": 3100,
-      "positive": 775,
-      "negative": 2325,
-      "features": [
-        "sentence_comprehension",
-        "word_structure",
-        "expressive_vocabulary",
-        "following_directions",
-        "formulated_sentences",
-        "recalling_sentences",
-        "vocabulary_delay",
-        "grammar_errors",
-        "narrative_coherence_low",
-        "instruction_following_low",
-        "word_finding_difficulty",
-        "late_talker_history",
-        "family_history_language",
-        "hearing_screen_pass"
-      ],
-      "n_features": 14,
-      "models": {
-        "logistic_regression": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dld_logistic_regression.joblib"
-        },
-        "random_forest": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dld_random_forest.joblib"
-        },
-        "gradient_boosting": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0001,
-          "test_auc": 1.0,
-          "test_accuracy": 0.9974,
-          "test_balanced_accuracy": 0.9948,
-          "test_f1": 0.9948,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dld_gradient_boosting.joblib"
-        },
-        "xgboost": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\dld_xgboost.joblib"
-        }
-      }
-    },
-    "tourette": {
-      "disorder": "Tourette Syndrome",
-      "total_records": 3100,
-      "positive": 930,
-      "negative": 2170,
-      "features": [
-        "motor_tic_number",
-        "motor_tic_frequency",
-        "motor_tic_intensity",
-        "vocal_tic_number",
-        "vocal_tic_frequency",
-        "vocal_tic_intensity",
-        "ygtss_impairment",
-        "puts_urge_score",
-        "adhd_comorbid",
-        "ocd_comorbid",
-        "stress_worsens_tics",
-        "onset_before_18",
-        "family_history_tics",
-        "tic_suppression_ability"
-      ],
-      "n_features": 14,
-      "models": {
-        "logistic_regression": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\tourette_logistic_regression.joblib"
-        },
-        "random_forest": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\tourette_random_forest.joblib"
-        },
-        "gradient_boosting": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 0.9987,
-          "test_balanced_accuracy": 0.9978,
-          "test_f1": 0.9978,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\tourette_gradient_boosting.joblib"
-        },
-        "xgboost": {
-          "cv_auc_mean": 1.0,
-          "cv_auc_std": 0.0,
-          "test_auc": 1.0,
-          "test_accuracy": 1.0,
-          "test_balanced_accuracy": 1.0,
-          "test_f1": 1.0,
-          "model_path": "c:\\Users\\sujan\\Downloads\\Mutli-Disorder-Detection-System--main\\Mutli-Disorder-Detection-System--main\\ml\\artifacts\\tourette_xgboost.joblib"
-        }
-      }
+    "ssd": {
+      "name": "Speech Sound Disorder (Audio / Articulation)",
+      "total": 3100,
+      "n_features": 15,
+      "best_auc": 1.0,
+      "data_source": "GFTA-3 articulation N=2621 + DEAP acoustic features + synthetic"
     }
   },
-  "total_records_all_disorders": 15507,
-  "datasets": {
-    "asd": "3107 records (936 real UCI + 2171 calibrated synthetic)",
-    "adhd": "3100 records (400 anchored WHO-ASRS + 2700 calibrated synthetic)",
-    "dyslexia": "3100 records (500 anchored IDA/Yale + 2600 calibrated synthetic)",
-    "dld": "3100 records (500 anchored Tomblin/CELF-5 + 2600 calibrated synthetic)",
-    "tourette": "3100 records (450 anchored YGTSS/PUTS + 2650 calibrated synthetic)"
+  "cnn_dyslexia": {
+    "model": "dyslexia_cnn.joblib",
+    "architecture": "MLP 128-64-32",
+    "auc": 1.0,
+    "reference": "DysDiTect CNN-LSTM MDPI 2024"
   }
 }

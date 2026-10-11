@@ -97,7 +97,8 @@
                          "augmentation_method":  "Per-feature Bernoulli sampling from real UCI distribution (seed=2024)",
                          "dataset_note":  "936 real UCI ASD screening records (Adults 704 + Children 292) + 2171 calibrated synthetic records. All records labelled with data_source field.",
                          "total_all_disorders":  15507,
-                         "records_per_disorder":  "3100-3107 per disorder"
+                         "records_per_disorder":  "3100-3107 per disorder",
+                         "v2_disorders":  "ASD, Dyslexia, ADHD, Stuttering, SSD"
                      },
     "leakage_prevention":  [
                                "result column (AQ-10 raw sum) excluded from feature matrix",

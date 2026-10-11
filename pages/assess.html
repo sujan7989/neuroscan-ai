@@ -279,8 +279,8 @@
         <button type="button" class="dis-filter-btn" data-dis="asd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #2d6a4f;background:#f0faf3;color:#2d6a4f;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F9E9; ASD</button>
         <button type="button" class="dis-filter-btn" data-dis="adhd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #e76f51;background:#fff5f2;color:#e76f51;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x26A1; ADHD</button>
         <button type="button" class="dis-filter-btn" data-dis="dyslexia" style="padding:7px 16px;border-radius:50px;border:1.5px solid #457b9d;background:#f0f6fb;color:#457b9d;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F4D6; Dyslexia</button>
-        <button type="button" class="dis-filter-btn" data-dis="dld" style="padding:7px 16px;border-radius:50px;border:1.5px solid #7c3aed;background:#f5f0ff;color:#7c3aed;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F5E8; DLD</button>
-        <button type="button" class="dis-filter-btn" data-dis="tourette" style="padding:7px 16px;border-radius:50px;border:1.5px solid #dc2626;background:#fff5f5;color:#dc2626;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F300; Tourette</button>
+        <button type="button" class="dis-filter-btn" data-dis="stuttering" style="padding:7px 16px;border-radius:50px;border:1.5px solid #0891b2;background:#f0fbff;color:#0891b2;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F399; Stuttering</button>
+        <button type="button" class="dis-filter-btn" data-dis="ssd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #7c3aed;background:#f5f0ff;color:#7c3aed;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F50A; SSD</button>
       </div>
       <div id="disorderFilterInfo" style="margin-top:10px;font-size:.8rem;color:var(--primary);font-weight:600;padding:8px 12px;background:#edf7f2;border-radius:var(--r-sm);border:1px solid var(--primary-l)">
         &#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, DLD, and Tourette
@@ -478,7 +478,7 @@ let ageGroup = 'child'; // toddler / child / adolescent / adult
 
 const DISORDER_COLORS = {
   asd:'#2d6a4f', adhd:'#e76f51', dyslexia:'#457b9d',
-  dld:'#7c3aed', tourette:'#dc2626'
+  stuttering:'#0891b2', ssd:'#7c3aed'
 };
 
 // Expose to window for inline onclick
@@ -1048,8 +1048,8 @@ document.querySelectorAll('.dis-filter-btn').forEach(btn => {
       asd: 'ASD Screening Progress',
       adhd: 'ADHD Screening Progress',
       dyslexia: 'Dyslexia Screening Progress',
-      dld: 'DLD Screening Progress',
-      tourette: 'Tourette Screening Progress'
+      stuttering: 'Stuttering Screening Progress',
+      ssd: 'SSD Screening Progress'
     };
     const pt = document.getElementById('progressTitle');
     if (pt) pt.textContent = TITLES[activeDisorderFilter] || 'Assessment Progress';

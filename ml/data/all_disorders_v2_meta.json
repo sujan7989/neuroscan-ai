@@ -1,0 +1,50 @@
+{
+  "version": "v2",
+  "disorders": [
+    "asd",
+    "dyslexia",
+    "adhd",
+    "stuttering",
+    "ssd"
+  ],
+  "total_records_all": 15507,
+  "per_disorder": {
+    "asd": {
+      "total": 3107,
+      "positive": 974,
+      "negative": 2133,
+      "real_anchored": 3107
+    },
+    "dyslexia": {
+      "total": 3100,
+      "positive": 620,
+      "negative": 2480,
+      "real_anchored": 500
+    },
+    "adhd": {
+      "total": 3100,
+      "positive": 930,
+      "negative": 2170,
+      "real_anchored": 400
+    },
+    "stuttering": {
+      "total": 3100,
+      "positive": 930,
+      "negative": 2170,
+      "real_anchored": 480
+    },
+    "ssd": {
+      "total": 3100,
+      "positive": 885,
+      "negative": 2215,
+      "real_anchored": 560
+    }
+  },
+  "data_sources": {
+    "asd": "UCI ML Repo (936 real) + MMASD/AV-ASD video features + synthetic",
+    "dyslexia": "IDA/Yale phonological norms + MDPI handwriting kinematics + synthetic",
+    "adhd": "WHO ASRS-v1.1 questionnaire + CPT-3 behavioural assessment + synthetic",
+    "stuttering": "SEP-28k/UCLASS acoustic disfluency features (audio-based) + synthetic",
+    "ssd": "GFTA-3 articulation norms (N=2621) + DEAP acoustic features + synthetic"
+  }
+}

@@ -31,21 +31,21 @@ export const DISORDERS = {
     prevalence: '1 in 5 children',
     features: ['reading_difficulty','spelling_errors','phonological_awareness','letter_reversal','slow_reading','word_recall'],
   },
-  dld: {
-    id: 'dld', name: 'Developmental Language Disorder', short: 'DLD',
-    color: '#7c3aed', icon: '🗨️',
-    description: 'A persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.',
-    icd: 'F80.9',
-    prevalence: '1 in 14 children',
-    features: ['vocabulary_delay','sentence_structure','narrative_skills','phonological_awareness','word_finding','grammar'],
+  stuttering: {
+    id: 'stuttering', name: 'Stuttering / Fluency Disorder', short: 'STU',
+    color: '#0891b2', icon: '🎙️',
+    description: 'A speech fluency disorder characterised by disfluencies including repetitions, prolongations, and blocks that disrupt the natural flow of speech.',
+    icd: 'F98.5',
+    prevalence: '1 in 100 people',
+    features: ['disfluency_rate','repetition_count','prolongation_duration','block_frequency','speech_rate','phonation_ratio'],
   },
-  tourette: {
-    id: 'tourette', name: 'Tourette Syndrome / Tic Disorders', short: 'TS',
-    color: '#dc2626', icon: '🌀',
-    description: 'A neurodevelopmental disorder characterised by multiple motor tics and at least one vocal tic lasting over 12 months.',
-    icd: 'F95.2',
-    prevalence: '1 in 100 children',
-    features: ['motor_tics','vocal_tics','premonitory_urge','tic_suppression','tic_frequency','comorbid_adhd_ocd'],
+  ssd: {
+    id: 'ssd', name: 'Speech Sound Disorder', short: 'SSD',
+    color: '#7c3aed', icon: '🔊',
+    description: 'A disorder affecting the accurate production of speech sounds, involving errors in articulation, phonological patterns, or motor speech planning.',
+    icd: 'F80.0',
+    prevalence: '1 in 12 children',
+    features: ['pcc_score','phoneme_error_rate','articulation_index','intelligibility_score','prosody_deviation','phonological_process'],
   },
 };
 
@@ -69,26 +69,26 @@ const FEATURE_WEIGHTS = {
     rhyming_difficulty: 0.69, sequencing: 0.64, memory: 0.59,
     left_right_confusion: 0.54, family_history: 0.46,
   },
-  dld: {
-    vocabulary_delay: 0.93, sentence_structure: 0.90, narrative_skills: 0.86,
-    phonological_awareness: 0.82, word_finding: 0.78, grammar: 0.74,
-    comprehension_difficulty: 0.69, pragmatic_language: 0.64, family_history: 0.48,
+  stuttering: {
+    disfluency_rate: 0.94, repetition_count: 0.91, prolongation_duration: 0.88,
+    block_frequency: 0.85, speech_rate: 0.79, phonation_ratio: 0.76,
+    jitter: 0.70, shimmer: 0.67, anxiety_speaking: 0.65, family_history: 0.60,
   },
-  tourette: {
-    motor_tics: 0.94, vocal_tics: 0.91, premonitory_urge: 0.86,
-    tic_suppression: 0.80, tic_frequency: 0.77, tic_intensity: 0.73,
-    comorbid_adhd_ocd: 0.68, stress_worsening: 0.62, family_history: 0.55,
+  ssd: {
+    pcc_score: 0.95, phoneme_error_rate: 0.92, articulation_index: 0.89,
+    intelligibility_score: 0.86, prosody_deviation: 0.82, cluster_errors: 0.78,
+    liquid_errors: 0.75, fricative_errors: 0.72, family_history: 0.55,
   },
 };
 
 // ── CO-OCCURRENCE MATRIX ─────────────────────────────────────────
 // How likely is disorder B given disorder A? (0-1 probability)
 export const CO_OCCURRENCE = {
-  asd:      { adhd:0.50, dld:0.45, tourette:0.22, dyslexia:0.25 },
-  adhd:     { asd:0.18, dyslexia:0.40, tourette:0.60, dld:0.30 },
-  dyslexia: { adhd:0.45, asd:0.12, dld:0.55 },
-  dld:      { asd:0.45, dyslexia:0.55, adhd:0.30, tourette:0.18 },
-  tourette: { adhd:0.60, asd:0.22, dld:0.18 },
+  asd:      { adhd:0.50, stuttering:0.30, ssd:0.25, dyslexia:0.25 },
+  adhd:     { asd:0.18, dyslexia:0.40, stuttering:0.35, ssd:0.20 },
+  dyslexia: { adhd:0.45, asd:0.12, ssd:0.40 },
+  stuttering: { adhd:0.25, ssd:0.35, asd:0.15 },
+  ssd:      { stuttering:0.35, adhd:0.18, dyslexia:0.22 },
 };
 
 // ── ADAPTIVE QUESTIONNAIRE SYSTEM ───────────────────────────────
@@ -97,52 +97,52 @@ export const ADAPTIVE_QUESTIONS = {
   // Universal screening questions (shown to all)
   universal: [
     {
-      id: 'q_eye_contact', disorder: ['asd','dld'],
+      id: 'q_eye_contact', disorder: ['asd','stuttering'],
       question: 'How does the individual respond to direct eye contact?',
       type: 'scale', options: ['Avoids completely','Avoids often','Sometimes maintains','Usually maintains','Always comfortable'],
-      weights: { asd: [1.0, 0.75, 0.3, 0.1, 0], dld: [0.9, 0.7, 0.4, 0.15, 0.05] },
+      weights: { asd: [1.0, 0.75, 0.3, 0.1, 0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
-      id: 'q_social_interaction', disorder: ['asd','dld'],
+      id: 'q_social_interaction', disorder: ['asd','stuttering'],
       question: 'How does the individual interact in group social settings?',
       type: 'scale', options: ['Completely withdrawn','Rarely engages','Sometimes participates','Usually participates','Very social'],
-      weights: { asd: [1.0, 0.8, 0.4, 0.1, 0], dld: [0.9, 0.75, 0.5, 0.2, 0.05], dld: [0.7, 0.5, 0.3, 0.1, 0] },
+      weights: { asd: [1.0, 0.8, 0.4, 0.1, 0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
       id: 'q_attention_span', disorder: ['adhd','tourette'],
       question: 'How long can the individual typically focus on a single task?',
       type: 'scale', options: ['< 2 minutes','2-5 minutes','5-15 minutes','15-30 minutes','30+ minutes'],
-      weights: { adhd: [1.0, 0.85, 0.5, 0.15, 0], dld: [0.8, 0.65, 0.4, 0.2, 0.05] },
+      weights: { adhd: [1.0, 0.85, 0.5, 0.15, 0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
       id: 'q_repetitive_behavior', disorder: ['asd','tourette'],
       question: 'Does the individual engage in repetitive behaviors or movements?',
       type: 'frequency', options: ['Never','Rarely','Sometimes','Often','Always'],
-      weights: { asd: [0, 0.2, 0.5, 0.85, 1.0], tourette: [0, 0.15, 0.4, 0.7, 0.9] },
+      weights: { asd: [0, 0.2, 0.5, 0.85, 1.0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
       id: 'q_sensory_response', disorder: ['asd','tourette'],
       question: 'How does the individual respond to sensory stimuli (sounds, textures, lights)?',
       type: 'scale', options: ['Very over-sensitive','Over-sensitive','Normal range','Under-sensitive','Seeks intense stimulation'],
-      weights: { asd: [1.0, 0.8, 0, 0.5, 0.7], tourette: [1.0, 0.85, 0, 0.6, 0.8] },
+      weights: { asd: [1.0, 0.8, 0, 0.5, 0.7] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
-      id: 'q_language_development', disorder: ['asd','dld'],
+      id: 'q_language_development', disorder: ['asd','stuttering'],
       question: 'Describe the individual\'s language development:',
       type: 'scale', options: ['No words yet (age inappropriate)','Single words only','Short phrases','Full sentences (some difficulty)','Age-appropriate'],
-      weights: { asd: [1.0, 0.8, 0.5, 0.2, 0], dld: [1.0, 0.85, 0.6, 0.25, 0], dld: [0.9, 0.75, 0.5, 0.25, 0.05] },
+      weights: { asd: [1.0, 0.8, 0.5, 0.2, 0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
-      id: 'q_reading', disorder: ['dyslexia','dld'],
+      id: 'q_reading', disorder: ['dyslexia','ssd'],
       question: 'How does the individual perform with reading and writing?',
       type: 'scale', options: ['Severe difficulty','Significant difficulty','Moderate difficulty','Mild difficulty','Age-appropriate'],
-      weights: { dyslexia: [1.0, 0.85, 0.65, 0.35, 0], dld: [0.85, 0.7, 0.5, 0.25, 0.05] },
+      weights: { dyslexia: [1.0, 0.85, 0.65, 0.35, 0] },
       ageGroups: ['child','adolescent','adult'],
     },
     {
@@ -156,7 +156,7 @@ export const ADAPTIVE_QUESTIONS = {
       id: 'q_emotional_regulation', disorder: ['adhd','asd','tourette'],
       question: 'How does the individual handle emotional regulation and frustration?',
       type: 'scale', options: ['Very poor — frequent meltdowns','Poor — regular outbursts','Moderate','Good','Excellent'],
-      weights: { adhd: [1.0, 0.8, 0.4, 0.1, 0], asd: [0.9, 0.75, 0.4, 0.15, 0.02], dld: [0.7, 0.6, 0.35, 0.1, 0] },
+      weights: { adhd: [1.0, 0.8, 0.4, 0.1, 0], asd: [0.9, 0.75, 0.4, 0.15, 0.02] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
@@ -177,14 +177,14 @@ export const ADAPTIVE_QUESTIONS = {
       id: 'q_anxiety_social', disorder: ['tourette','asd'],
       question: 'How does the individual feel about speaking in front of others or being observed?',
       type: 'scale', options: ['Extreme panic','Very anxious','Moderately anxious','Mildly anxious','Comfortable'],
-      weights: { dld: [1.0, 0.88, 0.65, 0.3, 0.02], asd: [0.5, 0.4, 0.3, 0.15, 0.05] },
+      weights: { asd: [0.5, 0.4, 0.3, 0.15, 0.05] },
       ageGroups: ['child','adolescent','adult'],
     },
     {
-      id: 'q_play_imaginative', disorder: ['asd','dld'],
+      id: 'q_play_imaginative', disorder: ['asd','stuttering'],
       question: 'How does the child engage in imaginative/pretend play with peers?',
       type: 'scale', options: ['Does not understand pretend play','Rarely engages','Sometimes engages','Usually engages','Actively leads play'],
-      weights: { asd: [1.0, 0.8, 0.45, 0.15, 0], dld: [0.85, 0.65, 0.4, 0.15, 0.02] },
+      weights: { asd: [1.0, 0.8, 0.45, 0.15, 0] },
       ageGroups: ['toddler','child'],
     },
   ],
@@ -192,16 +192,16 @@ export const ADAPTIVE_QUESTIONS = {
   // Age-specific follow-ups (toddlers 0-3)
   toddler: [
     {
-      id: 'q_pointing', disorder: ['asd','dld'],
+      id: 'q_pointing', disorder: ['asd','stuttering'],
       question: 'Does the child point to show interest in things (declarative pointing)?',
       type: 'frequency', options: ['Never','Rarely','Sometimes','Often','Always'],
-      weights: { asd: [1.0, 0.8, 0.4, 0.1, 0], dld: [0.9, 0.7, 0.35, 0.1, 0] },
+      weights: { asd: [1.0, 0.8, 0.4, 0.1, 0] },
     },
     {
-      id: 'q_babbling', disorder: ['asd','dld'],
+      id: 'q_babbling', disorder: ['asd','stuttering'],
       question: 'Was babbling delayed or absent in the first year?',
       type: 'binary', options: ['Yes — significantly delayed or absent','No — normal babbling'],
-      weights: { asd: [0.85, 0], dld: [1.0, 0] },
+      weights: { asd: [0.85, 0] },
     },
     {
       id: 'q_response_name', disorder: ['asd','hearing'],
@@ -220,16 +220,16 @@ export const ADAPTIVE_QUESTIONS = {
   // Age-specific (children 4-12)
   child: [
     {
-      id: 'q_friendships', disorder: ['asd','dld'],
+      id: 'q_friendships', disorder: ['asd','stuttering'],
       question: 'How does the child make and maintain friendships?',
       type: 'scale', options: ['Cannot make friends','Very rarely has friends','Has 1-2 friends with difficulty','Has friends with some difficulty','Makes friends easily'],
-      weights: { asd: [1.0, 0.8, 0.5, 0.2, 0.02], dld: [0.7, 0.6, 0.45, 0.25, 0.05], dld: [0.8, 0.65, 0.45, 0.2, 0.05] },
+      weights: { asd: [1.0, 0.8, 0.5, 0.2, 0.02] },
     },
     {
-      id: 'q_academic', disorder: ['dyslexia','adhd','dld'],
+      id: 'q_academic', disorder: ['dyslexia','adhd','ssd'],
       question: 'How is the child performing academically compared to peers?',
       type: 'scale', options: ['Severely behind','Significantly behind','Moderately behind','Slightly behind','At or above grade level'],
-      weights: { dyslexia: [0.8, 0.9, 0.7, 0.4, 0.05], adhd: [0.7, 0.8, 0.6, 0.35, 0.1], dld: [0.9, 0.85, 0.65, 0.35, 0.05] },
+      weights: { dyslexia: [0.8, 0.9, 0.7, 0.4, 0.05], adhd: [0.7, 0.8, 0.6, 0.35, 0.1] },
     },
     {
       id: 'q_letters_reversal', disorder: ['dyslexia'],
@@ -245,79 +245,78 @@ export const ADAPTIVE_QUESTIONS = {
       id: 'q_social_media', disorder: ['tourette','asd'],
       question: 'How does the individual engage with peers online vs. in-person?',
       type: 'scale', options: ['Avoids both','Prefers online only','Mixed with preference for online','Similar in both','More comfortable in-person'],
-      weights: { dld: [0.9, 0.85, 0.6, 0.2, 0.05], asd: [0.7, 0.6, 0.4, 0.2, 0.1] },
+      weights: { asd: [0.7, 0.6, 0.4, 0.2, 0.1] },
     },
     {
-      id: 'q_independence', disorder: ['dld','asd'],
+      id: 'q_independence', disorder: ['stuttering','asd'],
       question: 'How independent is the individual in daily activities (hygiene, organizing)?',
       type: 'scale', options: ['Requires full assistance','Requires significant help','Requires some help','Mostly independent','Fully independent'],
-      weights: { dld: [1.0, 0.8, 0.55, 0.2, 0.02], asd: [0.6, 0.5, 0.35, 0.15, 0.02] },
+      weights: { asd: [0.6, 0.5, 0.35, 0.15, 0.02] },
     },
   ],
 
-  // DLD-specific questions
-  dld_specific: [
+    // Stuttering-specific questions
+  stuttering_specific: [
     {
-      id: 'q_dld_vocabulary', disorder: ['dld'],
-      question: 'How large is the individual\'s vocabulary compared to peers of the same age?',
-      type: 'scale', options: ['Much smaller (< 50% of peers)','Smaller than average','Slightly below average','Average','Above average'],
-      weights: { dld: [1.0, 0.85, 0.6, 0.1, 0] },
+      id: 'q_stutter_disfluency', disorder: ['stuttering'],
+      question: 'How often does the individual experience repetitions, prolongations, or blocks when speaking?',
+      type: 'frequency', options: ['Never','Rarely (< 5% of words)','Sometimes (5-10%)','Often (10-20%)','Very frequently (> 20%)'],
+      weights: { stuttering: [0, 0.25, 0.55, 0.85, 1.0] },
       ageGroups: ['toddler','child','adolescent','adult'],
     },
     {
-      id: 'q_dld_sentences', disorder: ['dld'],
-      question: 'How does the individual form sentences when speaking?',
-      type: 'scale', options: ['Single words only','Short 2-3 word phrases','Short sentences with errors','Sentences with occasional errors','Age-appropriate'],
-      weights: { dld: [1.0, 0.88, 0.65, 0.3, 0.02] },
-      ageGroups: ['toddler','child','adolescent','adult'],
-    },
-    {
-      id: 'q_dld_story', disorder: ['dld'],
-      question: 'Can the individual tell a coherent story or describe an event in sequence?',
-      type: 'scale', options: ['Cannot narrate','Very disjointed','Partial sequence','Mostly coherent','Fully coherent'],
-      weights: { dld: [1.0, 0.85, 0.55, 0.2, 0] },
-      ageGroups: ['child','adolescent','adult'],
-    },
-    {
-      id: 'q_dld_instructions', disorder: ['dld'],
-      question: 'How well does the individual follow multi-step verbal instructions?',
-      type: 'scale', options: ['Cannot follow 1-step','Follows 1-step only','Follows 2-step','Follows 3-step','Follows 4+ steps easily'],
-      weights: { dld: [1.0, 0.85, 0.6, 0.25, 0] },
-      ageGroups: ['toddler','child','adolescent','adult'],
-    },
-  ],
-
-  // Tourette-specific questions
-  tourette_specific: [
-    {
-      id: 'q_ts_motor_tics', disorder: ['tourette'],
-      question: 'Does the individual have involuntary, sudden, repetitive motor movements (blinking, head jerking, shoulder shrugging)?',
-      type: 'frequency', options: ['Never','Rarely (less than weekly)','Sometimes (weekly)','Often (daily)','Very frequently (multiple times daily)'],
-      weights: { tourette: [0, 0.3, 0.6, 0.88, 1.0] },
-      ageGroups: ['toddler','child','adolescent','adult'],
-    },
-    {
-      id: 'q_ts_vocal_tics', disorder: ['tourette'],
-      question: 'Does the individual make involuntary sounds or vocalizations (throat clearing, sniffing, repeated words)?',
+      id: 'q_stutter_anxiety', disorder: ['stuttering'],
+      question: 'Does the individual avoid speaking situations due to fear of stuttering?',
       type: 'frequency', options: ['Never','Rarely','Sometimes','Often','Always'],
-      weights: { tourette: [0, 0.25, 0.55, 0.85, 1.0] },
+      weights: { stuttering: [0, 0.2, 0.5, 0.80, 0.95] },
       ageGroups: ['child','adolescent','adult'],
     },
     {
-      id: 'q_ts_urge', disorder: ['tourette'],
-      question: 'Does the individual report a sensation or urge before performing a tic?',
-      type: 'scale', options: ['No tics present','Never feels urge','Sometimes feels urge','Usually feels urge','Always feels strong urge'],
-      weights: { tourette: [0, 0.1, 0.5, 0.82, 1.0] },
+      id: 'q_stutter_onset', disorder: ['stuttering'],
+      question: 'At what age did stuttering first appear?',
+      type: 'scale', options: ['Never stuttered','After age 10','Ages 6-10','Ages 3-5','Before age 3'],
+      weights: { stuttering: [0, 0.15, 0.5, 0.82, 0.90] },
       ageGroups: ['child','adolescent','adult'],
     },
     {
-      id: 'q_ts_stress', disorder: ['tourette'],
-      question: 'Do tics become more frequent during periods of stress, excitement, or tiredness?',
-      type: 'frequency', options: ['No tics','Rarely','Sometimes','Often','Always'],
-      weights: { tourette: [0, 0.2, 0.55, 0.82, 0.95] },
-      ageGroups: ['child','adolescent','adult'],
+      id: 'q_stutter_family', disorder: ['stuttering'],
+      question: 'Is there a family history of stuttering?',
+      type: 'binary', options: ['No','Yes'],
+      weights: { stuttering: [0.10, 0.75] },
+      ageGroups: ['toddler','child','adolescent','adult'],
     },
   ],
+  // SSD-specific questions
+  ssd_specific: [
+    {
+      id: 'q_ssd_errors', disorder: ['ssd'],
+      question: 'How often does the individual make consistent errors on specific speech sounds (e.g. r, l, s, sh)?',
+      type: 'frequency', options: ['Never','Rarely','Sometimes','Often','Always on specific sounds'],
+      weights: { ssd: [0, 0.2, 0.55, 0.82, 1.0] },
+      ageGroups: ['toddler','child','adolescent'],
+    },
+    {
+      id: 'q_ssd_intelligibility', disorder: ['ssd'],
+      question: 'How well can unfamiliar people understand the individual\'s speech?',
+      type: 'scale', options: ['Fully intelligible','Mostly understood','Partially understood','Rarely understood','Not understood'],
+      weights: { ssd: [0, 0.15, 0.55, 0.85, 1.0] },
+      ageGroups: ['toddler','child','adolescent'],
+    },
+    {
+      id: 'q_ssd_pattern', disorder: ['ssd'],
+      question: 'Does the individual consistently substitute one sound for another (e.g. w for r, f for th)?',
+      type: 'binary', options: ['No','Yes — consistent pattern'],
+      weights: { ssd: [0.08, 0.85] },
+      ageGroups: ['toddler','child','adolescent'],
+    },
+    {
+      id: 'q_ssd_therapy', disorder: ['ssd'],
+      question: 'Has the individual received or been recommended speech therapy for articulation?',
+      type: 'binary', options: ['No','Yes'],
+      weights: { ssd: [0.12, 0.80] },
+      ageGroups: ['child','adolescent'],
+    },
+  ]
 };
 
 // ── ENSEMBLE PREDICTION ENGINE ───────────────────────────────────
@@ -413,12 +412,13 @@ function demographicAdjust(probability, demographics, disorderId) {
     if (family_history) adj *= 1.40;
     if (gender === 'male') adj *= 1.15;
   }
-  if (disorderId === 'dld') {
-    if (family_history) adj *= 1.25;
-  }
-  if (disorderId === 'tourette') {
-    if (family_history) adj *= 1.45;
+  if (disorderId === 'stuttering') {
+    if (family_history) adj *= 1.40;
     if (gender === 'male') adj *= 1.30;
+  }
+  if (disorderId === 'ssd') {
+    if (age < 6) adj *= 1.20;
+    if (family_history) adj *= 1.25;
   }
 
   return Math.max(0, Math.min(1, adj));
@@ -634,23 +634,35 @@ export function generateRecommendations(results) {
       });
       recs.specialists.push('Educational Psychologist', 'Learning Disabilities Specialist');
     }
-    if (disorderId === 'dld' && data.probability > 0.45) {
+    if (disorderId === 'stuttering' && data.probability > 0.45) {
       recs.therapies.push({
-        name: 'Speech-Language Therapy (SLT)',
-        description: 'Intensive therapy targeting vocabulary, sentence structure, narrative skills and phonological awareness.',
-        frequency: '2-3 sessions/week',
-        disorder: 'DLD',
+        name: 'Fluency Shaping Therapy',
+        description: 'Evidence-based techniques including prolonged speech, easy onsets, and breath management to achieve fluent speech patterns.',
+        frequency: '2 sessions/week',
+        disorder: 'Stuttering',
       });
-      recs.specialists.push('Speech-Language Pathologist (SLP)', 'Educational Psychologist');
+      recs.therapies.push({
+        name: 'CAMPSIE / Lidcombe Programme',
+        description: 'For children under 6: parent-delivered operant treatment shown to significantly reduce stuttering frequency.',
+        frequency: 'Daily home practice + weekly SLP session',
+        disorder: 'Stuttering',
+      });
+      recs.specialists.push('Speech-Language Pathologist (Fluency Specialist)', 'Psychologist (if anxiety present)');
     }
-    if (disorderId === 'tourette' && data.probability > 0.45) {
+    if (disorderId === 'ssd' && data.probability > 0.45) {
       recs.therapies.push({
-        name: 'CBIT (Comprehensive Behavioral Intervention for Tics)',
-        description: 'First-line behavioral therapy using habit reversal training to reduce tic frequency and intensity.',
-        frequency: '1 session/week for 8 weeks',
-        disorder: 'Tourette',
+        name: 'Articulation Therapy (Traditional)',
+        description: 'Systematic practice of target sounds at phoneme, syllable, word, and sentence levels. Most evidence-based for SSD.',
+        frequency: '2-3 sessions/week',
+        disorder: 'SSD',
       });
-      recs.specialists.push('Child Neurologist', 'CBIT-trained Behavioural Therapist');
+      recs.therapies.push({
+        name: 'Phonological Intervention (Metaphon / Cycles)',
+        description: 'For phonological pattern errors: targets rule-based sound system processes rather than individual phonemes.',
+        frequency: '2 sessions/week',
+        disorder: 'SSD',
+      });
+      recs.specialists.push('Speech-Language Pathologist (SLP)', 'Audiologist (rule out hearing loss)');
     }
   }
 
