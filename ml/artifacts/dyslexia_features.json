@@ -1,0 +1,22 @@
+{
+  "disorder": "dyslexia",
+  "features": [
+    "phonological_awareness",
+    "phonological_memory",
+    "word_reading_fluency",
+    "nonword_reading",
+    "letter_reversal",
+    "spelling_errors",
+    "slow_reading_rate",
+    "family_history_dyslexia",
+    "hw_pen_speed_mms",
+    "hw_stroke_consistency",
+    "hw_letter_reversal_rate",
+    "hw_erasure_per_word"
+  ],
+  "n_features": 12,
+  "test_auc": 1.0,
+  "test_accuracy": 1.0,
+  "positive_mean_prob": 0.9973,
+  "calibration": "isotonic"
+}

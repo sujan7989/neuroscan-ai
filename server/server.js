@@ -789,7 +789,7 @@ app.post('/api/ml/assess', async (req, res) => {
     demographics: req.body.demographics || {}
   };
   try {
-    const result = await runPythonScript('ml/inference/multi_predictor.py', payload);
+    const result = await runPythonScript('ml/inference/multi_predictor_v2.py', payload);
     res.json(result);
   } catch (e) {
     console.warn('Python Multi-Disorder ML predictor unavailable, seamlessly serving JavaScript ML inference:', e.message);

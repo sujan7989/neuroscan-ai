@@ -1,0 +1,21 @@
+{
+  "disorder": "ssd",
+  "features": [
+    "pcc_score",
+    "gfta3_standard_score",
+    "stop_error_rate",
+    "fricative_error_rate",
+    "liquid_error_rate",
+    "cluster_error_rate",
+    "intelligibility_score",
+    "prosody_deviation",
+    "late_sound_acquisition",
+    "phonological_process",
+    "family_history_ssd"
+  ],
+  "n_features": 11,
+  "test_auc": 1.0,
+  "test_accuracy": 1.0,
+  "positive_mean_prob": 0.9998,
+  "calibration": "isotonic"
+}

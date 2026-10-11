@@ -1,0 +1,26 @@
+{
+  "disorder": "adhd",
+  "features": [
+    "asrs_inatt_1",
+    "asrs_inatt_2",
+    "asrs_inatt_3",
+    "asrs_inatt_4",
+    "asrs_inatt_5",
+    "asrs_inatt_6",
+    "asrs_hyper_1",
+    "asrs_hyper_2",
+    "asrs_hyper_3",
+    "asrs_hyper_4",
+    "asrs_hyper_5",
+    "asrs_hyper_6",
+    "conners_inattention",
+    "conners_hyperactivity",
+    "family_history_adhd",
+    "school_performance_low"
+  ],
+  "n_features": 16,
+  "test_auc": 1.0,
+  "test_accuracy": 1.0,
+  "positive_mean_prob": 0.999,
+  "calibration": "isotonic"
+}

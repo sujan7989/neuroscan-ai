@@ -42,5 +42,29 @@
     "architecture": "MLP 128-64-32",
     "auc": 1.0,
     "reference": "DysDiTect CNN-LSTM MDPI 2024"
+  },
+  "retrained_clean": true,
+  "calibration": "isotonic_cv5",
+  "model_summary": {
+    "asd": {
+      "auc": 0.9854,
+      "mean_pos_prob": 0.874
+    },
+    "adhd": {
+      "auc": 1.0,
+      "mean_pos_prob": 0.999
+    },
+    "dyslexia": {
+      "auc": 1.0,
+      "mean_pos_prob": 0.9973
+    },
+    "stuttering": {
+      "auc": 1.0,
+      "mean_pos_prob": 0.9997
+    },
+    "ssd": {
+      "auc": 1.0,
+      "mean_pos_prob": 0.9998
+    }
   }
 }
