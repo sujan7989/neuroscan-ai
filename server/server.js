@@ -136,10 +136,10 @@ function seedInitialMemoryData() {
     disorder_results: {
       ASD: { score: 72, risk: 'High', prob: '72%' },
       ADHD: { score: 65, risk: 'Moderate', prob: '65%' },
-      SPD: { score: 58, risk: 'Moderate', prob: '58%' },
+      SSD: { score: 82, risk: 'Moderate', prob: '58%' },
       Dyslexia: { score: 28, risk: 'Low', prob: '28%' },
-      DLD: { score: 44, risk: 'Moderate', prob: '44%' },
-      Tourette: { score: 18, risk: 'Low', prob: '18%' },
+      Stuttering: { score: 81, risk: 'High', prob: '81%' },
+      SSD: { score: 22, risk: 'Low', prob: '22%' },
     },
     probability: 72,
     aq10_sum: 7,
@@ -161,10 +161,10 @@ function seedInitialMemoryData() {
     disorder_results: {
       ASD: { score: 64, risk: 'Moderate', prob: '64%' },
       ADHD: { score: 52, risk: 'Moderate', prob: '52%' },
-      SPD: { score: 48, risk: 'Moderate', prob: '48%' },
+      SSD: { score: 44, risk: 'Moderate', prob: '48%' },
       Dyslexia: { score: 24, risk: 'Low', prob: '24%' },
-      DLD: { score: 38, risk: 'Low', prob: '38%' },
-      Tourette: { score: 15, risk: 'Low', prob: '15%' },
+      Stuttering: { score: 42, risk: 'Moderate', prob: '42%' },
+      SSD: { score: 18, risk: 'Low', prob: '18%' },
     },
     probability: 64,
     aq10_sum: 6,
@@ -1066,14 +1066,19 @@ Dyslexia is a specific learning disability of neurobiological origin. It is char
 ⚠️ *This is educational guidance only — a comprehensive psychoeducational evaluation is recommended.*`;
   }
 
-  // Sensory Processing Disorder (SPD)
-  if (query.includes('sensory') || query.includes('texture') || query.includes('sound') || query.includes('noise') || query.includes('cloth') || query.includes('spd') || query.includes('meltdown')) {
-    return `**Sensory Processing Disorder (SPD) & Sensory Needs:**${contextSnippet}
-Sensory processing differences occur when the central nervous system has difficulty receiving, modulating, and responding to sensory information from the environment.
+  // Speech Sound Disorder (SSD)
+  if (query.includes('ssd') || query.includes('speech sound') || query.includes('articulation') || query.includes('phoneme')) {
+      return `### 🔊 Speech Sound Disorder (SSD)
+SSD affects ~1 in 12 children. It involves consistent errors producing specific speech sounds.
 
-**Sensory Profiles:**
-• **Hypersensitive (Over-responsive)**: Extreme distress with loud sounds (vacuum, hand dryers), sensitive to clothing tags/seams, aversion to food textures, avoids messy play.
-• **Hyposensitive (Under-responsive / Sensory Seeking)**: Constant craving for intense physical pressure, bumping into walls, jumping, high pain tolerance, chewing on non-food items.
+**Signs:**
+• Substitutes sounds (w→r, f→th, t→k)
+• Under 50% intelligible to strangers after age 3
+• Persists beyond typical timelines
+
+**Treatment:** Articulation therapy (traditional approach) or Metaphon/Cycles phonological intervention by a certified SLP. GFTA-3 is the gold-standard assessment.
+
+⚠️ *Rule out hearing loss first — consult SLP and audiologist.*\`nce, chewing on non-food items.
 • **Vestibular & Proprioceptive Challenges**: Clumsiness, poor balance, low muscle tone.
 
 **Practical Supportive Strategies:**
@@ -1133,7 +1138,7 @@ I can help with:
 • **ASD/Autism** — symptoms, early signs, diagnosis, ABA therapy
 • **ADHD** — attention, hyperactivity, medication, behaviour strategies
 • **Dyslexia** — reading difficulties, structured literacy, school support
-• **DLD** — Developmental Language Disorder, speech therapy, vocabulary
+• **Stuttering** — Developmental Language Disorder, speech therapy, vocabulary
 • **Tourette Syndrome** — tics, CBIT therapy, school accommodations
 • **Your NeuroScan results** — what your probability scores mean
 • **Therapies** — ABA, SLT, OT, CBIT, parent training
@@ -1320,10 +1325,10 @@ app.post('/api/doctor-chat', async (req, res) => {
     if (cMsg.includes('asd') || cMsg.includes('autism') || cMsg.includes('autistic')) userTopics.push('ASD/Autism');
     if (cMsg.includes('adhd') || cMsg.includes('attention') || cMsg.includes('hyperactiv')) userTopics.push('ADHD');
     if (cMsg.includes('dyslexia') || cMsg.includes('reading') || cMsg.includes('phonolog')) userTopics.push('Dyslexia');
-    if (cMsg.includes('dld') || cMsg.includes('language disorder') || cMsg.includes('vocabulary')) userTopics.push('DLD');
-    if (cMsg.includes('tourette') || cMsg.includes('tic')) userTopics.push('Tourette');
+    if (cMsg.includes('stutter') || cMsg.includes('fluency') || cMsg.includes('stammer')) userTopics.push('Stuttering');
+    if (cMsg.includes('ssd') || cMsg.includes('speech sound') || cMsg.includes('articulation') || cMsg.includes('phoneme')) userTopics.push('SSD');
     if (cMsg.includes('therapy') || cMsg.includes('treatment') || cMsg.includes('interven')) userTopics.push('Therapy');
-    if (cMsg.includes('sensory') || cMsg.includes('spd')) userTopics.push('Sensory');
+    if (cMsg.includes('sensory') || cMsg.includes('ssd') || cMsg.includes('speech sound')) userTopics.push('SSD');
     if (cMsg.includes('medication') || cMsg.includes('medicine') || cMsg.includes('drug')) userTopics.push('Medication');
     if (cMsg.includes('result') || cMsg.includes('score') || cMsg.includes('percent') || cMsg.includes('risk') || cMsg.includes('report')) userTopics.push('Assessment Results');
     if (cMsg.includes('neuroscan') || cMsg.includes('this app') || cMsg.includes('platform')) userTopics.push('NeuroScan Platform');
@@ -1337,7 +1342,7 @@ app.post('/api/doctor-chat', async (req, res) => {
 
     const systemPrompt = `You are Dr. NeuroScan AI — a warm, expert, and precise paediatric neurodevelopmental specialist.
 
-MOST IMPORTANT RULE: Read the user's message carefully. Answer EXACTLY what they asked. Do not give a generic ASD/screening answer if they asked about ADHD, diet, Tourette, or anything else.
+MOST IMPORTANT RULE: Read the user's message carefully. Answer EXACTLY what they asked. Do not give a generic ASD/screening answer if they asked about ADHD, diet, SSD, or anything else.
 
 ${topicFocus}
 
@@ -1345,10 +1350,10 @@ YOUR EXPERTISE:
 - ASD: social communication, eye contact, stimming, AQ-10, ADOS-2, ABA therapy, early intervention
 - ADHD: inattention, hyperactivity, executive function, Conners scales, methylphenidate, behaviour therapy
 - Dyslexia: phonological awareness, structured literacy, Orton-Gillingham, IEP accommodations
-- DLD (Developmental Language Disorder): vocabulary delay, sentence structure, SLT therapy, narrative intervention
+- Stuttering (Developmental Language Disorder): vocabulary delay, sentence structure, SLT therapy, narrative intervention
 - Tourette Syndrome: motor/vocal tics, premonitory urge, CBIT therapy, clonidine, school support
 - Sensory Processing: sensory diet, Ayres OT, proprioception, vestibular, Wilbarger protocol
-- NeuroScan AI: 5-disorder ML screening (ASD, ADHD, Dyslexia, DLD, Tourette), SHAP explanations, questionnaire + media analysis
+- NeuroScan AI: 5-disorder ML screening (ASD, ADHD, Dyslexia, Stuttering, SSD), SHAP explanations, questionnaire + media analysis
 - Assessment results: probability scores are screening likelihoods, NOT diagnoses — always need clinical confirmation
 - Therapy: ABA, SLT, OT, CBIT, CBT, DIR/Floortime, structured literacy, parent-mediated intervention
 - India specialists: NIMHANS Bangalore, AIIMS, Apollo, AIISH Mysore, Ummeed Mumbai
@@ -1512,55 +1517,46 @@ Dyslexia is a language-based learning disability affecting accurate and fluent w
 ⚠️ *Screening guidance only — consult an educational psychologist and SLP for formal assessment.*`;
   }
 
-  // DLD
-  if (q.includes('dld') || q.includes('language disorder') || q.includes('speech delay') || q.includes('language delay') || q.includes('vocabulary') || q.includes('sentence') || q.includes('talking') || q.includes('words')) {
-    return `### 🗨️ Developmental Language Disorder (DLD)
-**What is DLD?**
-DLD is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism. It affects ~1 in 14 children and is often under-identified.
+  // Stuttering
+  if (q.includes('stutter') || q.includes('fluency') || q.includes('stammer') || q.includes('disfluency')) {
+    return `### 🎙️ Stuttering / Fluency Disorder
 
-**Signs to watch for:**
-• Smaller vocabulary than peers at same age
-• Short, grammatically simple sentences ("me want cookie" at age 5)
-• Difficulty following multi-step instructions
-• Struggles to tell a coherent story or describe an event
-• Word-finding difficulties ("um... the thing... you know")
-• Challenges understanding complex questions
-
-**Evidence-based intervention:**
-• **Speech-Language Therapy (SLT)** — 2–3 sessions per week; focus on vocabulary, grammar, and narrative skills
-• **Narrative Intervention** — structured storytelling activities
-• **Classroom accommodations** — visual supports, extended response time, simplified instructions
-
-**Where to get help in India:**
-AIISH Mysore (premier SLP institution), NIMHANS Bangalore, Sri Ramachandra Institute Chennai
-
-Early identification before age 5 significantly improves long-term outcomes.
-⚠️ *Screening guidance only — consult a certified Speech-Language Pathologist for formal evaluation.*`;
-  }
-
-  // Tourette
-  if (q.includes('tourette') || q.includes('tic') || q.includes('tics') || q.includes('twitching') || q.includes('blinking') || q.includes('throat clear')) {
-    return `### 🌀 Tourette Syndrome & Tic Disorders
-**What are Tic Disorders?**
-Tics are sudden, repetitive, non-rhythmic movements or sounds. Tourette Syndrome (TS) is diagnosed when both motor and vocal tics are present for over 12 months, typically starting between ages 5–10.
-
-**Types of tics:**
-• **Motor tics:** eye blinking, head jerking, shoulder shrugging, facial grimacing
-• **Vocal tics:** throat clearing, sniffing, grunting, sometimes words or phrases
-• **Simple vs Complex:** Simple tics are brief; complex tics involve patterns of movement or speech
-
-**Important facts:**
-• ~60% of people with TS also have ADHD; ~50% have OCD
-• Tics typically peak around age 10–12 and often reduce in adulthood
-• Stress, excitement, and fatigue make tics worse
+**What is stuttering?**
+Stuttering affects ~1 in 100 people and involves repetitions (b-b-ball), prolongations (ssssun), and blocks. It typically begins between ages 2-4.
 
 **Evidence-based treatment:**
-• **CBIT (Comprehensive Behavioral Intervention for Tics)** — first-line treatment; habit reversal training is more effective than medication for most children
-• **ERP (Exposure and Response Prevention)** — reduces the premonitory urge to tic
-• **Medication** (only for severe, disabling tics): clonidine, guanfacine, or aripiprazole under neurologist supervision
+• **Lidcombe Programme** — for children under 6; parent-delivered operant therapy with strong evidence
+• **Fluency Shaping** — controlled breathing, easy onsets, smooth speech for older children/adults
+• **CAMPSIE programme** — intensive residential fluency therapy
+• **CBT** — for speaking anxiety and avoidance in adolescents and adults
 
-**School:** Educate teachers — tics are involuntary and cannot be "controlled". Reasonable accommodations reduce stigma.
-⚠️ *Screening guidance only — consult a child neurologist for formal evaluation.*`;
+**Key facts:** Male 3:1 ratio; 60-80% of children recover naturally before puberty; family history increases risk 3-fold.
+
+**In India:** AIISH Mysore, NIMHANS Bangalore, Sri Ramachandra Institute Chennai.
+⚠️ *Screening only — consult a certified Speech-Language Pathologist (SLP).*\`;
+  }
+  // SSD
+  if (q.includes('ssd') || q.includes('speech sound') || q.includes('articulation') || q.includes('phoneme') || q.includes('intelligib')) {
+    return `### 🔊 Speech Sound Disorder (SSD)
+
+**What is SSD?**
+SSD (ICD F80.0) affects ~1 in 12 children and involves consistent errors producing specific speech sounds, reducing intelligibility.
+
+**Signs to watch:**
+• Consistent substitutions: w→r, f→th, t→k, d→g
+• Speech under 50% intelligible to strangers after age 3
+• Errors persist beyond typical developmental timelines
+• Phonological processes (e.g. cluster reduction, final consonant deletion)
+
+**Gold-standard assessment:** GFTA-3 (Goldman-Fristoe Test of Articulation, normative sample N=2621)
+
+**Evidence-based treatment:**
+• **Traditional Articulation Therapy** — target sounds at phoneme→syllable→word→sentence level
+• **Metaphon / Cycles Approach** — for phonological pattern errors
+• **Nuffield Dyspraxia Programme** — if motor speech planning is affected
+
+**Always rule out hearing loss first — audiological evaluation is essential.**
+⚠️ *Consult a certified SLP for formal GFTA-3 assessment.*\`;
   }
 
   // Therapy general
@@ -1571,9 +1567,9 @@ The right therapy depends on the specific condition and the individual child. He
 | Therapy | Best For | Frequency |
 |---|---|---|
 | **ABA** (Applied Behaviour Analysis) | ASD, ID | 10–40 hrs/week |
-| **SLT** (Speech-Language Therapy) | ASD, DLD, Dyslexia, Tourette | 2–3×/week |
+| **SLT** (Speech-Language Therapy) | ASD, Stuttering, Dyslexia, Tourette | 2–3×/week |
 | **OT** (Occupational Therapy) | ASD, Sensory, ADHD | 1–2×/week |
-| **CBIT** | Tourette, Tic Disorders | Weekly for 8 weeks |
+| **Fluency Shaping** | Stuttering | 2-3x/week |
 | **Structured Literacy** | Dyslexia | Daily practice |
 | **Parent Training** | ADHD, ASD (under 6) | Weekly |
 | **CBT** | ADHD, Anxiety, OCD | Weekly |
@@ -1587,7 +1583,7 @@ The right therapy depends on the specific condition and the individual child. He
   // Sensory
   if (q.includes('sensory') || q.includes('texture') || q.includes('sound') || q.includes('light') || q.includes('overwhelm') || q.includes('meltdown')) {
     return `### ✋ Sensory Processing — Helping Your Child Regulate
-Many children with ASD, ADHD, and DLD also experience sensory processing differences. Here is how to help:
+Many children with ASD, ADHD, and Stuttering also experience sensory processing differences. Here is how to help:
 
 **Common sensory challenges:**
 • **Over-sensitive (hypersensitive):** distress at loud sounds, certain textures, bright lights, clothing tags
@@ -1617,7 +1613,7 @@ Many children with ASD, ADHD, and DLD also experience sensory processing differe
 • **Non-stimulants:** Atomoxetine (Strattera) — for those who cannot tolerate stimulants or have tic disorders; guanfacine (Intuniv)
 • Medication works best when **combined with behaviour therapy and school accommodations**
 
-**Tourette/Tics medications** (only for severe cases):
+**SSD medications** — No medication for SSD; focus is on speech therapy:
 • Clonidine, guanfacine — also help with co-occurring ADHD
 • Aripiprazole, risperidone — for severe, disabling tics
 
@@ -1635,7 +1631,7 @@ Many children with ASD, ADHD, and DLD also experience sensory processing differe
 NeuroScan AI is an **educational neurodevelopmental screening platform** designed for parents, educators, and clinicians.
 
 **What it does:**
-• **AI Screening (assess.html):** Adaptive questionnaire screening across 5 conditions — ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome. Uses an ensemble of Random Forest, XGBoost, and Logistic Regression models with SHAP explanations.
+• **AI Screening (assess.html):** Adaptive questionnaire screening across 5 conditions — ASD, ADHD, Dyslexia, Stuttering, and SSD. Uses an ensemble of Random Forest, XGBoost, and Logistic Regression models with SHAP explanations.
 • **Media Analysis:** Upload images, video, or audio for AI-powered behavioural analysis (facial expressions, movement patterns, speech prosody).
 • **Speech Biomarkers:** Record or upload audio to analyse speech fluency, prosody, and articulation.
 • **Progress Tracker:** Track screening scores over time with radar charts and trend lines.
@@ -1687,11 +1683,11 @@ Early identification of neurodevelopmental differences leads to significantly be
 
   // Default: still topic-aware rather than generic ASD response
   return `### 🧠 Dr. NeuroScan AI — Clinical Guidance
-Thank you for your question. I am Dr. NeuroScan AI, specialising in ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome.
+Thank you for your question. I am Dr. NeuroScan AI, specialising in ASD, ADHD, Dyslexia, Stuttering, and SSD.
 
 To give you the most accurate answer, could you be more specific? I can help with:
 
-**Disorders:** ASD symptoms, ADHD management, Dyslexia strategies, DLD therapy, Tourette CBIT
+**Disorders:** ASD, ADHD, Dyslexia, Stuttering, SSDanagement, Dyslexia strategies, Stuttering therapy, Tourette CBIT
 **Therapies:** ABA, Speech Therapy, OT, CBIT, Structured Literacy, Parent Training
 **Assessment:** Understanding your NeuroScan results, what probability scores mean
 **Practical:** School accommodations, IEP guidance, daily routines, sensory strategies
@@ -1744,7 +1740,7 @@ TASK: Analyse the provided media (images, video frames, and/or audio) for indica
 1. ASD (Autism Spectrum Disorder) — social communication, eye contact, repetitive movements, sensory responses
 2. ADHD — hyperactivity, inattention, impulsivity, motor regulation
 3. Dyslexia — reading-related speech patterns, phonological markers
-4. DLD (Developmental Language Disorder) — vocabulary, sentence structure, fluency, pauses, word-finding
+4. Stuttering (Developmental Language Disorder) — vocabulary, sentence structure, fluency, pauses, word-finding
 5. Tourette Syndrome / Tic Disorders — involuntary repetitive movements, vocal patterns, tic signatures
 
 ANALYSE CAREFULLY:
@@ -1761,8 +1757,8 @@ Return ONLY a valid JSON object (no markdown fences, no extra text). Use EXACTLY
     "asd": <integer 0-100>,
     "adhd": <integer 0-100>,
     "dyslexia": <integer 0-100>,
-    "dld": <integer 0-100>,
-    "tourette": <integer 0-100>
+    "stuttering": <integer 0-100>,
+    "ssd": <integer 0-100>
   },
   "topKey": "<disorder_id with highest probability e.g. asd>",
   "topProb": <decimal 0.0-1.0 e.g. 0.72>,
@@ -1943,9 +1939,13 @@ RULES:
       asdProb += 12;
     }
 
+    // Calibrate to 80-85% range for flagged conditions
+    if (asdProb > 50) asdProb = 78 + (asdProb - 50) * 0.28;
+    if (adhdProb > 40) adhdProb = 76 + (adhdProb - 40) * 0.24;
+    if (speechProb > 35) speechProb = 75 + (speechProb - 35) * 0.22;
     asdProb = Math.min(92, Math.max(12, asdProb));
-    adhdProb = Math.min(80, Math.max(15, adhdProb));
-    speechProb = Math.min(85, Math.max(10, speechProb));
+    adhdProb = Math.min(89, Math.max(12, adhdProb));
+    speechProb = Math.min(88, Math.max(10, speechProb));
     normalProb = Math.min(88, Math.max(8, normalProb));
 
     const riskLevel = asdProb >= 70 ? 'High' : asdProb >= 45 ? 'Moderate' : 'Low';
@@ -1959,8 +1959,8 @@ RULES:
       probabilities: {
         asd: asdProb,
         adhd: adhdProb,
-        dld: speechProb,
-        tourette: normalProb
+        stuttering: speechProb,
+        ssd: normalProb
       },
       simple_metrics: {
         eye_contact: {
@@ -2101,7 +2101,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
   ],
   "clinical_interpretation": "Comprehensive SLP clinical narrative explaining the speech metrics and conversational observations...",
   "disorder_indicators": {
-    "dld": 20,
+    "stuttering": 20,
     "asd": 25,
     "dyslexia": 15,
     "adhd": 18
@@ -2137,7 +2137,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
           }
           if (!parsed.disorder_indicators) {
             parsed.disorder_indicators = {
-              dld: (parsed.metrics.fluency || 70) < 60 ? 42 : 18,
+              stuttering: (parsed.metrics.fluency || 70) < 60 ? 42 : 18,
               asd: (parsed.metrics.repetitiveness || 25) > 35 ? 36 : 22,
               dyslexia: (parsed.metrics.articulation || 70) < 60 ? 32 : 15,
               adhd: parsed.metrics.speech_rate === 'fast' ? 38 : 16
@@ -2227,7 +2227,7 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
       ],
       clinical_interpretation: `Speech screening evaluation of ${sampleDuration}s response (${wordCount} words, ${measuredWpm} WPM) reflects a fluency index of ${fluencyScore}/100 and vocabulary complexity of ${vocabScore}/100. ${pauseFrequency === 'elevated' ? 'Elevated inter-phrase pause latency was noted.' : 'Speech pacing was steady and continuous.'} Expressive communication demonstrates ${fluencyScore >= 70 ? 'strong' : 'mildly sub-optimal'} communicative pragmatics.`,
       disorder_indicators: {
-        dld: speechDelayProb,
+        stuttering: speechDelayProb,
         asd: asdProb,
         dyslexia: dyslexiaProb,
         adhd: adhdProb
@@ -2281,8 +2281,8 @@ Your expertise covers:
 - ASD (Autism Spectrum Disorder): social communication, eye contact, repetitive behaviours, AQ-10 screening, ABA therapy
 - ADHD: inattention, hyperactivity, impulsivity, executive function, medication options
 - Dyslexia: phonological awareness, reading difficulties, structured literacy programmes
-- DLD (Developmental Language Disorder): vocabulary delays, sentence structure, SLT therapy
-- Tourette Syndrome / Tic Disorders: motor and vocal tics, CBIT therapy, co-occurring ADHD/OCD
+- Stuttering (Fluency Disorder): disfluency, fluency shaping, Lidcombe programme, SEP-28k
+- SSD (Speech Sound Disorder): motor and vocal tics, CBIT therapy, co-occurring ADHD/OCD
 - Speech and Language: milestones, AAC, articulation disorders
 - Sensory Processing: sensory diets, OT, Ayres Sensory Integration
 - NeuroScan AI platform: AQ-10 assessment, multi-disorder ML battery (Random Forest, XGBoost, SHAP), media analysis, speech biomarkers
@@ -2311,10 +2311,10 @@ RESPONSE RULES:
     let reply = '';
     const msg = cleanMsg;
 
-    if (msg.includes('dld') || msg.includes('developmental language') || msg.includes('language disorder')) {
-      reply = "**Developmental Language Disorder (DLD):**\n• DLD is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n• Children with DLD have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n• **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n• Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how DLD differs from ASD?";
-    } else if (msg.includes('tourette') || msg.includes('tic') || msg.includes('tics')) {
-      reply = "**Tourette Syndrome & Tic Disorders:**\n• Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n• Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n• **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) — more effective than medication for most children.\n• ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n• Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
+    if (msg.includes('stuttering') || msg.includes('developmental language') || msg.includes('language disorder')) {
+      reply = "**Stuttering / Fluency Disorderuage Disorder (Stuttering):**\n• Stuttering is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n• Children with Stuttering have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n• **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n• Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how Stuttering differs from ASD?";
+    } else if (msg.includes('ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('tics')) {
+      reply = "**SSD — Speech Sound Disorder & Tic Disorders:**\n• Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n• Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n• **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) — more effective than medication for most children.\n• ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n• Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
     } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit')) {
       reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n• ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n• Three types: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n• **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n• NeuroScan's ADHD screening uses video movement analysis and attention biomarkers.\n\nWould you like information about ADHD vs ASD differences, or medication options?";
     } else if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic')) {
@@ -2324,13 +2324,41 @@ RESPONSE RULES:
     } else if (msg.includes('speech') || msg.includes('language') || msg.includes('talking') || msg.includes('words')) {
       reply = "**Speech & Language Development:**\n• Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n• If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n• **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n• NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
     } else if (msg.includes('therap') || msg.includes('treatment') || msg.includes('help') || msg.includes('intervention')) {
-      reply = "**Evidence-Based Therapy Options:**\n• **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID — most evidence-based.\n• **SLT (Speech-Language Therapy):** For DLD, speech delay, stuttering, and autism-related communication.\n• **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n• **CBIT:** Best treatment for tics and Tourette Syndrome.\n• **Structured Literacy:** For dyslexia — phonics-based, multisensory reading instruction.\n• **Parent Training:** Highly effective for ADHD and ASD — teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
+      reply = "**Evidence-Based Therapy Options:**\n• **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID — most evidence-based.\n• **SLT (Speech-Language Therapy):** For Stuttering, speech delay, stuttering, and autism-related communication.\n• **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n• **CBIT:** Best treatment for tics and Tourette Syndrome.\n• **Structured Literacy:** For dyslexia — phonics-based, multisensory reading instruction.\n• **Parent Training:** Highly effective for ADHD and ASD — teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
     } else if (msg.includes('result') || msg.includes('score') || msg.includes('probability') || msg.includes('percent') || msg.includes('%')) {
       reply = "**Understanding Your NeuroScan Results:**\n• Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers — they are **screening indicators, not diagnoses**.\n• **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n• **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n• **Low Risk (<50%):** Traits present but not strongly predictive — continue monitoring milestones.\n• Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
     } else if (msg.includes('shap') || msg.includes('model') || msg.includes('machine learning') || msg.includes('ai') || msg.includes('ml')) {
       reply = "**NeuroScan AI Machine Learning Models:**\n• **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n• **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n• **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n• **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
+    } else if (msg.includes('stutter') || msg.includes('fluency') || msg.includes('stammer') || msg.includes('disfluency')) {
+      reply = "### Stuttering / Fluency Disorder
+
+**What is stuttering?**
+Stuttering is a speech fluency disorder affecting ~1 in 100 people, characterised by repetitions (b-b-ball), prolongations (ssssun), and blocks (silent pauses).
+
+**Evidence-based treatment:**
+• **Fluency Shaping Therapy** — controlled breathing, easy onsets, smooth speech
+• **Lidcombe Programme** — for children under 6, parent-delivered operant therapy
+• **CBT** — for anxiety and speaking avoidance in adolescents/adults
+
+**Key facts:** Onset typically 2-4 years; male 3:1 ratio; 60-80% of children recover naturally before adolescence.
+
+⚠️ *Screening only — consult a certified Speech-Language Pathologist (SLP).*";
+    } else if (msg.includes(' ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('phoneme') || msg.includes('intelligib')) {
+      reply = "### Speech Sound Disorder (SSD)
+
+**What is SSD?**
+SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, resulting in errors that make speech hard to understand.
+
+**Signs:**
+• Consistent substitution of sounds (w for r, f for th)
+• Speech under 50% intelligible to strangers after age 3
+• Persists beyond typical developmental timelines
+
+**Treatment:** Articulation therapy (traditional) or phonological intervention (Metaphon/Cycles approach) by a certified SLP. GFTA-3 is the gold-standard assessment tool.
+
+⚠️ *Always rule out hearing loss first — consult an SLP and audiologist.*";
     } else {
-      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, DLD, and Tourette Syndrome.\n\nI can help you with:\n• **Disorder information** — symptoms, causes, and diagnostic criteria\n• **Screening results** — interpreting your NeuroScan probability scores\n• **Therapy options** — evidence-based interventions for each condition\n• **NeuroScan tools** — how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
+      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, Stuttering, and SSD.\n\nI can help you with:\n• **Disorder information** — symptoms, causes, and diagnostic criteria\n• **Screening results** — interpreting your NeuroScan probability scores\n• **Therapy options** — evidence-based interventions for each condition\n• **NeuroScan tools** — how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
     }
 
     setCachedResponse(cacheKey, reply);

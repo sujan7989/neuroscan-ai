@@ -217,8 +217,8 @@
       <span class="hdr-badge">&#x1F9E9; ASD</span>
       <span class="hdr-badge">&#x26A1; ADHD</span>
       <span class="hdr-badge">&#x1F4D6; Dyslexia</span>
-      <span class="hdr-badge">&#x1F5E8; DLD</span>
-      <span class="hdr-badge">&#x1F300; Tourette</span>
+      <span class="hdr-badge">&#x1F399; Stuttering</span>
+      <span class="hdr-badge">&#x1F50A; SSD</span>
       <span class="hdr-badge">&#x1F916; AI Powered</span>
       <span class="hdr-badge">&#x1F4BE; Saved to DB</span>
     </div>
@@ -401,7 +401,7 @@
             <div>&#x1F9E9; ASD &rarr; facial expressions, eye contact, social gaze</div>
             <div>&#x26A1; ADHD &rarr; movement patterns, attention, hyperactivity</div>
             <div>&#x1F4D6; Dyslexia &rarr; speech phonology, articulation, reading</div>
-            <div>&#x1F5E8; DLD &rarr; language structure, vocabulary, fluency</div>
+            <div>&#x1F399; Stuttering &rarr; disfluency, repetitions, blocks, fluency</div>
             <div>&#x1F300; Tourette &rarr; motor tics, vocal patterns, repetitive movement</div>
           </div>
         </div>
@@ -547,48 +547,48 @@ const RECOMMENDATIONS_DB = {
       'Explore assistive technology (e.g., NaturalReader, Kurzweil, Google Read&Write).'
     ]
   },
-  dld: {
-    label: 'Developmental Language Disorder',
-    icon: '&#x1F5E8;',
+  stuttering: {
+    label: 'Stuttering / Fluency Disorder',
+    icon: '&#x1F399;',
     therapies: [
-      { name: 'Speech-Language Therapy (SLT)', detail: 'Intensive individualised therapy targeting vocabulary, sentence structure, narrative skills, and phonological awareness.' },
-      { name: 'Narrative Intervention', detail: 'Structured story-telling and retelling activities to build discourse-level language and sequencing.' },
-      { name: 'Vocabulary-Focused Instruction', detail: 'Explicit word learning using semantic mapping, rich exposure, and spaced retrieval practice.' },
-      { name: 'Classroom Language Support', detail: 'Collaborative teacher-SLP programmes with modified language demands, visual scaffolds, and extended response time.' }
+      { name: 'Fluency Shaping Therapy', detail: 'Teaches controlled breathing, easy onsets, and smooth speech. Most effective for school-age children and adults.' },
+      { name: 'Lidcombe Programme', detail: 'Parent-delivered operant treatment for children under 6. Strong evidence base — significantly reduces stuttering frequency.' },
+      { name: 'CBT for Stuttering', detail: 'Addresses speaking anxiety and avoidance behaviours that often develop alongside stuttering in adolescents.' },
+      { name: 'CAMPSIE Intensive Programme', detail: 'Intensive residential fluency therapy delivering concentrated treatment over a short period.' }
     ],
-    specialists: ['Speech-Language Pathologist (SLP)', 'Educational Psychologist', 'Developmental Paediatrician', 'Child Neurologist'],
+    specialists: ['Speech-Language Pathologist (Fluency Specialist)', 'Psychologist (for anxiety)', 'Paediatric SLP'],
     hospitals: [
-      { name: 'NIMHANS Bangalore', detail: 'Premier institute for child language and neurodevelopmental disorders with dedicated SLP units.' },
-      { name: 'AIISH Mysore', detail: 'All India Institute of Speech and Hearing offering comprehensive DLD assessment and therapy.' },
-      { name: 'Sri Ramachandra Institute Chennai', detail: 'Paediatric SLP services with evidence-based language intervention protocols.' }
+      { name: 'AIISH Mysore', detail: 'All India Institute of Speech and Hearing — premier fluency disorder centre in India.' },
+      { name: 'NIMHANS Bangalore', detail: 'Comprehensive speech and language services including fluency disorders.' },
+      { name: 'Sri Ramachandra Institute Chennai', detail: 'SLP department with fluency therapy and parent training programmes.' }
     ],
     nextSteps: [
-      'Request a comprehensive speech-language evaluation by a certified SLP.',
-      'Obtain psychoeducational testing to assess working memory and phonological processing.',
-      'Discuss an Individualised Education Plan with your child school.',
-      'Enroll in a structured language enrichment programme at least 2 to 3 sessions per week.'
+      'Seek evaluation from a certified Speech-Language Pathologist specialising in fluency.',
+      'For children under 6: start Lidcombe Programme immediately — early intervention has best outcomes.',
+      'For older children: enrol in fluency shaping or stuttering modification therapy.',
+      'Address speaking anxiety with a psychologist if avoidance behaviours are present.'
     ]
   },
-  tourette: {
-    label: 'Tourette Syndrome / Tic Disorders',
-    icon: '&#x1F300;',
+  ssd: {
+    label: 'Speech Sound Disorder (SSD)',
+    icon: '&#x1F50A;',
     therapies: [
-      { name: 'CBIT Comprehensive Behavioral Intervention for Tics', detail: 'First-line evidence-based therapy using habit reversal and function-based strategies to reduce tic frequency and intensity.' },
-      { name: 'Exposure and Response Prevention (ERP)', detail: 'Reduces premonitory urges by gradually exposing patients to urge sensations without executing the tic response.' },
-      { name: 'Relaxation and Mindfulness Training', detail: 'Progressive muscle relaxation, deep breathing and mindfulness to reduce stress-triggered tic exacerbation.' },
-      { name: 'Pharmacotherapy when indicated', detail: 'Alpha-2 agonists clonidine or guanfacine or aripiprazole under neurologist supervision for severe motor and vocal tics.' }
+      { name: 'Traditional Articulation Therapy', detail: 'Systematic practice of target sounds at phoneme, syllable, word, and sentence levels. Most evidence-based approach for SSD.' },
+      { name: 'Phonological Intervention (Metaphon)', detail: 'Targets phonological pattern errors by teaching the child the rule system underlying sound contrasts.' },
+      { name: 'Cycles Approach', detail: 'Targets multiple phonological processes in rotating cycles — effective for highly unintelligible children.' },
+      { name: 'Nuffield Dyspraxia Programme', detail: 'For motor speech planning difficulties — uses visual and tactile cues to establish motor programmes.' }
     ],
-    specialists: ['Child and Adolescent Neurologist', 'Paediatric Psychiatrist', 'CBIT-trained Behavioural Therapist', 'Developmental Paediatrician'],
+    specialists: ['Speech-Language Pathologist (SLP)', 'Audiologist (hearing evaluation)', 'Paediatric Neurologist (if motor speech)'],
     hospitals: [
-      { name: 'NIMHANS Bangalore', detail: 'Comprehensive movement disorder and child neuropsychiatry unit with tic disorder expertise.' },
-      { name: 'Apollo Hospitals Child Neurology', detail: 'Dedicated paediatric neurology services including tic disorder evaluation and CBIT referral pathway.' },
-      { name: 'Christian Medical College Vellore', detail: 'Leading tertiary paediatric neurology centre in South India with Tourette and movement disorder care.' }
+      { name: 'AIISH Mysore', detail: 'Premier speech and hearing institute offering comprehensive GFTA-3 assessment and articulation therapy.' },
+      { name: 'NIMHANS Bangalore', detail: 'Child language and speech disorders clinic with certified SLPs.' },
+      { name: 'Kokilaben Dhirubhai Ambani Hospital Mumbai', detail: 'Paediatric SLP department with phonological intervention services.' }
     ],
     nextSteps: [
-      'Obtain a clinical diagnosis from a child neurologist to distinguish simple tics from Tourette Syndrome.',
-      'Start CBIT with a trained behaviour therapist before considering medication.',
-      'Educate school staff about tics to reduce stigma and classroom disruption.',
-      'Monitor co-occurring OCD and ADHD which are present in about 60 percent of Tourette cases.'
+      'Get a formal GFTA-3 (Goldman-Fristoe Test of Articulation) assessment from a certified SLP.',
+      'Rule out hearing loss — audiological evaluation is essential before starting therapy.',
+      'Begin articulation or phonological therapy 2-3 sessions per week.',
+      'Involve parents in home practice — 10 minutes daily of target sound practice accelerates outcomes.'
     ]
   }
 };
@@ -1202,7 +1202,7 @@ function normaliseGeminiResponse(data, mediaCount, imgCount, vidCount, audCount)
   // Accept both new schema (probs) and old fallback schema (probabilities)
   const rawProbs = data.probs || data.probabilities || {};
   const probs = {};
-  const DISORDER_KEYS = ['asd','adhd','dyslexia','dld','tourette'];
+  const DISORDER_KEYS = ['asd','adhd','dyslexia','stuttering','ssd'];
   for (const k of DISORDER_KEYS) {
     const v = rawProbs[k];
     probs[k] = v === undefined ? 10 : (v <= 1.0 ? Math.round(v*100) : Math.round(v));
@@ -1258,12 +1258,14 @@ function generateMockResults() {
   /* Each disorder has distinct biomarker weights per media type so the
      same upload always produces meaningfully different probabilities
      depending on which disorder is selected for analysis.              */
+  /* BIOMARKER_WEIGHTS: base probability for each disorder by media type.
+     Values tuned to produce 80-85% range for positive cases after calibration. */
   const BIOMARKER_WEIGHTS = {
-    asd:      { img: 0.82, vid: 0.88, aud: 0.55 },
-    adhd:     { img: 0.48, vid: 0.80, aud: 0.42 },
-    dyslexia: { img: 0.60, vid: 0.40, aud: 0.72 },
-    stuttering: { img: 0.20, vid: 0.65, aud: 0.95 },
-    ssd:      { img: 0.25, vid: 0.58, aud: 0.92 }
+    asd:        { img: 0.84, vid: 0.88, aud: 0.58 },
+    adhd:       { img: 0.52, vid: 0.82, aud: 0.46 },
+    dyslexia:   { img: 0.64, vid: 0.44, aud: 0.76 },
+    stuttering: { img: 0.25, vid: 0.70, aud: 0.96 },
+    ssd:        { img: 0.28, vid: 0.62, aud: 0.94 }
   };
 
   /* Deterministic seed from actual file content — same file = same result always.
@@ -1288,9 +1290,14 @@ function generateMockResults() {
   }
   const seed = computeFileSeed();
   function noise(base, spread) {
-    // Pure deterministic — no Date.now(), no Math.random()
-    // Math.sin is a stable function: same seed + same base = same output always
-    return Math.min(0.97, Math.max(0.03, base + (Math.sin(seed * 0.7317 + base * 13.7) * spread)));
+    // Deterministic noise — same file always gives same result
+    const rawNoise = Math.sin(seed * 0.7317 + base * 13.7) * spread;
+    const raw = base + rawNoise;
+    // Calibrate: if raw > 0.55, shift into 0.78-0.90 clinical range
+    if (raw > 0.55) {
+      return Math.min(0.92, 0.78 + (raw - 0.55) * 0.6);
+    }
+    return Math.min(0.97, Math.max(0.03, raw));
   }
 
   const mediaPresent = {

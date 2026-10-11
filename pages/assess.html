@@ -9,7 +9,7 @@
   <style>
     :root {
       --asd:#2d6a4f; --adhd:#e76f51; --dys:#457b9d;
-      --dld:#7c3aed; --ts:#dc2626;
+      --stu:#0891b2; --ssd:#7c3aed;
     }
 
     /* ── PAGE HEADER ── */
@@ -283,7 +283,7 @@
         <button type="button" class="dis-filter-btn" data-dis="ssd" style="padding:7px 16px;border-radius:50px;border:1.5px solid #7c3aed;background:#f5f0ff;color:#7c3aed;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s">&#x1F50A; SSD</button>
       </div>
       <div id="disorderFilterInfo" style="margin-top:10px;font-size:.8rem;color:var(--primary);font-weight:600;padding:8px 12px;background:#edf7f2;border-radius:var(--r-sm);border:1px solid var(--primary-l)">
-        &#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, DLD, and Tourette
+        &#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, Stuttering, and SSD
       </div>
     </div>
 
@@ -492,12 +492,12 @@ window.generateReport = generateReport;
 let activeDisorderFilter = 'all';
 
 const DISORDER_FILTER_INFO = {
-  all:      '&#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, DLD, and Tourette',
+  all:      '&#x1F9EA; <strong>Screening all disorders</strong> &mdash; questions cover ASD, ADHD, Dyslexia, Stuttering, and SSD',
   asd:      '&#x1F9E9; <strong>ASD-focused screening</strong> &mdash; eye contact, social communication, repetitive behaviors, sensory responses',
   adhd:     '&#x26A1; <strong>ADHD-focused screening</strong> &mdash; attention span, hyperactivity, impulse control, task completion',
   dyslexia: '&#x1F4D6; <strong>Dyslexia-focused screening</strong> &mdash; reading, spelling, phonological awareness, letter reversals',
-  dld:      '&#x1F5E8; <strong>DLD-focused screening</strong> &mdash; vocabulary, sentence structure, narrative skills, instruction following',
-  tourette: '&#x1F300; <strong>Tourette-focused screening</strong> &mdash; motor tics, vocal tics, premonitory urge, stress-triggered tics',
+  stuttering: '&#x1F399; <strong>Stuttering-focused screening</strong> &mdash; vocabulary, sentence structure, narrative skills, instruction following',
+  ssd:      '&#x1F50A; <strong>SSD-focused screening</strong> &mdash; motor tics, vocal tics, premonitory urge, stress-triggered tics',
 };
 
 
