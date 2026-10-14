@@ -240,12 +240,47 @@ export function predictMultiDisorder(answers = {}, demographics = {}) {
   // Each disorder scored independently using its own clinical feature set.
   // Calibrated to produce 80-88% for strong positive profiles.
 
-  const age    = parseFloat(demographics.age || demographics.Age || 8) || 8;
-  const family = [true,1,'yes','Yes','true'].includes(demographics.family_history || demographics.family || demographics.austim || false) ? 1 : 0;
-  const jaund  = [true,1,'yes','Yes','true'].includes(demographics.jaundice || false) ? 1 : 0;
+  // Support fields coming in answers OR demographics (frontend may send either)
+  const merged = Object.assign({}, demographics, answers);
+  const age    = parseFloat(merged.age || merged.Age || 8) || 8;
+  const family = [true,1,'yes','Yes','true','1'].includes(
+    merged.family_history_asd || merged.family_history || merged.family || merged.austim || false) ? 1 : 0;
+  const jaund  = [true,1,'yes','Yes','true','1'].includes(
+    merged.neonatal_jaundice || merged.jaundice || false) ? 1 : 0;
 
+  // Field alias map: internal q_key -> possible frontend field names
+  const FIELD_ALIASES = {
+    'q_eye_contact':         ['eye_contact', 'eyecontact', 'q_eye_contact'],
+    'q_social_interaction':  ['social_reciprocity', 'social_interaction', 'socialreciprocity'],
+    'q_repetitive_behavior': ['repetitive_behaviors', 'repetitive_behavior', 'repetitivebehaviors'],
+    'q_routine':             ['routine_adherence', 'routine', 'routineadherence'],
+    'q_special_interests':   ['special_interests', 'specialinterests'],
+    'q_sensory_response':    ['sensory_sensitivity', 'sensory_response', 'sensorysensitivity'],
+    'q_anxiety_social':      ['anxiety_level', 'anxiety_social', 'anxietylevel'],
+    'q_attention_span':      ['attention_span', 'attention', 'attentionspan', 'inattention'],
+    'q_hyperactivity':       ['hyperactivity', 'hyperactive'],
+    'q_emotional_regulation':['emotional_regulation', 'emotionalregulation', 'emotional'],
+    'q_impulsivity':         ['impulsivity', 'impulsive'],
+    'q_reading':             ['reading_difficulty', 'reading', 'readingdifficulty'],
+    'q_phonological':        ['phonological_awareness', 'phonological', 'phonologicalawareness'],
+    'q_spelling':            ['spelling_difficulty', 'spelling'],
+    'q_reading_fluency':     ['reading_fluency', 'readingfluency'],
+    'q_speech_fluency':      ['speech_fluency', 'fluency', 'speechfluency', 'disfluency'],
+    'q_language_development':['language_development', 'languagedevelopment', 'language'],
+    'q_articulation':        ['articulation_errors', 'articulation'],
+    'q_intelligibility':     ['speech_intelligibility', 'intelligibility'],
+  };
   function ans(k, def=0) {
-    const v = answers[k] ?? answers[k.replace('q_','').replace(/_/g,'')] ?? def;
+    // Try exact match, then aliases, then strip q_ with/without underscores
+    let v = merged[k];
+    if (v === undefined && FIELD_ALIASES[k]) {
+      for (const alias of FIELD_ALIASES[k]) {
+        if (merged[alias] !== undefined) { v = merged[alias]; break; }
+      }
+    }
+    if (v === undefined) v = merged[k.replace('q_','')];
+    if (v === undefined) v = merged[k.replace('q_','').replace(/_/g,'')];
+    if (v === undefined) v = def;
     return Math.max(0, Math.min(4, parseFloat(v) || 0));
   }
 
