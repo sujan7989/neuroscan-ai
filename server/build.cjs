@@ -10,7 +10,7 @@ const path = require('path');
 const SERVER_DIR = __dirname;
 const ROOT_DIR   = path.join(__dirname, '..');
 
-// ── 1. Copy metrics JSON ──────────────────────────────────────────
+// ── 1. Copy metrics JSON + ML model artifacts ──────────────────────
 const mlSrc = path.join(SERVER_DIR, 'ml_artifacts');
 const mlDst = path.join(ROOT_DIR, 'ml', 'artifacts');
 if (fs.existsSync(mlSrc)) {

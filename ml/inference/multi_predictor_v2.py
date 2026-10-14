@@ -12,7 +12,12 @@ import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.insert(0, ROOT)
-ART_DIR = os.path.join(os.path.dirname(__file__), '../artifacts')
+
+# ART_DIR: check server/ml_artifacts first (contains committed joblib files),
+# then fall back to ml/artifacts (for local dev)
+_server_art = os.path.join(os.path.dirname(__file__), '../../server/ml_artifacts')
+_ml_art     = os.path.join(os.path.dirname(__file__), '../artifacts')
+ART_DIR = _server_art if os.path.exists(os.path.join(_server_art, 'asd_rf.joblib')) else _ml_art
 
 # ── Disorder metadata ─────────────────────────────────────────────
 DISORDERS_V2 = {

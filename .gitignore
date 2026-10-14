@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules/
 server/node_modules/
 
@@ -56,3 +56,4 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
