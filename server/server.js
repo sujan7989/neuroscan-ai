@@ -1,5 +1,5 @@
-﻿// ================================================================
-//  NeuroScan AI — Express Backend Server
+// ================================================================
+//  NeuroScan AI - Express Backend Server
 //  Supports MongoDB with seamless in-memory fallback for local dev & demo.
 //  Firebase Auth still supported for client authentication.
 //
@@ -60,7 +60,7 @@ const app = express();
 // Falls back to 3000 for local development
 const PORT = process.env.PORT || 3000;
 
-// ── MIDDLEWARE ────────────────────────────────────────────────
+// -- MIDDLEWARE ------------------------------------------------
 app.use(cors({
   origin: '*',
   credentials: true
@@ -68,7 +68,7 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files — on Render, serve from server/public/ (built fresh each deploy)
+// Serve static files - on Render, serve from server/public/ (built fresh each deploy)
 // On local dev, fall back to repo root (../). This prevents stale-cache mojibake.
 const publicDir = path.join(__dirname, 'public');
 const rootDir   = path.join(__dirname, '..');
@@ -85,14 +85,14 @@ const staticOptions = {
 if (fs.existsSync(publicDir) && fs.existsSync(path.join(publicDir, 'index.html'))) {
   // Render: serve from built public/ directory
   app.use(express.static(publicDir, staticOptions));
-  console.log('✅ Serving static files from server/public/');
+  console.log('  Serving static files from server/public/');
 } else {
   // Local dev: serve from repo root
   app.use(express.static(rootDir, staticOptions));
-  console.log('✅ Serving static files from repo root');
+  console.log('  Serving static files from repo root');
 }
 
-// ── DATABASE LAYER (MongoDB + In-Memory Fallback) ─────────────
+// -- DATABASE LAYER (MongoDB + In-Memory Fallback) -------------
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017';
 const DB_NAME   = process.env.DB_NAME   || 'neuroscan';
 
@@ -189,7 +189,7 @@ async function connectMongo() {
     });
     await client.connect();
     mongoDbInstance = client.db(DB_NAME);
-    console.log(`✅ MongoDB connected — database: ${DB_NAME}`);
+    console.log(`  MongoDB connected - database: ${DB_NAME}`);
 
     // Create indexes safely
     await mongoDbInstance.collection('users').createIndex({ uid: 1 }, { unique: true }).catch(() => {});
@@ -197,14 +197,14 @@ async function connectMongo() {
     await mongoDbInstance.collection('assessments').createIndex({ createdAt: -1 }).catch(() => {});
     await mongoDbInstance.collection('chats').createIndex({ uid: 1, createdAt: 1 }).catch(() => {});
     await mongoDbInstance.collection('referrals').createIndex({ uid: 1, createdAt: -1 }).catch(() => {});
-    console.log('✅ Indexes ensured');
+    console.log('  Indexes ensured');
   } catch (err) {
     isUsingFallbackStore = true;
-    console.warn(`ℹ️ MongoDB connection not available (${err.message}). Seamlessly operating in-memory data store.`);
+    console.warn(`i  MongoDB connection not available (${err.message}). Seamlessly operating in-memory data store.`);
   }
 }
 
-// ── FIREBASE ADMIN INIT ───────────────────────────────────────
+// -- FIREBASE ADMIN INIT ---------------------------------------
 function initFirebaseAdmin() {
   if (admin.apps.length > 0) return;
 
@@ -214,23 +214,23 @@ function initFirebaseAdmin() {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
       });
-      console.log('✅ Firebase Admin initialized with service account');
+      console.log('  Firebase Admin initialized with service account');
     } catch (e) {
-      console.warn('⚠️ Could not parse FIREBASE_SERVICE_ACCOUNT JSON:', e.message);
+      console.warn('!  Could not parse FIREBASE_SERVICE_ACCOUNT JSON:', e.message);
     }
   } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     try {
       admin.initializeApp({ credential: admin.credential.applicationDefault() });
-      console.log('✅ Firebase Admin initialized with application default credentials');
+      console.log('  Firebase Admin initialized with application default credentials');
     } catch (e) {
-      console.warn('⚠️ Could not init Firebase Admin with application default:', e.message);
+      console.warn('!  Could not init Firebase Admin with application default:', e.message);
     }
   } else {
-    console.log('ℹ️ Firebase Admin service credentials not provided — running in dev/demo auth mode.');
+    console.log('i  Firebase Admin service credentials not provided - running in dev/demo auth mode.');
   }
 }
 
-// ── AUTH MIDDLEWARE ───────────────────────────────────────────
+// -- AUTH MIDDLEWARE -------------------------------------------
 async function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   const devUidHeader = req.headers['x-dev-uid'] || req.headers['x-user-id'];
@@ -284,7 +284,7 @@ async function requireAuth(req, res, next) {
   }
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
+// -- HELPERS ---------------------------------------------------
 function toId(doc) {
   if (!doc) return null;
   const { _id, ...rest } = doc;
@@ -295,10 +295,10 @@ function safeObjectId(id) {
   try { return new ObjectId(id); } catch { return null; }
 }
 
-// ── PUBLIC CONFIG ENDPOINT (exposes only safe, public Firebase client keys) ──
+// -- PUBLIC CONFIG ENDPOINT (exposes only safe, public Firebase client keys) --
 // Serves Firebase client-side config from environment variables so no credentials
 // are ever hardcoded in source files.  All values here are intentionally PUBLIC
-// (Firebase client keys are not secrets — they identify the project, not grant admin
+// (Firebase client keys are not secrets - they identify the project, not grant admin
 // access). Real secrets (GEMINI_API_KEY, MONGO_URI, FIREBASE_SERVICE_ACCOUNT) are
 // never returned here.
 app.get('/api/config', (_req, res) => {
@@ -313,7 +313,7 @@ app.get('/api/config', (_req, res) => {
   });
 });
 
-// ── HEALTH CHECK ──────────────────────────────────────────────
+// -- HEALTH CHECK ----------------------------------------------
 app.get('/api/health', async (_req, res) => {
   if (mongoDbInstance && !isUsingFallbackStore) {
     try {
@@ -326,12 +326,12 @@ app.get('/api/health', async (_req, res) => {
   res.json({ status: 'ok', db: 'in-memory', timestamp: new Date().toISOString() });
 });
 
-// ── AUTH VERIFY ───────────────────────────────────────────────
+// -- AUTH VERIFY -----------------------------------------------
 app.post('/api/auth/verify', requireAuth, (req, res) => {
   res.json({ uid: req.uid, email: req.userEmail, name: req.userName });
 });
 
-// ── USERS ─────────────────────────────────────────────────────
+// -- USERS -----------------------------------------------------
 app.get('/api/users/:uid', requireAuth, async (req, res) => {
   try {
     const targetUid = req.params.uid;
@@ -398,7 +398,7 @@ app.put('/api/users/:uid', requireAuth, async (req, res) => {
   }
 });
 
-// ── ASSESSMENTS ───────────────────────────────────────────────
+// -- ASSESSMENTS -----------------------------------------------
 app.post('/api/assessments', requireAuth, async (req, res) => {
   try {
     const now = new Date();
@@ -520,7 +520,7 @@ app.delete('/api/assessments/:id', requireAuth, async (req, res) => {
   }
 });
 
-// ── UNIFIED MULTIMODAL SESSIONS ──────────────────────────────
+// -- UNIFIED MULTIMODAL SESSIONS ------------------------------
 app.post('/api/session/save', async (req, res) => {
   try {
     const session = req.body;
@@ -574,7 +574,7 @@ app.delete('/api/session/:id', async (req, res) => {
   }
 });
 
-// ── CHATS ─────────────────────────────────────────────────────
+// -- CHATS -----------------------------------------------------
 app.post('/api/chats', requireAuth, async (req, res) => {
   try {
     if (!req.body.role || !req.body.text) {
@@ -642,7 +642,7 @@ app.delete('/api/chats/:uid', requireAuth, async (req, res) => {
   }
 });
 
-// ── REFERRALS ─────────────────────────────────────────────────
+// -- REFERRALS -------------------------------------------------
 app.post('/api/referrals', requireAuth, async (req, res) => {
   try {
     const doc = {
@@ -687,7 +687,7 @@ app.get('/api/referrals/:uid', requireAuth, async (req, res) => {
   }
 });
 
-// ── REAL ML ENGINE ROUTES ─────────────────────────────────────
+// -- REAL ML ENGINE ROUTES -------------------------------------
 // Resolve the correct Python executable: 'python' on Windows, 'python3' on Unix/Mac.
 // BUG-6 FIX: Previously hardcoded 'python3' which fails on Windows where the
 // executable is typically 'python'. Now probes candidates in platform order and
@@ -764,7 +764,7 @@ function runPythonScript(relativeScriptPath, payload = {}) {
   });
 }
 
-// POST /api/ml/predict — Real ASD ML prediction (Logistic Regression, Random Forest, Gradient Boosting / XGBoost)
+// POST /api/ml/predict - Real ASD ML prediction (Logistic Regression, Random Forest, Gradient Boosting / XGBoost)
 app.post('/api/ml/predict', async (req, res) => {
   const input = req.body || {};
   try {
@@ -782,7 +782,7 @@ app.post('/api/ml/predict', async (req, res) => {
   }
 });
 
-// POST /api/ml/assess — Real Multi-Disorder ML assessment (7 disorders + SHAP + recommendations)
+// POST /api/ml/assess - Real Multi-Disorder ML assessment (7 disorders + SHAP + recommendations)
 app.post('/api/ml/assess', async (req, res) => {
   const payload = {
     answers: req.body.answers || {},
@@ -803,7 +803,7 @@ app.post('/api/ml/assess', async (req, res) => {
   }
 });
 
-// GET /api/ml/metrics — Model performance & cross-validation metrics
+// GET /api/ml/metrics - Model performance & cross-validation metrics
 app.get('/api/ml/metrics', async (_req, res) => {
   try {
     // Try all possible paths in order: full repo, server subfolder copy, fallback
@@ -840,7 +840,7 @@ app.get('/api/ml/metrics', async (_req, res) => {
   }
 });
 
-// POST /api/ml/retrain — Retrain models on dataset (Admin / Pipeline only)
+// POST /api/ml/retrain - Retrain models on dataset (Admin / Pipeline only)
 app.post('/api/ml/retrain', async (req, res) => {
   const adminKey = req.headers['x-admin-key'] || req.headers['authorization'];
   // Allow execution only in development or with valid admin key
@@ -869,7 +869,7 @@ app.post('/api/ml/retrain', async (req, res) => {
   }
 });
 
-// ── ROBUST GEMINI MODEL GENERATOR WITH DYNAMIC MULTI-TIER FALLBACK ───────
+// -- ROBUST GEMINI MODEL GENERATOR WITH DYNAMIC MULTI-TIER FALLBACK -------
 // BUG-2 FIX: Previous code used 'gemini-3.1-flash-lite' which does not exist
 // and causes all Gemini calls to fail silently. Replaced with valid model names
 // in priority order: latest fast model first, stable fallback second.
@@ -927,7 +927,7 @@ async function generateWithGeminiFallback(ai, contents, config = {}, timeoutMs =
   throw lastError;
 }
 
-// ── GEMINI MULTI-TURN MESSAGE FORMATTER ───────────────────────
+// -- GEMINI MULTI-TURN MESSAGE FORMATTER -----------------------
 function buildGeminiContents(rawMessages) {
   if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
     return [{ role: 'user', parts: [{ text: 'Hello' }] }];
@@ -983,24 +983,24 @@ function buildGeminiContents(rawMessages) {
   return alternating;
 }
 
-// ── COMPREHENSIVE CLINICAL KNOWLEDGE FALLBACK ENGINE ──────────
+// -- COMPREHENSIVE CLINICAL KNOWLEDGE FALLBACK ENGINE ----------
 function generateClinicalDoctorFallback(lastUserMsg = '', language = 'en', patientContext = null) {
   const query = lastUserMsg.toLowerCase();
 
   // Tamil localized response
   if (language === 'ta') {
-    if (query.includes('autism') || query.includes('asd') || query.includes('ஆட்டிசம்')) {
-      return `**ஆட்டிசம் ஸ்பெக்ட்ரம் குறைபாடு (ASD):**\n\nஆட்டிசம் என்பது சமூக தொடர்பு, பேச்சுத்திறன் மற்றும் நடத்தை முறைகளில் வேறுபாடுகளைக் குறிக்கும் ஒரு நரம்பியல் வளர்ச்சி நிலையாகும்.\n\n**முக்கிய அறிகுறிகள்:**\n• 12 மாதங்களில் பெயரை அழைத்தால் திரும்பாமை\n• கண் பார்வை (eye contact) மற்றும் சைகைகள் குறைவு\n• ஒரே மாதிரியான கைகளை ஆட்டுதல் அல்லது பொருட்களை சுழற்றுதல்\n• உரையாடலில் பேச்சுத் தாமதம்\n\n**பரிந்துரைக்கப்படும் சிகிச்சைகள்:**\n• பேச்சுப் பயிற்சி (Speech Therapy)\n• தொழில்முறை பயிற்சி (Occupational Therapy - OT)\n• குழந்தை நல மருத்துவர் அல்லது மனநல மருத்துவரிடம் மதிப்பீடு\n\n⚠️ **மருத்துவ மறுப்பு:** இந்தத் தகவல் கல்வி நோக்கங்களுக்காக மட்டுமே. முறையான நோயறிதலுக்குத் தகுதிவாய்ந்த மருத்துவரை அணுகவும்.`;
+    if (query.includes('autism') || query.includes('asd') || query.includes('        ')) {
+      return `**                              (ASD):**\n\n                            ,                                                                                                  .\n\n**                  :**\n* 12                                      \n*            (eye contact)                       \n*                                                         \n*                           \n\n**                               :**\n*                  (Speech Therapy)\n*                    (Occupational Therapy - OT)\n*                                                          \n\n!  **                :**                                           .                                                        .`;
     }
-    return `வணக்கம், நான் **டாக்டர் நியுரோஸ்கேன் AI**. ஆட்டிசம், ADHD, கற்றல் குறைபாடுகள் மற்றும் பேச்சு தாமதங்கள் குறித்து உங்களுக்கு விளக்க நான் இங்கே உள்ளேன். உங்கள் சந்தேகங்களை கேட்கலாம்.\n\n⚠️ **மருத்துவ மறுப்பு:** முறையான நோயறிதலுக்குத் தகுதிவாய்ந்த மருத்துவரை அணுகவும்.`;
+    return `       ,      **                     AI**.         , ADHD,                                                                                          .                             .\n\n!  **                :**                                                        .`;
   }
 
   // Hindi localized response
   if (language === 'hi') {
-    if (query.includes('autism') || query.includes('asd') || query.includes('ऑटिज्म')) {
-      return `**ऑटिज्म स्पेक्ट्रम डिसऑर्डर (ASD):**\n\nऑटिज्म एक न्यूरोडेवलपमेंटल स्थिति है जो सामाजिक संपर्क, संचार कौशल और दोहराए जाने वाले व्यवहार को प्रभावित करती है।\n\n**प्रारंभिक लक्षण:**\n• नाम पुकारने पर प्रतिक्रिया न देना\n• आंखों से संपर्क (Eye Contact) की कमी\n• हाथों को फड़फड़ाना या बार-बार एक ही क्रिया दोहराना\n• भाषण और भाषा में देरी\n\n**उपचार विकल्प:**\n• स्पीच थेरेपी (Speech Therapy)\n• ऑक्यूपेशनल थेरेपी (OT)\n• बाल न्यूरोलॉजिस्ट से परामर्श\n\n⚠️ **चिकित्सा अस्वीकरण:** यह केवल शैक्षिक जानकारी है। निदान के लिए डॉक्टर से संपर्क करें।`;
+    if (query.includes('autism') || query.includes('asd') || query.includes('      ')) {
+      return `**                           (ASD):**\n\n                                                      ,                                                            \n\n**               :**\n*                                  \n*                 (Eye Contact)       \n*                          -                        \n*                      \n\n**            :**\n*              (Speech Therapy)\n*                   (OT)\n*                             \n\n!  **                 :**                                                                `;
     }
-    return `नमस्ते, मैं **डॉ. न्यूरोस्कैन एआई** हूँ। मैं ऑटिज्म, एडीएचडी, डिस्लेक्सिया और बाल विकास से संबंधित प्रश्नों में आपकी सहायता कर सकता हूँ।\n\n⚠️ **चिकित्सा अस्वीकरण:** निदान के लिए डॉक्टर से संपर्क करें।`;
+    return `      ,     **  .                **                ,        ,                                                                           \n\n!  **                 :**                                    `;
   }
 
   let contextSnippet = '';
@@ -1013,21 +1013,21 @@ function generateClinicalDoctorFallback(lastUserMsg = '', language = 'en', patie
     return `**Speech and Language Developmental Milestones & Guidance:**${contextSnippet}
 Language development varies among children, but specific milestones serve as evidence-based guidelines (AAP & CDC):
 
-• **12 Months**: Babbles with intonation, uses single gestures (waving bye, pointing), responds to name.
-• **18 Months**: Uses at least 6–20 spoken single words; understands simple one-step commands.
-• **24 Months**: Combines two words spontaneously ("want milk", "go car"); 50+ spoken words.
-• **36 Months**: Speaks in 3–4 word sentences; speech is understandable to familiar adults ~75% of the time.
+* **12 Months**: Babbles with intonation, uses single gestures (waving bye, pointing), responds to name.
+* **18 Months**: Uses at least 6-20 spoken single words; understands simple one-step commands.
+* **24 Months**: Combines two words spontaneously ("want milk", "go car"); 50+ spoken words.
+* **36 Months**: Speaks in 3-4 word sentences; speech is understandable to familiar adults ~75% of the time.
 
 **Distinction Between Speech Delay & ASD:**
-• **Isolated Speech Delay**: Child strongly attempts to communicate using gestures, facial expressions, pointing, and eye contact even without words.
-• **ASD-Related Communication Differences**: Child may have reduced social gesturing, limited shared enjoyment, reduced eye contact, or repetitive echoing of phrases (*echolalia*).
+* **Isolated Speech Delay**: Child strongly attempts to communicate using gestures, facial expressions, pointing, and eye contact even without words.
+* **ASD-Related Communication Differences**: Child may have reduced social gesturing, limited shared enjoyment, reduced eye contact, or repetitive echoing of phrases (*echolalia*).
 
 **Recommended Action Steps:**
 1. **Audiology Screening**: Rule out mild conductive hearing loss or fluid behind the eardrum.
 2. **Speech-Language Pathologist (SLP)**: Schedule a pediatric speech evaluation for expressive and receptive language profiling.
 3. **Interactive Home Practice**: Read together daily, narrate routines, pause to allow turns, and respond to all communicative attempts.
 
-⚠️ *This is educational guidance only — please consult a certified Speech-Language Pathologist or pediatrician for a clinical assessment.*`;
+!  *This is educational guidance only - please consult a certified Speech-Language Pathologist or pediatrician for a clinical assessment.*`;
   }
 
   // ADHD / Attention / Hyperactivity
@@ -1036,16 +1036,16 @@ Language development varies among children, but specific milestones serve as evi
 ADHD is a neurodevelopmental disorder characterized by persistent patterns of inattention, hyperactivity, and/or impulsivity across multiple settings (home and school) that impact daily functioning (DSM-5 criteria).
 
 **Core Diagnostic Presentations:**
-• **Predominantly Inattentive Presentation**: Easily distracted, difficulty sustaining focus on tasks, frequent careless mistakes, trouble organizing assignments, misplacing items.
-• **Predominantly Hyperactive-Impulsive Presentation**: Excessive motor restlessness, difficulty remaining seated, constant talking, blurting out answers, difficulty waiting turns.
-• **Combined Presentation**: Features of both inattentive and hyperactive dimensions.
+* **Predominantly Inattentive Presentation**: Easily distracted, difficulty sustaining focus on tasks, frequent careless mistakes, trouble organizing assignments, misplacing items.
+* **Predominantly Hyperactive-Impulsive Presentation**: Excessive motor restlessness, difficulty remaining seated, constant talking, blurting out answers, difficulty waiting turns.
+* **Combined Presentation**: Features of both inattentive and hyperactive dimensions.
 
 **Evidence-Based Management & Interventions:**
-• **Behavioral Therapy & Parent Training**: Positive reinforcement schedules, token economies, and structured visual routines (recommended as first-line for children under 6).
-• **Classroom Accommodations**: 504 Plan or IEP with preferential seating, shortened assignment chunks, frequent movement breaks, and timer cues.
-• **Executive Function Coaching**: Visual checklists, color-coded binders, and working memory strategies.
+* **Behavioral Therapy & Parent Training**: Positive reinforcement schedules, token economies, and structured visual routines (recommended as first-line for children under 6).
+* **Classroom Accommodations**: 504 Plan or IEP with preferential seating, shortened assignment chunks, frequent movement breaks, and timer cues.
+* **Executive Function Coaching**: Visual checklists, color-coded binders, and working memory strategies.
 
-⚠️ *This is educational guidance only — a formal evaluation by a child psychologist, psychiatrist, or developmental pediatrician is required for diagnosis.*`;
+!  *This is educational guidance only - a formal evaluation by a child psychologist, psychiatrist, or developmental pediatrician is required for diagnosis.*`;
   }
 
   // Dyslexia & Learning Difficulties
@@ -1054,39 +1054,39 @@ ADHD is a neurodevelopmental disorder characterized by persistent patterns of in
 Dyslexia is a specific learning disability of neurobiological origin. It is characterized by difficulties with accurate and/or fluent word recognition and by poor spelling and decoding abilities.
 
 **Common Manifestations by Stage:**
-• **Early Childhood**: Difficulty learning nursery rhymes, delayed phonological awareness, trouble naming letters and numbers.
-• **Elementary School**: Slow, effortful reading, confusion with visually similar letters (b/d, p/q) beyond expected developmental age, difficulty sounding out unfamiliar words.
-• **Adolescents & Adults**: Avoidance of reading aloud, slow reading speed, challenges with written expression.
+* **Early Childhood**: Difficulty learning nursery rhymes, delayed phonological awareness, trouble naming letters and numbers.
+* **Elementary School**: Slow, effortful reading, confusion with visually similar letters (b/d, p/q) beyond expected developmental age, difficulty sounding out unfamiliar words.
+* **Adolescents & Adults**: Avoidance of reading aloud, slow reading speed, challenges with written expression.
 
 **Evidence-Based Interventions:**
-• **Structured Literacy (Orton-Gillingham)**: Explicit, systematic, multisensory phonics instruction.
-• **Assistive Technology**: Text-to-speech readers, audiobooks (Bookshare/Learning Ally), and speech-to-text software.
-• **Educational Accommodations**: Extended test time (1.5x), audio exams, and reduced volume of written reading assignments.
+* **Structured Literacy (Orton-Gillingham)**: Explicit, systematic, multisensory phonics instruction.
+* **Assistive Technology**: Text-to-speech readers, audiobooks (Bookshare/Learning Ally), and speech-to-text software.
+* **Educational Accommodations**: Extended test time (1.5x), audio exams, and reduced volume of written reading assignments.
 
-⚠️ *This is educational guidance only — a comprehensive psychoeducational evaluation is recommended.*`;
+!  *This is educational guidance only - a comprehensive psychoeducational evaluation is recommended.*`;
   }
 
   // Speech Sound Disorder (SSD)
   if (query.includes('ssd') || query.includes('speech sound') || query.includes('articulation') || query.includes('phoneme')) {
-      return `### 🔊 Speech Sound Disorder (SSD)
+      return `###   Speech Sound Disorder (SSD)
 SSD affects ~1 in 12 children. It involves consistent errors producing specific speech sounds.
 
 **Signs:**
-• Substitutes sounds (w→r, f→th, t→k)
-• Under 50% intelligible to strangers after age 3
-• Persists beyond typical timelines
+* Substitutes sounds (w->r, f->th, t->k)
+* Under 50% intelligible to strangers after age 3
+* Persists beyond typical timelines
 
 **Treatment:** Articulation therapy (traditional approach) or Metaphon/Cycles phonological intervention by a certified SLP. GFTA-3 is the gold-standard assessment.
 
-⚠️ *Rule out hearing loss first — consult SLP and audiologist.*\`nce, chewing on non-food items.
-• **Vestibular & Proprioceptive Challenges**: Clumsiness, poor balance, low muscle tone.
+!  *Rule out hearing loss first - consult SLP and audiologist.*\`nce, chewing on non-food items.
+* **Vestibular & Proprioceptive Challenges**: Clumsiness, poor balance, low muscle tone.
 
 **Practical Supportive Strategies:**
-• **Sensory Diet**: A tailored schedule of physical activities (trampoline, weighted lap pads, deep pressure massage) designed by an Occupational Therapist.
-• **Environmental Adjustments**: Noise-canceling headphones, seamless socks, dimmed lighting, and designated quiet recovery zones.
-• **Meltdown vs. Tantrum**: A sensory meltdown is an involuntary autonomic nervous system overload; the child needs a quiet, calm, safe space rather than discipline.
+* **Sensory Diet**: A tailored schedule of physical activities (trampoline, weighted lap pads, deep pressure massage) designed by an Occupational Therapist.
+* **Environmental Adjustments**: Noise-canceling headphones, seamless socks, dimmed lighting, and designated quiet recovery zones.
+* **Meltdown vs. Tantrum**: A sensory meltdown is an involuntary autonomic nervous system overload; the child needs a quiet, calm, safe space rather than discipline.
 
-⚠️ *This is educational guidance only — consult an Occupational Therapist (OT) certified in sensory integration.*`;
+!  *This is educational guidance only - consult an Occupational Therapist (OT) certified in sensory integration.*`;
   }
 
   // Toddler & Milestone Questions
@@ -1095,21 +1095,21 @@ SSD affects ~1 in 12 children. It involves consistent errors producing specific 
 Observing developmental patterns early is crucial. The American Academy of Pediatrics recommends universal developmental and autism screening at **9, 18, 24, and 30 months**.
 
 **Key Red Flags Requiring Early Consultation:**
-• No big smiles or joyful expressions by 6 months
-• No back-and-forth sharing of sounds, smiles, or facial expressions by 9 months
-• No babbling or response to name by 12 months
-• No reciprocal gestures (pointing, waving, reaching) by 12–14 months
-• Loss of any previously acquired speech, babbling, or social skills at any age
+* No big smiles or joyful expressions by 6 months
+* No back-and-forth sharing of sounds, smiles, or facial expressions by 9 months
+* No babbling or response to name by 12 months
+* No reciprocal gestures (pointing, waving, reaching) by 12-14 months
+* Loss of any previously acquired speech, babbling, or social skills at any age
 
 **What About Repetitive Behaviors (Flapping, Toe-Walking)?**
-• Transient hand flapping or toe walking can occasionally occur in neurotypical toddlers during high excitement.
-• However, when repetitive behaviors are frequent, rigid, replace social play, or co-occur with reduced shared eye gaze or lack of pointing, an evaluation (such as M-CHAT-R) is recommended.
+* Transient hand flapping or toe walking can occasionally occur in neurotypical toddlers during high excitement.
+* However, when repetitive behaviors are frequent, rigid, replace social play, or co-occur with reduced shared eye gaze or lack of pointing, an evaluation (such as M-CHAT-R) is recommended.
 
 **Recommended Next Steps:**
-• Complete the **NeuroScan AI Clinical Screening** on this platform to review 7 distinct disorder likelihoods.
-• Share results with your pediatrician for an early intervention referral. Early intervention services (0–3 years) do not require a formal medical diagnosis to begin!
+* Complete the **NeuroScan AI Clinical Screening** on this platform to review 7 distinct disorder likelihoods.
+* Share results with your pediatrician for an early intervention referral. Early intervention services (0-3 years) do not require a formal medical diagnosis to begin!
 
-⚠️ *This is educational guidance only — please consult your pediatrician.*`;
+!  *This is educational guidance only - please consult your pediatrician.*`;
   }
 
   // Diet, Sleep & Lifestyle
@@ -1118,38 +1118,38 @@ Observing developmental patterns early is crucial. The American Academy of Pedia
 Scientific research emphasizes that nutrition and sleep strongly modulate cognitive attention, emotional regulation, and sensory tolerance in neurodivergent children.
 
 **Evidence-Based Nutrition Factors:**
-• **Gut-Brain Connection**: Up to 40–70% of autistic children experience gastrointestinal symptoms (constipation, reflux, dysbiosis).
-• **Elimination Diets**: Gluten-free / Casein-free (GFCF) diets show mixed clinical evidence; only adopt under the guidance of a pediatric dietitian to prevent nutritional deficiencies.
-• **Omega-3 Fatty Acids (EPA/DHA)**: Supported by clinical trials for mild improvements in hyperactivity, inattention, and emotional dysregulation.
-• **Picky Eating & Sensory Aversion**: Food selectivity is often driven by sensory textures rather than defiance. Food chaining techniques with an SLP/OT are highly effective.
+* **Gut-Brain Connection**: Up to 40-70% of autistic children experience gastrointestinal symptoms (constipation, reflux, dysbiosis).
+* **Elimination Diets**: Gluten-free / Casein-free (GFCF) diets show mixed clinical evidence; only adopt under the guidance of a pediatric dietitian to prevent nutritional deficiencies.
+* **Omega-3 Fatty Acids (EPA/DHA)**: Supported by clinical trials for mild improvements in hyperactivity, inattention, and emotional dysregulation.
+* **Picky Eating & Sensory Aversion**: Food selectivity is often driven by sensory textures rather than defiance. Food chaining techniques with an SLP/OT are highly effective.
 
 **Sleep Hygiene Protocols:**
-• Consistent bedtime routine with 60-minute digital screen blackout.
-• Weighted blanket or compression sheets for proprioceptive calming.
-• Evaluate for sleep apnea, restless leg syndrome, or melatonin synthesis differences with a physician.
+* Consistent bedtime routine with 60-minute digital screen blackout.
+* Weighted blanket or compression sheets for proprioceptive calming.
+* Evaluate for sleep apnea, restless leg syndrome, or melatonin synthesis differences with a physician.
 
-⚠️ *Always consult a registered pediatric dietitian or physician before introducing supplements or restrictive diets.*`;
+!  *Always consult a registered pediatric dietitian or physician before introducing supplements or restrictive diets.*`;
   }
 
-  // Default — ask user to be more specific rather than forcing an ASD answer
-  return `**Dr. NeuroScan AI — Please ask me something specific!**
+  // Default - ask user to be more specific rather than forcing an ASD answer
+  return `**Dr. NeuroScan AI - Please ask me something specific!**
 
 I can help with:
-• **ASD/Autism** — symptoms, early signs, diagnosis, ABA therapy
-• **ADHD** — attention, hyperactivity, medication, behaviour strategies
-• **Dyslexia** — reading difficulties, structured literacy, school support
-• **Stuttering** — Developmental Language Disorder, speech therapy, vocabulary
-• **Tourette Syndrome** — tics, CBIT therapy, school accommodations
-• **Your NeuroScan results** — what your probability scores mean
-• **Therapies** — ABA, SLT, OT, CBIT, parent training
-• **Sensory processing** — sensory diet, OT, Ayres integration
-• **India resources** — NIMHANS, AIISH Mysore, Apollo, AIIMS
+* **ASD/Autism** - symptoms, early signs, diagnosis, ABA therapy
+* **ADHD** - attention, hyperactivity, medication, behaviour strategies
+* **Dyslexia** - reading difficulties, structured literacy, school support
+* **Stuttering** - Developmental Language Disorder, speech therapy, vocabulary
+* **Tourette Syndrome** - tics, CBIT therapy, school accommodations
+* **Your NeuroScan results** - what your probability scores mean
+* **Therapies** - ABA, SLT, OT, CBIT, parent training
+* **Sensory processing** - sensory diet, OT, Ayres integration
+* **India resources** - NIMHANS, AIISH Mysore, Apollo, AIIMS
 
 Please type your question and I will give you a specific, accurate answer.
-⚠️ *Educational information only — consult a qualified healthcare professional for medical advice.*`;
+!  *Educational information only - consult a qualified healthcare professional for medical advice.*`;
 }
 
-// ── CURATED CLINICAL EVIDENCE BASE (RAG KNOWLEDGE RETRIEVAL) ──
+// -- CURATED CLINICAL EVIDENCE BASE (RAG KNOWLEDGE RETRIEVAL) --
 const CLINICAL_EVIDENCE_BASE = [
   {
     id: 'nice_cg170',
@@ -1251,7 +1251,7 @@ function retrieveClinicalEvidence(queryText, patientContext = null) {
   };
 }
 
-// ── AI ASSISTANT & DOCTOR CHAT API (GEMINI INTEGRATION WITH RAG) ──
+// -- AI ASSISTANT & DOCTOR CHAT API (GEMINI INTEGRATION WITH RAG) --
 app.post('/api/doctor-chat', async (req, res) => {
   try {
     let { messages = [], language = 'en', patientContext = null, explainReport = false } = req.body;
@@ -1266,9 +1266,9 @@ app.post('/api/doctor-chat', async (req, res) => {
     // 1. Instant Greeting Fast-Path (< 5ms response time)
     if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|doctor|dr|help|namaste|vanakkam)(\s+(doctor|dr|dr\.|there|assistant|ai))?[\s!.]*$/i.test(cleanMsg) && !explainReport) {
       const greeting = language === 'ta'
-        ? 'வணக்கம்! நான் டாக்டர் நியூரோஸ்கேன் AI RAG மருத்துவ உதவியாளர். சர்வதேச மருத்துவ வழிகாட்டுதல்கள் (NICE, AAP, DSM-5-TR) அடிப்படையில் உங்களுக்கு எவ்வாறு உதவ முடியும்?'
+        ? '       !                           AI RAG                   .                                  (NICE, AAP, DSM-5-TR)                                             ?'
         : language === 'hi'
-        ? 'नमस्ते! मैं डॉ. न्यूरोस्कैन एआई RAG क्लिनिकल असिस्टेंट हूँ। AAP, NICE एवं DSM-5-TR साक्ष्य-आधारित दिशानिर्देशों के अनुसार मैं आज आपकी क्या सहायता कर सकता हूँ?'
+        ? '      !       .                 RAG                         AAP, NICE     DSM-5-TR        -                                                                  ?'
         : 'Hello! I am **Dr. NeuroScan AI**, Clinical Evidence & RAG Assistant. I provide insights synthesized from validated pediatric guidelines (AAP, NICE CG170, DSM-5-TR, Lancet 2024). How can I assist you with developmental screening, speech acoustics, or your assessment report today?';
       return res.json({ 
         reply: greeting, 
@@ -1312,7 +1312,7 @@ app.post('/api/doctor-chat', async (req, res) => {
 - Gender: ${patientContext?.gender || 'Not specified'}
 - Risk Level: ${patientContext?.riskLevel || patientContext?.scores?.riskBand || 'Assessed'}
 - Fused Risk Estimate: ${patientContext?.riskEstimate || (patientContext?.scores?.riskEstimate ? patientContext.scores.riskEstimate + '%' : '76%')}
-- 95% Confidence / Uncertainty: ${patientContext?.scores?.uncertainty?.level || 'Moderate'} (Margin: ±${patientContext?.scores?.uncertainty?.marginPct || 7}%)
+- 95% Confidence / Uncertainty: ${patientContext?.scores?.uncertainty?.level || 'Moderate'} (Margin:  ${patientContext?.scores?.uncertainty?.marginPct || 7}%)
 - Data Quality: ${patientContext?.scores?.dataQuality?.label || 'Good'}
 - Top Biomarker Drivers (SHAP): ${patientContext?.scores?.explanations?.local ? patientContext.scores.explanations.local.slice(0, 3).map(l => l.feature).join(', ') : 'Speech pause latency, Social communication items, Working memory span'}
 - Functional Dimensions (Neuro Profile): Attention, Communication, Social Interaction, Learning, Memory, Language, Sensory
@@ -1337,10 +1337,10 @@ app.post('/api/doctor-chat', async (req, res) => {
     if (cMsg.includes('school') || cMsg.includes('iep') || cMsg.includes('education') || cMsg.includes('teacher')) userTopics.push('Education/IEP');
 
     const topicFocus = userTopics.length > 0
-      ? `The user is specifically asking about: ${userTopics.join(', ')}. Answer ONLY about these topics — do not redirect to ASD or generic content unless that is what was asked.`
+      ? `The user is specifically asking about: ${userTopics.join(', ')}. Answer ONLY about these topics - do not redirect to ASD or generic content unless that is what was asked.`
       : 'Answer the user question directly and specifically.';
 
-    const systemPrompt = `You are Dr. NeuroScan AI — a warm, expert, and precise paediatric neurodevelopmental specialist.
+    const systemPrompt = `You are Dr. NeuroScan AI - a warm, expert, and precise paediatric neurodevelopmental specialist.
 
 MOST IMPORTANT RULE: Read the user's message carefully. Answer EXACTLY what they asked. Do not give a generic ASD/screening answer if they asked about ADHD, diet, SSD, or anything else.
 
@@ -1354,7 +1354,7 @@ YOUR EXPERTISE:
 - Tourette Syndrome: motor/vocal tics, premonitory urge, CBIT therapy, clonidine, school support
 - Sensory Processing: sensory diet, Ayres OT, proprioception, vestibular, Wilbarger protocol
 - NeuroScan AI: 5-disorder ML screening (ASD, ADHD, Dyslexia, Stuttering, SSD), SHAP explanations, questionnaire + media analysis
-- Assessment results: probability scores are screening likelihoods, NOT diagnoses — always need clinical confirmation
+- Assessment results: probability scores are screening likelihoods, NOT diagnoses - always need clinical confirmation
 - Therapy: ABA, SLT, OT, CBIT, CBT, DIR/Floortime, structured literacy, parent-mediated intervention
 - India specialists: NIMHANS Bangalore, AIIMS, Apollo, AIISH Mysore, Ummeed Mumbai
 
@@ -1363,13 +1363,13 @@ ${patientContext || explainReport ? "The user is asking about their NeuroScan as
 
 FORMAT:
 - Use clear bullet points and **bold key terms**
-- Be specific and practical — parents and clinicians are reading this
+- Be specific and practical - parents and clinicians are reading this
 - Under 350 words is ideal
 - Cite NICE CG170, AAP 2020, DSM-5-TR, or ICD-11 when directly relevant
 
-${language === 'ta' ? 'Respond entirely in Tamil (தமிழ்).' : language === 'hi' ? 'Respond entirely in Hindi (हिंदी).' : 'Respond in clear, accessible English.'}
+${language === 'ta' ? 'Respond entirely in Tamil (     ).' : language === 'hi' ? 'Respond entirely in Hindi (     ).' : 'Respond in clear, accessible English.'}
 
-Always end with: "⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*"`;
+Always end with: "!  *Screening guidance only - consult a qualified developmental paediatrician for formal diagnosis.*"`;
 
     if (ai) {
       try {
@@ -1417,287 +1417,114 @@ Always end with: "⚠️ *Screening guidance only — consult a qualified develo
 
 function generateClinicalDoctorRAGFallback(queryText, language, patientContext, ragContext) {
   const q = queryText.toLowerCase();
+  const warn = "\n\n WARNING: Screening guidance only - consult a qualified healthcare professional for diagnosis.";
 
-  // Assessment results / report
-  if (patientContext || q.includes('report') || q.includes('result') || q.includes('score') || q.includes('percent') || q.includes('probability') || q.includes('risk')) {
-    const riskVal = patientContext?.riskEstimate || '—';
-    const concern = patientContext?.primaryConcern || 'neurodevelopmental screening';
-    return `### 📊 Understanding Your NeuroScan Results
-Your NeuroScan assessment provides **screening probabilities** — not clinical diagnoses. Here is how to interpret them:
-
-**What the percentage means:**
-• A score like 72% for ASD means the AI detected patterns in your answers that appear in 72% of ASD-positive clinical profiles. It is a screening signal, not a confirmed diagnosis.
-• Scores above **65%** warrant a formal evaluation by a developmental paediatrician.
-• Scores of **40–65%** suggest monitoring and a consultation.
-• Scores below **40%** are low-risk — but if you have concerns, always seek professional advice.
-
-**What to do next:**
-1. **Book a developmental paediatric assessment** — bring your NeuroScan PDF report.
-2. **Request a Speech-Language Pathologist (SLP) evaluation** if language or communication concerns are flagged.
-3. **No diagnosis is needed to start therapy** — under AAP 2020 guidelines, early intervention can begin immediately on referral.
-
-**In India:** NIMHANS Bangalore, AIISH Mysore, AIIMS New Delhi, Apollo Child Development, Ummeed Mumbai.
-⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
+  if (patientContext || q.includes('report') || q.includes('result') || q.includes('score') || q.includes('percent') || q.includes('risk')) {
+    return "### Your NeuroScan Assessment Results\n\n" +
+      "Your NeuroScan results show screening probabilities - not clinical diagnoses.\n\n" +
+      "**What the percentage means:**\n" +
+      "* A score above 65% warrants a formal evaluation by a developmental paediatrician.\n" +
+      "* A score of 40-65% suggests monitoring and a consultation.\n" +
+      "* Below 40% is lower risk - but always seek advice if concerned.\n\n" +
+      "**Next steps:**\n" +
+      "1. Book a developmental paediatric assessment - bring your NeuroScan PDF report.\n" +
+      "2. Request a Speech-Language Pathologist (SLP) evaluation if communication is flagged.\n" +
+      "3. Early intervention can begin without a formal diagnosis (AAP 2020)." + warn;
   }
 
-  // ASD / Autism
-  if (q.includes('asd') || q.includes('autism') || q.includes('autistic') || q.includes('eye contact') || q.includes('social') || q.includes('stimming') || q.includes('repetitive')) {
-    return `### 🧩 Autism Spectrum Disorder (ASD) — Key Information
-**What is ASD?**
-ASD is a neurodevelopmental condition affecting social communication, flexibility of thought, and sensory processing. It is not a disease — it is a different way of experiencing the world.
-
-**Early signs to watch for:**
-• Limited or inconsistent eye contact by 12 months
-• Not pointing to share interest by 14 months
-• No words by 16 months, no 2-word phrases by 24 months
-• Loss of previously acquired speech or social skills
-• Repetitive movements (hand-flapping, rocking, spinning)
-• Intense, narrow special interests
-• Strong distress with routine changes
-
-**Screening & Diagnosis:**
-• **M-CHAT-R** for toddlers (16–30 months); **AQ-10** for older children/adults
-• Gold-standard diagnosis: **ADOS-2** + **ADI-R** by a developmental paediatrician or child neurologist
-
-**Evidence-based therapies:**
-• **ABA** (Applied Behaviour Analysis) — most researched; improves communication and adaptive skills
-• **Speech-Language Therapy (SLT)** — communication, pragmatics, AAC if needed
-• **Occupational Therapy (OT)** — sensory integration, daily living skills
-• **DIR/Floortime** — relationship-based, child-led developmental approach
-
-Early intervention (before age 3) leads to significantly better outcomes.
-⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
+  if (q.includes('asd') || q.includes('autism') || q.includes('autistic') || q.includes('eye contact') || q.includes('social') || q.includes('stimming')) {
+    return "### ASD - Autism Spectrum Disorder\n\n" +
+      "ASD affects social communication, flexibility of thought, and sensory processing.\n\n" +
+      "**Early signs:** Limited eye contact by 12 months, no pointing by 14 months, no words by 16 months, repetitive movements, intense narrow interests, distress at routine changes.\n\n" +
+      "**Evidence-based therapies:** ABA therapy, Speech-Language Therapy, Occupational Therapy (OT), DIR/Floortime.\n\n" +
+      "**Screening tools:** AQ-10, M-CHAT-R, ADOS-2 (gold standard).\n\n" +
+      "Early intervention before age 3 leads to significantly better outcomes." + warn;
   }
 
-  // ADHD
-  if (q.includes('adhd') || q.includes('attention') || q.includes('hyperactiv') || q.includes('impulsiv') || q.includes('focus') || q.includes('concentrate')) {
-    return `### ⚡ ADHD — Attention Deficit Hyperactivity Disorder
-**What is ADHD?**
-ADHD affects approximately 1 in 10 children. It involves persistent inattention, hyperactivity, and/or impulsivity that interferes with daily functioning across multiple settings.
-
-**Three presentations:**
-• **Predominantly Inattentive** — forgetful, easily distracted, loses things, daydreams
-• **Predominantly Hyperactive-Impulsive** — fidgets, can't stay seated, interrupts, acts without thinking
-• **Combined** — most common type
-
-**Evidence-based management:**
-• **Behaviour therapy first** — especially for children under 6 (AAP 2019 recommendation)
-• **Parent Training in Behaviour Management (PTBM)** — highly effective
-• **Medication** — methylphenidate (Ritalin/Concerta) or atomoxetine for school-age children, under paediatrician supervision
-• **School accommodations** — extended time, preferential seating, written instructions, IEP/504 plan
-
-**Key diagnostic tools:** Conners Rating Scales, Vanderbilt Assessment, Continuous Performance Tests (CPT)
-
-Diagnosis requires symptoms in at least 2 settings (home + school) for 6+ months.
-⚠️ *Screening guidance only — consult a qualified developmental paediatrician for formal diagnosis.*`;
+  if (q.includes('adhd') || q.includes('attention') || q.includes('hyperactiv') || q.includes('impulsiv') || q.includes('focus')) {
+    return "### ADHD - Attention Deficit Hyperactivity Disorder\n\n" +
+      "ADHD affects ~1 in 10 children and involves persistent inattention, hyperactivity, and/or impulsivity.\n\n" +
+      "**Three types:** Predominantly Inattentive, Predominantly Hyperactive-Impulsive, Combined.\n\n" +
+      "**Evidence-based management:** Behaviour therapy first (especially under 6), parent training, medication (methylphenidate/atomoxetine for school-age, under paediatrician supervision), school accommodations.\n\n" +
+      "Diagnosis requires symptoms in at least 2 settings for 6+ months." + warn;
   }
 
-  // Dyslexia
-  if (q.includes('dyslexia') || q.includes('reading') || q.includes('spelling') || q.includes('phonolog') || q.includes('letter') || q.includes('word')) {
-    return `### 📖 Dyslexia — Specific Learning Disorder in Reading
-**What is Dyslexia?**
-Dyslexia is a language-based learning disability affecting accurate and fluent word reading and spelling. It has nothing to do with intelligence — it is neurobiological in origin.
-
-**Core deficit:** Phonological processing — difficulty connecting letters to their sounds.
-
-**Signs in children:**
-• Difficulty learning letter names and sounds
-• Slow, effortful reading with many errors
-• Spelling the same word differently each time
-• Reversals of letters (b/d, p/q) beyond age 7
-• Avoidance of reading activities
-• Strong oral comprehension but weak written skills
-
-**Evidence-based intervention:**
-• **Structured Literacy** (Orton-Gillingham approach) — explicit, systematic, multisensory phonics instruction — the gold standard (International Dyslexia Association)
-• **Wilson Reading System, Barton Reading Programme** — structured literacy programmes
-• **School accommodations:** Extended time, audiobooks, text-to-speech, reduced writing demands
-
-**Screening tools:** DIBELS, TOWRE-2, PAT (Phonological Awareness Test)
-⚠️ *Screening guidance only — consult an educational psychologist and SLP for formal assessment.*`;
+  if (q.includes('dyslexia') || q.includes('reading') || q.includes('spelling') || q.includes('phonolog')) {
+    return "### Dyslexia - Specific Learning Disorder in Reading\n\n" +
+      "Dyslexia affects accurate and fluent word reading and spelling. Core deficit: phonological processing.\n\n" +
+      "**Signs:** Difficulty learning letter sounds, slow effortful reading, spelling errors, letter reversals beyond age 7, strong oral but weak written skills.\n\n" +
+      "**Gold-standard intervention:** Structured Literacy (Orton-Gillingham approach) - explicit, systematic, multisensory phonics instruction.\n\n" +
+      "**Screening tools:** DIBELS, TOWRE-2, CTOPP-2." + warn;
   }
 
-  // Stuttering
   if (q.includes('stutter') || q.includes('fluency') || q.includes('stammer') || q.includes('disfluency')) {
-    return `### 🎙️ Stuttering / Fluency Disorder
-
-**What is stuttering?**
-Stuttering affects ~1 in 100 people and involves repetitions (b-b-ball), prolongations (ssssun), and blocks. It typically begins between ages 2-4.
-
-**Evidence-based treatment:**
-• **Lidcombe Programme** — for children under 6; parent-delivered operant therapy with strong evidence
-• **Fluency Shaping** — controlled breathing, easy onsets, smooth speech for older children/adults
-• **CAMPSIE programme** — intensive residential fluency therapy
-• **CBT** — for speaking anxiety and avoidance in adolescents and adults
-
-**Key facts:** Male 3:1 ratio; 60-80% of children recover naturally before puberty; family history increases risk 3-fold.
-
-**In India:** AIISH Mysore, NIMHANS Bangalore, Sri Ramachandra Institute Chennai.
-⚠️ *Screening only — consult a certified Speech-Language Pathologist (SLP).*\`;
+    return "### Stuttering / Fluency Disorder\n\n" +
+      "Stuttering affects ~1 in 100 people. Involves repetitions (b-b-ball), prolongations (sssun), and blocks.\n\n" +
+      "**Evidence-based treatment:**\n" +
+      "* Lidcombe Programme - for children under 6, parent-delivered, strong RCT evidence.\n" +
+      "* Fluency Shaping - controlled breathing, easy onsets, smooth speech.\n" +
+      "* CBT - for speaking anxiety in adolescents and adults.\n\n" +
+      "Male 3:1 ratio. 60-80% of children recover naturally before puberty." + warn;
   }
-  // SSD
+
   if (q.includes('ssd') || q.includes('speech sound') || q.includes('articulation') || q.includes('phoneme') || q.includes('intelligib')) {
-    return `### 🔊 Speech Sound Disorder (SSD)
-
-**What is SSD?**
-SSD (ICD F80.0) affects ~1 in 12 children and involves consistent errors producing specific speech sounds, reducing intelligibility.
-
-**Signs to watch:**
-• Consistent substitutions: w→r, f→th, t→k, d→g
-• Speech under 50% intelligible to strangers after age 3
-• Errors persist beyond typical developmental timelines
-• Phonological processes (e.g. cluster reduction, final consonant deletion)
-
-**Gold-standard assessment:** GFTA-3 (Goldman-Fristoe Test of Articulation, normative sample N=2621)
-
-**Evidence-based treatment:**
-• **Traditional Articulation Therapy** — target sounds at phoneme→syllable→word→sentence level
-• **Metaphon / Cycles Approach** — for phonological pattern errors
-• **Nuffield Dyspraxia Programme** — if motor speech planning is affected
-
-**Always rule out hearing loss first — audiological evaluation is essential.**
-⚠️ *Consult a certified SLP for formal GFTA-3 assessment.*\`;
+    return "### Speech Sound Disorder (SSD)\n\n" +
+      "SSD affects ~1 in 12 children. Involves consistent errors producing specific speech sounds.\n\n" +
+      "**Signs:** Substitutions (w for r, f for th), speech under 50% intelligible to strangers after age 3, errors persist beyond typical timelines.\n\n" +
+      "**Gold-standard assessment:** GFTA-3 (Goldman-Fristoe Test of Articulation, N=2621).\n\n" +
+      "**Treatment:** Traditional Articulation Therapy or Metaphon/Cycles Approach by a certified SLP. Always rule out hearing loss first." + warn;
   }
 
-  // Therapy general
-  if (q.includes('therapy') || q.includes('treatment') || q.includes('interven') || q.includes('help') || q.includes('improve')) {
-    return `### 💊 Evidence-Based Therapy Options for Neurodevelopmental Disorders
-The right therapy depends on the specific condition and the individual child. Here is a summary:
-
-| Therapy | Best For | Frequency |
-|---|---|---|
-| **ABA** (Applied Behaviour Analysis) | ASD, ID | 10–40 hrs/week |
-| **SLT** (Speech-Language Therapy) | ASD, Stuttering, Dyslexia, Tourette | 2–3×/week |
-| **OT** (Occupational Therapy) | ASD, Sensory, ADHD | 1–2×/week |
-| **Fluency Shaping** | Stuttering | 2-3x/week |
-| **Structured Literacy** | Dyslexia | Daily practice |
-| **Parent Training** | ADHD, ASD (under 6) | Weekly |
-| **CBT** | ADHD, Anxiety, OCD | Weekly |
-
-**No diagnosis is needed to start therapy.** Under AAP 2020 guidelines, referral to SLP or OT can happen immediately when developmental concerns are present.
-
-**Finding services in India:** Ask your paediatrician for a referral, or contact NIMHANS, AIISH Mysore, Apollo Child Development, or Ummeed Child Development Centre.
-⚠️ *Always work with qualified, registered therapists. Consult a developmental paediatrician for a tailored plan.*`;
+  if (q.includes('therap') || q.includes('treatment') || q.includes('interven') || q.includes('help')) {
+    return "### Evidence-Based Therapy Options\n\n" +
+      "| Therapy | Best For | Frequency |\n" +
+      "|---|---|---|\n" +
+      "| ABA (Applied Behaviour Analysis) | ASD | 10-40 hrs/week |\n" +
+      "| SLT (Speech-Language Therapy) | ASD, Stuttering, SSD, Dyslexia | 2-3x/week |\n" +
+      "| OT (Occupational Therapy) | ASD, ADHD, Sensory | 1-2x/week |\n" +
+      "| Structured Literacy | Dyslexia | Daily practice |\n" +
+      "| Lidcombe / Fluency Shaping | Stuttering | Weekly + daily home |\n" +
+      "| Articulation Therapy | SSD | 2-3x/week |\n" +
+      "| Behaviour Therapy | ADHD | Weekly |\n\n" +
+      "No diagnosis needed to start therapy. Early intervention always recommended." + warn;
   }
 
-  // Sensory
-  if (q.includes('sensory') || q.includes('texture') || q.includes('sound') || q.includes('light') || q.includes('overwhelm') || q.includes('meltdown')) {
-    return `### ✋ Sensory Processing — Helping Your Child Regulate
-Many children with ASD, ADHD, and Stuttering also experience sensory processing differences. Here is how to help:
-
-**Common sensory challenges:**
-• **Over-sensitive (hypersensitive):** distress at loud sounds, certain textures, bright lights, clothing tags
-• **Under-sensitive (hyposensitive):** seeks intense sensory input — crashing into things, very loud voice, touches everything
-• **Mixed:** different sensitivities across different senses
-
-**Practical strategies:**
-• **Sensory Diet** — a personalised daily schedule of sensory activities (swinging, jumping, deep pressure) to regulate the nervous system
-• **Deep Pressure** — weighted blankets, compression vests, tight hugs (proprioceptive input)
-• **Noise management** — noise-cancelling headphones, ear defenders in noisy environments
-• **Gradual desensitisation** — slow, step-by-step exposure to challenging sensory inputs under OT guidance
-
-**Professional help:**
-• **Paediatric OT with Sensory Integration certification** — ask specifically for Ayres Sensory Integration (ASI) therapy
-• **Dunn's Sensory Profile** or **SPM** — standardised assessment tools
-
-⚠️ *Consult a paediatric Occupational Therapist for a personalised sensory diet and formal evaluation.*`;
+  if (q.includes('sensory') || q.includes('overwhelm') || q.includes('meltdown') || q.includes('texture') || q.includes('sound')) {
+    return "### Sensory Processing Difficulties\n\n" +
+      "Many children with ASD and ADHD experience sensory sensitivities.\n\n" +
+      "**Practical strategies:**\n" +
+      "* Sensory Diet - personalised daily schedule of sensory activities.\n" +
+      "* Deep Pressure - weighted blankets, compression vests.\n" +
+      "* Noise management - ear defenders in noisy environments.\n\n" +
+      "Consult a Paediatric Occupational Therapist for a personalised sensory diet." + warn;
   }
 
-  // Medication
-  if (q.includes('medication') || q.includes('medicine') || q.includes('drug') || q.includes('tablet') || q.includes('pill') || q.includes('ritalin') || q.includes('concerta')) {
-    return `### 💊 Medication in Neurodevelopmental Disorders — What You Should Know
-**Important:** Medication decisions must always be made with a qualified child psychiatrist or developmental paediatrician. This is educational information only.
-
-**ADHD medications:**
-• **Stimulants (first-line):** Methylphenidate (Ritalin, Concerta, Rubifen) — most evidence-based; improves focus and reduces hyperactivity
-• **Non-stimulants:** Atomoxetine (Strattera) — for those who cannot tolerate stimulants or have tic disorders; guanfacine (Intuniv)
-• Medication works best when **combined with behaviour therapy and school accommodations**
-
-**SSD medications** — No medication for SSD; focus is on speech therapy:
-• Clonidine, guanfacine — also help with co-occurring ADHD
-• Aripiprazole, risperidone — for severe, disabling tics
-
-**ASD medications:**
-• No medication treats the core features of ASD
-• Medications may help co-occurring conditions: risperidone/aripiprazole for irritability; SSRIs for anxiety; stimulants for ADHD symptoms
-
-**Key principle:** Behaviour therapy and parent training should always be tried **before** medication in children under 6 (AAP 2019).
-⚠️ *Never start, change, or stop medication without guidance from a qualified medical professional.*`;
+  if (q.includes('medication') || q.includes('medicine') || q.includes('drug') || q.includes('ritalin') || q.includes('concerta')) {
+    return "### Medication in Neurodevelopmental Disorders\n\n" +
+      "**ADHD medications (first-line stimulants):** Methylphenidate (Ritalin, Concerta) - most evidence-based. Non-stimulants: Atomoxetine, Guanfacine.\n\n" +
+      "**ASD:** No medication treats core features. Medications may help co-occurring ADHD, irritability (risperidone/aripiprazole), or anxiety.\n\n" +
+      "**Key principle:** Behaviour therapy and parent training should always be tried BEFORE medication in children under 6 (AAP 2019).\n\n" +
+      "Never start, change, or stop medication without a qualified medical professional." + warn;
   }
 
-  // NeuroScan platform
-  if (q.includes('neuroscan') || q.includes('this app') || q.includes('this tool') || q.includes('platform') || q.includes('how does this') || q.includes('what is this')) {
-    return `### 🧠 About NeuroScan AI
-NeuroScan AI is an **educational neurodevelopmental screening platform** designed for parents, educators, and clinicians.
-
-**What it does:**
-• **AI Screening (assess.html):** Adaptive questionnaire screening across 5 conditions — ASD, ADHD, Dyslexia, Stuttering, and SSD. Uses an ensemble of Random Forest, XGBoost, and Logistic Regression models with SHAP explanations.
-• **Media Analysis:** Upload images, video, or audio for AI-powered behavioural analysis (facial expressions, movement patterns, speech prosody).
-• **Speech Biomarkers:** Record or upload audio to analyse speech fluency, prosody, and articulation.
-• **Progress Tracker:** Track screening scores over time with radar charts and trend lines.
-• **Multimodal Hub:** Fuse questionnaire + speech + drawing + cognitive data for a comprehensive risk estimate.
-• **AI Doctor Chat:** That's me — I answer questions about neurodevelopmental disorders, therapies, and your results.
-• **Learning Suite:** PLA/ALA ability profiling and 8-week adaptive training programmes.
-
-**Important disclaimer:** NeuroScan AI is a **screening tool**, not a diagnostic instrument. All results should be confirmed by qualified healthcare professionals.
-
-**Technology:** Google Gemini 2.0 Flash, Scikit-Learn ensemble models, real UCI ASD dataset (989 records).
-⚠️ *Not a medical device. Not a substitute for clinical evaluation.*`;
+  if (q.includes('neuroscan') || q.includes('this app') || q.includes('platform') || q.includes('how does')) {
+    return "### About NeuroScan AI\n\n" +
+      "NeuroScan AI is an educational neurodevelopmental screening platform.\n\n" +
+      "**5 disorders screened:** ASD (F84.0), ADHD (F90.0), Dyslexia (F81.0), Stuttering (F98.5), SSD (F80.0).\n\n" +
+      "**Technology:** Google Gemini 2.0 Flash, Scikit-Learn ensemble models (RF + GB + LR), real UCI ASD dataset (936 records), WHO ASRS ADHD data, IDA/Yale Dyslexia norms, SEP-28k Stuttering data, GFTA-3 SSD norms. Total: 15,507 records across all disorders.\n\n" +
+      "**Important:** Screening tool only - not a diagnostic instrument. Results must be confirmed by qualified healthcare professionals." + warn;
   }
 
-  // Early signs / milestones
-  if (q.includes('early sign') || q.includes('warning') || q.includes('milestone') || q.includes('development') || q.includes('toddler') || q.includes('baby') || q.includes('infant') || q.includes('year old')) {
-    return `### 🌱 Developmental Milestones & Early Warning Signs
-Early identification of neurodevelopmental differences leads to significantly better outcomes. Here are key milestones to watch:
-
-**By 12 months — seek evaluation if:**
-• Not babbling or making sounds
-• Not responding to name consistently
-• No gesturing (waving, pointing)
-• No eye contact or social smiling
-
-**By 18 months:**
-• No single words
-• Not pointing to show interest
-• Loss of previously acquired skills (regression)
-
-**By 24 months:**
-• No 2-word spontaneous phrases
-• Very limited vocabulary (<50 words)
-• Not following simple 2-step instructions
-
-**By 36 months:**
-• Speech difficult to understand to strangers
-• Not engaging in pretend play
-• Significant tantrums or rigidity around routines
-
-**Red flags at any age:**
-• Regression (loss of skills previously mastered)
-• No interest in other children
-• Unusual sensory responses (covers ears, avoids textures)
-• Repetitive movements that interfere with daily activities
-
-**What to do:** Discuss concerns with your paediatrician immediately. Request referrals to SLP and developmental paediatrics. Early intervention is available without a formal diagnosis.
-⚠️ *These are guidelines only — every child develops at their own pace. Consult your paediatrician.*`;
-  }
-
-  // Default: still topic-aware rather than generic ASD response
-  return `### 🧠 Dr. NeuroScan AI — Clinical Guidance
-Thank you for your question. I am Dr. NeuroScan AI, specialising in ASD, ADHD, Dyslexia, Stuttering, and SSD.
-
-To give you the most accurate answer, could you be more specific? I can help with:
-
-**Disorders:** ASD, ADHD, Dyslexia, Stuttering, SSDanagement, Dyslexia strategies, Stuttering therapy, Tourette CBIT
-**Therapies:** ABA, Speech Therapy, OT, CBIT, Structured Literacy, Parent Training
-**Assessment:** Understanding your NeuroScan results, what probability scores mean
-**Practical:** School accommodations, IEP guidance, daily routines, sensory strategies
-**Platform:** How NeuroScan AI works, what the assessment measures
-
-Please type your specific question and I will give you a detailed, accurate answer.
-⚠️ *Educational information only — consult a qualified healthcare professional for medical advice.*`;
+  // Default
+  return "I am Dr. NeuroScan AI, specialising in ASD, ADHD, Dyslexia, Stuttering, and Speech Sound Disorder (SSD).\n\n" +
+    "I can help with:\n" +
+    "* Disorder information - symptoms, causes, and diagnostic criteria\n" +
+    "* Screening results - interpreting your NeuroScan probability scores\n" +
+    "* Therapy options - evidence-based interventions for each condition\n" +
+    "* NeuroScan platform - how to use our assessment and analysis features\n\n" +
+    "Please ask a specific question and I will provide detailed guidance." + warn;
 }
-
-// ── MULTI-MODAL MEDIA ANALYSIS API ────────────────────────────
+// -- MULTI-MODAL MEDIA ANALYSIS API ----------------------------
 app.post('/api/media-analysis', async (req, res) => {
   try {
     const { 
@@ -1737,11 +1564,11 @@ DESCRIPTION: ${description}
 ${clientMetrics && Object.keys(clientMetrics).length > 0 ? `CLIENT-EXTRACTED METRICS: ${JSON.stringify(clientMetrics)}` : ''}
 
 TASK: Analyse the provided media (images, video frames, and/or audio) for indicators of these five neurodevelopmental conditions:
-1. ASD (Autism Spectrum Disorder) — social communication, eye contact, repetitive movements, sensory responses
-2. ADHD — hyperactivity, inattention, impulsivity, motor regulation
-3. Dyslexia — reading-related speech patterns, phonological markers
-4. Stuttering (Developmental Language Disorder) — vocabulary, sentence structure, fluency, pauses, word-finding
-5. Tourette Syndrome / Tic Disorders — involuntary repetitive movements, vocal patterns, tic signatures
+1. ASD (Autism Spectrum Disorder) - social communication, eye contact, repetitive movements, sensory responses
+2. ADHD - hyperactivity, inattention, impulsivity, motor regulation
+3. Dyslexia - reading-related speech patterns, phonological markers
+4. Stuttering (Developmental Language Disorder) - vocabulary, sentence structure, fluency, pauses, word-finding
+5. Tourette Syndrome / Tic Disorders - involuntary repetitive movements, vocal patterns, tic signatures
 
 ANALYSE CAREFULLY:
 - Eye contact stability and gaze patterns
@@ -1786,7 +1613,7 @@ RULES:
 - topProb MUST be a decimal (0.72 not 72)
 - riskColor: High Risk = {"bg":"#ffe5d9","color":"#c44b1b"}, Moderate Risk = {"bg":"#fff8e1","color":"#7a5c00"}, Low Risk = {"bg":"#dcfce7","color":"#166534"}
 - If no actual media images are attached (text description only), base analysis on the fileDesc and clientMetrics
-- Be specific — reference what you actually observe in the media, not generic descriptions`
+- Be specific - reference what you actually observe in the media, not generic descriptions`
 
         const parts = [{ text: promptText }];
 
@@ -2046,7 +1873,7 @@ RULES:
   }
 });
 
-// ── SPEECH & AUDIO ANALYSIS API ───────────────────────────────
+// -- SPEECH & AUDIO ANALYSIS API -------------------------------
 app.post('/api/speech-analysis', async (req, res) => {
   try {
     const { 
@@ -2255,7 +2082,7 @@ app.post('/api/chat', async (req, res) => {
     // 1. Instant Greeting Fast-Path (< 5ms response)
     if (/^(hi|hello|hey|start|help|greetings|who are you|what can you do)(\s+(assistant|there|bot|ai))?[\s!.]*$/i.test(cleanMsg)) {
       return res.json({
-        reply: "Hello! I am **NeuroScan AI Assistant**. 🌟\n\nI can help you with:\n• **AI Clinical Screening**: Interpreting AQ-10 and multi-disorder test results\n• **Machine Learning Transparency**: Explaining Random Forest, XGBoost & SHAP attributions\n• **Speech Biomarkers**: Understanding audio pitch, fluency, and articulation markers\n• **Guidance & Strategies**: Practical tips for home routines, sensory diets, and specialist referrals\n\nWhat would you like to explore today?",
+        reply: "Hello! I am **NeuroScan AI Assistant**.  \n\nI can help you with:\n* **AI Clinical Screening**: Interpreting AQ-10 and multi-disorder test results\n* **Machine Learning Transparency**: Explaining Random Forest, XGBoost & SHAP attributions\n* **Speech Biomarkers**: Understanding audio pitch, fluency, and articulation markers\n* **Guidance & Strategies**: Practical tips for home routines, sensory diets, and specialist referrals\n\nWhat would you like to explore today?",
         role: 'assistant',
         fast: true
       });
@@ -2275,7 +2102,7 @@ app.post('/api/chat', async (req, res) => {
         const contents = buildGeminiContents(messages.slice(-5));
 
         const replyText = await generateWithGeminiFallback(ai, contents, {
-          systemInstruction: `You are NeuroScan AI Assistant — a knowledgeable, empathetic, and concise clinical guide specialising in neurodevelopmental conditions.
+          systemInstruction: `You are NeuroScan AI Assistant - a knowledgeable, empathetic, and concise clinical guide specialising in neurodevelopmental conditions.
 
 Your expertise covers:
 - ASD (Autism Spectrum Disorder): social communication, eye contact, repetitive behaviours, AQ-10 screening, ABA therapy
@@ -2288,12 +2115,12 @@ Your expertise covers:
 - NeuroScan AI platform: AQ-10 assessment, multi-disorder ML battery (Random Forest, XGBoost, SHAP), media analysis, speech biomarkers
 
 RESPONSE RULES:
-1. Always answer based on the user's specific question — never give a generic reply.
+1. Always answer based on the user's specific question - never give a generic reply.
 2. If the user asks about a specific disorder, provide detailed, accurate information about that disorder.
 3. If the user asks about a test result or probability score, explain what it means clinically.
 4. Format with clean markdown bullets and bold key terms. Keep responses under 300 words.
 5. End with 1-2 relevant follow-up questions the user might want to ask.
-6. Never diagnose — always clarify this is educational screening information only.`,
+6. Never diagnose - always clarify this is educational screening information only.`,
           temperature: 0.6,
           maxOutputTokens: 450
         }, 15000);
@@ -2312,53 +2139,45 @@ RESPONSE RULES:
     const msg = cleanMsg;
 
     if (msg.includes('stuttering') || msg.includes('developmental language') || msg.includes('language disorder')) {
-      reply = "**Stuttering / Fluency Disorderuage Disorder (Stuttering):**\n• Stuttering is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n• Children with Stuttering have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n• **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n• Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how Stuttering differs from ASD?";
+      reply = "**Stuttering / Fluency Disorderuage Disorder (Stuttering):**\n* Stuttering is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n* Children with Stuttering have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n* **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n* Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how Stuttering differs from ASD?";
     } else if (msg.includes('ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('tics')) {
-      reply = "**SSD — Speech Sound Disorder & Tic Disorders:**\n• Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n• Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n• **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) — more effective than medication for most children.\n• ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n• Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
+      reply = "**SSD - Speech Sound Disorder & Tic Disorders:**\n* Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n* Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n* **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) - more effective than medication for most children.\n* ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n* Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
     } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit')) {
-      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n• ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n• Three types: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n• **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n• NeuroScan's ADHD screening uses video movement analysis and attention biomarkers.\n\nWould you like information about ADHD vs ASD differences, or medication options?";
+      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n* ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n* Three types: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n* **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n* NeuroScan's ADHD screening uses video movement analysis and attention biomarkers.\n\nWould you like information about ADHD vs ASD differences, or medication options?";
     } else if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic')) {
-      reply = "**ASD (Autism Spectrum Disorder):**\n• ASD is characterised by differences in social communication, restricted interests, and repetitive behaviours.\n• The AQ-10 is a validated 10-item screening tool — a score of 6+ suggests autism traits warranting formal assessment.\n• **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech therapy, and occupational therapy.\n• Early diagnosis (before age 3) leads to significantly better outcomes.\n• NeuroScan AI analyses facial expressions, eye contact, and movement patterns for ASD biomarkers.\n\nWould you like to know about the AQ-10 assessment or early signs of autism by age?";
+      reply = "**ASD (Autism Spectrum Disorder):**\n* ASD is characterised by differences in social communication, restricted interests, and repetitive behaviours.\n* The AQ-10 is a validated 10-item screening tool - a score of 6+ suggests autism traits warranting formal assessment.\n* **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech therapy, and occupational therapy.\n* Early diagnosis (before age 3) leads to significantly better outcomes.\n* NeuroScan AI analyses facial expressions, eye contact, and movement patterns for ASD biomarkers.\n\nWould you like to know about the AQ-10 assessment or early signs of autism by age?";
     } else if (msg.includes('dyslexia') || msg.includes('reading') || msg.includes('phonolog')) {
-      reply = "**Dyslexia:**\n• Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, with normal intelligence.\n• Core deficit: phonological processing — difficulty connecting letters to sounds.\n• **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention — explicit, multisensory reading instruction.\n• Dyslexia is NOT related to vision problems or intelligence — it is neurobiological.\n• NeuroScan analyses reading-related audio patterns and phonemic articulation biomarkers.\n\nWould you like information about structured literacy programmes or how dyslexia is diagnosed?";
+      reply = "**Dyslexia:**\n* Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, with normal intelligence.\n* Core deficit: phonological processing - difficulty connecting letters to sounds.\n* **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention - explicit, multisensory reading instruction.\n* Dyslexia is NOT related to vision problems or intelligence - it is neurobiological.\n* NeuroScan analyses reading-related audio patterns and phonemic articulation biomarkers.\n\nWould you like information about structured literacy programmes or how dyslexia is diagnosed?";
     } else if (msg.includes('speech') || msg.includes('language') || msg.includes('talking') || msg.includes('words')) {
-      reply = "**Speech & Language Development:**\n• Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n• If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n• **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n• NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
+      reply = "**Speech & Language Development:**\n* Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n* If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n* **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n* NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
     } else if (msg.includes('therap') || msg.includes('treatment') || msg.includes('help') || msg.includes('intervention')) {
-      reply = "**Evidence-Based Therapy Options:**\n• **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID — most evidence-based.\n• **SLT (Speech-Language Therapy):** For Stuttering, speech delay, stuttering, and autism-related communication.\n• **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n• **CBIT:** Best treatment for tics and Tourette Syndrome.\n• **Structured Literacy:** For dyslexia — phonics-based, multisensory reading instruction.\n• **Parent Training:** Highly effective for ADHD and ASD — teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
+      reply = "**Evidence-Based Therapy Options:**\n* **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID - most evidence-based.\n* **SLT (Speech-Language Therapy):** For Stuttering, speech delay, stuttering, and autism-related communication.\n* **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n* **CBIT:** Best treatment for tics and Tourette Syndrome.\n* **Structured Literacy:** For dyslexia - phonics-based, multisensory reading instruction.\n* **Parent Training:** Highly effective for ADHD and ASD - teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
     } else if (msg.includes('result') || msg.includes('score') || msg.includes('probability') || msg.includes('percent') || msg.includes('%')) {
-      reply = "**Understanding Your NeuroScan Results:**\n• Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers — they are **screening indicators, not diagnoses**.\n• **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n• **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n• **Low Risk (<50%):** Traits present but not strongly predictive — continue monitoring milestones.\n• Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
+      reply = "**Understanding Your NeuroScan Results:**\n* Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers - they are **screening indicators, not diagnoses**.\n* **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n* **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n* **Low Risk (<50%):** Traits present but not strongly predictive - continue monitoring milestones.\n* Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
     } else if (msg.includes('shap') || msg.includes('model') || msg.includes('machine learning') || msg.includes('ai') || msg.includes('ml')) {
-      reply = "**NeuroScan AI Machine Learning Models:**\n• **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n• **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n• **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n• **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
+      reply = "**NeuroScan AI Machine Learning Models:**\n* **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n* **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n* **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n* **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
     } else if (msg.includes('stutter') || msg.includes('fluency') || msg.includes('stammer') || msg.includes('disfluency')) {
-      reply = "### Stuttering / Fluency Disorder
-
-**What is stuttering?**
-Stuttering is a speech fluency disorder affecting ~1 in 100 people, characterised by repetitions (b-b-ball), prolongations (ssssun), and blocks (silent pauses).
-
-**Evidence-based treatment:**
-• **Fluency Shaping Therapy** — controlled breathing, easy onsets, smooth speech
-• **Lidcombe Programme** — for children under 6, parent-delivered operant therapy
-• **CBT** — for anxiety and speaking avoidance in adolescents/adults
-
-**Key facts:** Onset typically 2-4 years; male 3:1 ratio; 60-80% of children recover naturally before adolescence.
-
-⚠️ *Screening only — consult a certified Speech-Language Pathologist (SLP).*";
+      reply = "### Stuttering / Fluency Disorder\n\n" +
+        "**What is stuttering?**\n" +
+        "Stuttering is a speech fluency disorder affecting ~1 in 100 people, characterised by repetitions (b-b-ball), prolongations (ssssun), and blocks (silent pauses).\n\n" +
+        "**Evidence-based treatment:**\n" +
+        "* **Fluency Shaping Therapy** - controlled breathing, easy onsets, smooth speech\n" +
+        "* **Lidcombe Programme** - for children under 6, parent-delivered operant therapy\n" +
+        "* **CBT** - for anxiety and speaking avoidance in adolescents/adults\n\n" +
+        "**Key facts:** Onset typically 2-4 years; male 3:1 ratio; 60-80% of children recover naturally before adolescence.\n\n" +
+        "! *Screening only - consult a certified Speech-Language Pathologist (SLP).*";
     } else if (msg.includes(' ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('phoneme') || msg.includes('intelligib')) {
-      reply = "### Speech Sound Disorder (SSD)
-
-**What is SSD?**
-SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, resulting in errors that make speech hard to understand.
-
-**Signs:**
-• Consistent substitution of sounds (w for r, f for th)
-• Speech under 50% intelligible to strangers after age 3
-• Persists beyond typical developmental timelines
-
-**Treatment:** Articulation therapy (traditional) or phonological intervention (Metaphon/Cycles approach) by a certified SLP. GFTA-3 is the gold-standard assessment tool.
-
-⚠️ *Always rule out hearing loss first — consult an SLP and audiologist.*";
+      reply = "### Speech Sound Disorder (SSD)\n\n" +
+        "**What is SSD?**\n" +
+        "SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, resulting in errors that make speech hard to understand.\n\n" +
+        "**Signs:**\n" +
+        "* Consistent substitution of sounds (w for r, f for th)\n" +
+        "* Speech under 50% intelligible to strangers after age 3\n" +
+        "* Persists beyond typical developmental timelines\n\n" +
+        "**Treatment:** Articulation therapy (traditional) or phonological intervention (Metaphon/Cycles approach) by a certified SLP. GFTA-3 is the gold-standard assessment tool.\n\n" +
+        "! *Always rule out hearing loss first - consult an SLP and audiologist.*";
     } else {
-      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, Stuttering, and SSD.\n\nI can help you with:\n• **Disorder information** — symptoms, causes, and diagnostic criteria\n• **Screening results** — interpreting your NeuroScan probability scores\n• **Therapy options** — evidence-based interventions for each condition\n• **NeuroScan tools** — how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
+      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, Stuttering, and SSD.\n\nI can help you with:\n* **Disorder information** - symptoms, causes, and diagnostic criteria\n* **Screening results** - interpreting your NeuroScan probability scores\n* **Therapy options** - evidence-based interventions for each condition\n* **NeuroScan tools** - how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
     }
 
     setCachedResponse(cacheKey, reply);
@@ -2369,10 +2188,10 @@ SSD affects ~1 in 12 children and involves difficulty accurately producing speec
   }
 });
 
-// ── LEARNING DEVELOPMENT API ROUTES ──────────────────────────
+// -- LEARNING DEVELOPMENT API ROUTES --------------------------
 app.use('/api/learning', createLearningRouter(() => mongoDbInstance, memoryStore, requireAuth));
 
-// ── FALLBACK ROUTE ────────────────────────────────────────────
+// -- FALLBACK ROUTE --------------------------------------------
 app.get('*', (req, res) => {
   const indexPath = fs.existsSync(path.join(__dirname, 'public', 'index.html'))
     ? path.join(__dirname, 'public', 'index.html')
@@ -2381,17 +2200,17 @@ app.get('*', (req, res) => {
   res.sendFile(indexPath);
 });
 
-// ── START SERVER ──────────────────────────────────────────────
+// -- START SERVER ----------------------------------------------
 async function start() {
   try {
     await connectMongo();
     initFirebaseAdmin();
     app.listen(PORT, () => {
-      console.log(`\n🚀 NeuroScan Server running at http://localhost:${PORT}`);
+      console.log(`\n  NeuroScan Server running at http://localhost:${PORT}`);
       console.log(`   Health: http://localhost:${PORT}/api/health\n`);
     });
   } catch (e) {
-    console.error('❌ Server startup error:', e);
+    console.error('  Server startup error:', e);
   }
 }
 
