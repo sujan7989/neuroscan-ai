@@ -1296,7 +1296,8 @@ app.post('/api/doctor-chat', async (req, res) => {
         quickReply = "**Speech Sound Disorder (SSD — ICD-11 F80.0):**\n* SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, making speech hard to understand.\n* **Common error patterns:** Substitutions (w for r), omissions (dropping final sounds), distortions, and additions.\n* Speech under 50% intelligible to strangers after age 3 is a red flag requiring SLP assessment.\n* **Evidence-based treatments:**\n  - **Traditional Articulation Therapy** — systematic target sound practice at phoneme, word, sentence levels\n  - **Phonological Intervention (Metaphon/Cycles)** — targets phonological pattern errors\n  - **Nuffield Dyspraxia Programme** — for motor speech planning difficulties\n* Always rule out hearing loss first — audiological evaluation is essential before starting therapy.\n* NeuroScan analyses phoneme accuracy, articulation errors, and intelligibility from audio recordings.\n\n! *Screening guidance only - consult a certified Speech-Language Pathologist (SLP) and audiologist for formal diagnosis.*";
       }
       if (quickReply) {
-        setCachedResponse(cacheKey + '_quick', quickReply);
+        const quickKey = 'quick_' + cleanMsg.substring(0, 60);
+        setCachedResponse(quickKey, quickReply);
         return res.json({ reply: quickReply, role: 'assistant', fast: true, sourcesUsed: 1 });
       }
     }
