@@ -329,11 +329,11 @@ export function predictMultiDisorder(answers = {}, demographics = {}) {
     family * 0.05
   );
 
-  // ── Stuttering: speech fluency, anxiety speaking ──
+  // ── Stuttering: speech fluency, disfluency, blocks ──
   const stu_score = (
-    (ans('q_speech_fluency')    / 4) * 0.55 +
-    (ans('q_anxiety_social')    / 4) * 0.25 +
-    (ans('q_language_development') / 4) * 0.10 +
+    (ans('q_speech_fluency')    / 4) * 0.75 +
+    (ans('q_anxiety_social')    / 4) * 0.10 +
+    (ans('q_language_development') / 4) * 0.05 +
     family * 0.10
   );
 
