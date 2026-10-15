@@ -1282,6 +1282,7 @@ app.post('/api/doctor-chat', async (req, res) => {
 
     // 2. FAST DISORDER KEYWORD PATH (v2) — answer disorder questions directly, bypass Gemini
     // This guarantees correct, specific disorder content for all 5 NeuroScan disorders.
+    console.log('[FastPath] cleanMsg:', JSON.stringify(cleanMsg.substring(0,80)), 'explainReport:', explainReport, 'patientContext:', !!patientContext);
     if (!explainReport && !patientContext) {
       let quickReply = '';
       if (cleanMsg.includes('asd') || cleanMsg.includes('autism') || cleanMsg.includes('autistic') || cleanMsg.includes('eye contact') || cleanMsg.includes('social communication') || cleanMsg.includes('stimming') || cleanMsg.includes('repetitive behav')) {
