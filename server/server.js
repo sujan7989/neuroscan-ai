@@ -1280,7 +1280,7 @@ app.post('/api/doctor-chat', async (req, res) => {
       });
     }
 
-    // 2. FAST DISORDER KEYWORD PATH — answer disorder questions directly, bypass Gemini
+    // 2. FAST DISORDER KEYWORD PATH (v2) — answer disorder questions directly, bypass Gemini
     // This guarantees correct, specific disorder content for all 5 NeuroScan disorders.
     if (!explainReport && !patientContext) {
       let quickReply = '';
