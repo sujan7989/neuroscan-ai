@@ -1306,18 +1306,29 @@ app.post('/api/doctor-chat', async (req, res) => {
     // 3. Perform RAG Knowledge Retrieval
     const ragContext = retrieveClinicalEvidence(lastUserMsg + (explainReport ? ' report explain assessment' : ''), patientContext);
 
-    // 3. High-speed In-Memory Cache Lookup (< 2ms response time)
+    // 4. High-speed In-Memory Cache Lookup — but SKIP cache for disorder keyword queries
+    // (fast-path already handled those above; cached Gemini responses may be stale/generic)
     const cacheKey = `doc_rag_${language}_${patientContext ? (patientContext.primaryConcern || '') : ''}_${cleanMsg}_${explainReport ? 1 : 0}`;
-    const cachedReply = getCachedResponse(cacheKey);
-    if (cachedReply) {
-      return res.json({ 
-        reply: cachedReply, 
-        role: 'assistant', 
-        cached: true,
-        sourcesUsed: ragContext.sourcesUsed,
-        evidenceLevel: ragContext.evidenceLevel,
-        sources: ragContext.sources
-      });
+    const isDisorderQuery = !explainReport && !patientContext && (
+      cleanMsg.includes('asd') || cleanMsg.includes('autism') || cleanMsg.includes('autistic') ||
+      cleanMsg.includes('adhd') || cleanMsg.includes('hyperactiv') || cleanMsg.includes('attention deficit') ||
+      cleanMsg.includes('dyslexia') || cleanMsg.includes('reading') || cleanMsg.includes('phonolog') ||
+      cleanMsg.includes('stutter') || cleanMsg.includes('stammer') || cleanMsg.includes('disfluency') ||
+      (cleanMsg.includes('fluency') && !cleanMsg.includes('reading fluency')) ||
+      cleanMsg.includes('ssd') || cleanMsg.includes('speech sound') || cleanMsg.includes('articulation') || cleanMsg.includes('phoneme')
+    );
+    if (!isDisorderQuery) {
+      const cachedReply = getCachedResponse(cacheKey);
+      if (cachedReply) {
+        return res.json({ 
+          reply: cachedReply, 
+          role: 'assistant', 
+          cached: true,
+          sourcesUsed: ragContext.sourcesUsed,
+          evidenceLevel: ragContext.evidenceLevel,
+          sources: ragContext.sources
+        });
+      }
     }
 
     const ai = getGenAI();
