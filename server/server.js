@@ -323,7 +323,7 @@ app.get('/api/health', async (_req, res) => {
       return res.json({ status: 'ok', db: 'memory-fallback', message: e.message, timestamp: new Date().toISOString(), version: 'f42589d' });
     }
   }
-  res.json({ status: 'ok', db: 'in-memory', timestamp: new Date().toISOString(), version: 'f42589d' });
+  res.json({ status: 'ok', db: 'in-memory', timestamp: new Date().toISOString(), version: 'e090069' });
 });
 
 // -- AUTH VERIFY -----------------------------------------------
