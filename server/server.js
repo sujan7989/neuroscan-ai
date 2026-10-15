@@ -1138,10 +1138,10 @@ I can help with:
 * **ASD/Autism** - symptoms, early signs, diagnosis, ABA therapy
 * **ADHD** - attention, hyperactivity, medication, behaviour strategies
 * **Dyslexia** - reading difficulties, structured literacy, school support
-* **Stuttering** - Developmental Language Disorder, speech therapy, vocabulary
-* **Tourette Syndrome** - tics, CBIT therapy, school accommodations
+* **Stuttering** - fluency disorder, disfluency, Lidcombe Programme, fluency shaping
+* **SSD** - speech sound disorder, articulation, phoneme errors, GFTA-3
 * **Your NeuroScan results** - what your probability scores mean
-* **Therapies** - ABA, SLT, OT, CBIT, parent training
+* **Therapies** - ABA, SLT, OT, CBT, parent training
 * **Sensory processing** - sensory diet, OT, Ayres integration
 * **India resources** - NIMHANS, AIISH Mysore, Apollo, AIIMS
 
@@ -1346,13 +1346,12 @@ MOST IMPORTANT RULE: Read the user's message carefully. Answer EXACTLY what they
 
 ${topicFocus}
 
-YOUR EXPERTISE:
+YOUR EXPERTISE (5 disorders only — do not mention DLD or Tourette):
 - ASD: social communication, eye contact, stimming, AQ-10, ADOS-2, ABA therapy, early intervention
 - ADHD: inattention, hyperactivity, executive function, Conners scales, methylphenidate, behaviour therapy
 - Dyslexia: phonological awareness, structured literacy, Orton-Gillingham, IEP accommodations
-- Stuttering (Developmental Language Disorder): vocabulary delay, sentence structure, SLT therapy, narrative intervention
-- Tourette Syndrome: motor/vocal tics, premonitory urge, CBIT therapy, clonidine, school support
-- Sensory Processing: sensory diet, Ayres OT, proprioception, vestibular, Wilbarger protocol
+- Stuttering / Fluency Disorder: disfluency, repetitions, prolongations, blocks, Lidcombe Programme, fluency shaping, CBT
+- SSD (Speech Sound Disorder): phoneme errors, articulation, intelligibility, GFTA-3, Cycles approach, Metaphon
 - NeuroScan AI: 5-disorder ML screening (ASD, ADHD, Dyslexia, Stuttering, SSD), SHAP explanations, questionnaire + media analysis
 - Assessment results: probability scores are screening likelihoods, NOT diagnoses - always need clinical confirmation
 - Therapy: ABA, SLT, OT, CBIT, CBT, DIR/Floortime, structured literacy, parent-mediated intervention
@@ -1566,9 +1565,9 @@ ${clientMetrics && Object.keys(clientMetrics).length > 0 ? `CLIENT-EXTRACTED MET
 TASK: Analyse the provided media (images, video frames, and/or audio) for indicators of these five neurodevelopmental conditions:
 1. ASD (Autism Spectrum Disorder) - social communication, eye contact, repetitive movements, sensory responses
 2. ADHD - hyperactivity, inattention, impulsivity, motor regulation
-3. Dyslexia - reading-related speech patterns, phonological markers
-4. Stuttering (Developmental Language Disorder) - vocabulary, sentence structure, fluency, pauses, word-finding
-5. Tourette Syndrome / Tic Disorders - involuntary repetitive movements, vocal patterns, tic signatures
+3. Dyslexia - reading-related speech patterns, phonological markers, letter reversals
+4. Stuttering / Fluency Disorder - disfluency rate, repetitions, prolongations, blocks, speech rhythm
+5. SSD (Speech Sound Disorder) - phoneme errors, articulation accuracy, intelligibility, sound substitutions
 
 ANALYSE CAREFULLY:
 - Eye contact stability and gaze patterns
@@ -1902,7 +1901,7 @@ Evaluate:
 2. Speech rate (words per minute), rhythm, and hesitation pauses.
 3. Expressive vocabulary richness, Type-Token diversity, and grammatical complexity.
 4. Prosodic intonation contour (monotone vs modulated).
-5. Indicators for Speech Delay, Developmental Language Disorder, ASD communication markers, and Dyslexia.
+5. Indicators for Stuttering, SSD, ASD communication markers, and Dyslexia phonological patterns.
 
 Return ONLY a valid JSON object strictly matching this schema (no markdown, no backticks, no wrapping text):
 {
@@ -2138,44 +2137,24 @@ RESPONSE RULES:
     let reply = '';
     const msg = cleanMsg;
 
-    if (msg.includes('stuttering') || msg.includes('developmental language') || msg.includes('language disorder')) {
-      reply = "**Stuttering / Fluency Disorderuage Disorder (Stuttering):**\n* Stuttering is a persistent difficulty acquiring spoken language that cannot be explained by hearing loss, intellectual disability, or autism.\n* Children with Stuttering have a smaller vocabulary, shorter sentences, and difficulty telling stories or following complex instructions.\n* **Key intervention:** Intensive speech-language therapy (SLT) with a focus on vocabulary, narrative skills, and phonological awareness.\n* Early identification (before age 5) significantly improves outcomes.\n\nWould you like to know about SLT therapy techniques or how Stuttering differs from ASD?";
-    } else if (msg.includes('ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('tics')) {
-      reply = "**SSD - Speech Sound Disorder & Tic Disorders:**\n* Tourette Syndrome involves multiple motor tics and at least one vocal tic lasting over 12 months, typically emerging between ages 5-10.\n* Tics are sudden, repetitive, non-rhythmic movements or sounds (eye blinking, throat clearing, head jerking).\n* **First-line treatment:** CBIT (Comprehensive Behavioral Intervention for Tics) - more effective than medication for most children.\n* ~60% of people with Tourette also have ADHD, and ~50% have OCD.\n* Medication (clonidine, aripiprazole) is considered only for severe, disabling tics.\n\nWould you like to know more about CBIT therapy or managing Tourette in a school setting?";
-    } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit')) {
-      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n* ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n* Three types: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n* **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n* NeuroScan's ADHD screening uses video movement analysis and attention biomarkers.\n\nWould you like information about ADHD vs ASD differences, or medication options?";
-    } else if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic')) {
-      reply = "**ASD (Autism Spectrum Disorder):**\n* ASD is characterised by differences in social communication, restricted interests, and repetitive behaviours.\n* The AQ-10 is a validated 10-item screening tool - a score of 6+ suggests autism traits warranting formal assessment.\n* **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech therapy, and occupational therapy.\n* Early diagnosis (before age 3) leads to significantly better outcomes.\n* NeuroScan AI analyses facial expressions, eye contact, and movement patterns for ASD biomarkers.\n\nWould you like to know about the AQ-10 assessment or early signs of autism by age?";
-    } else if (msg.includes('dyslexia') || msg.includes('reading') || msg.includes('phonolog')) {
-      reply = "**Dyslexia:**\n* Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, with normal intelligence.\n* Core deficit: phonological processing - difficulty connecting letters to sounds.\n* **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention - explicit, multisensory reading instruction.\n* Dyslexia is NOT related to vision problems or intelligence - it is neurobiological.\n* NeuroScan analyses reading-related audio patterns and phonemic articulation biomarkers.\n\nWould you like information about structured literacy programmes or how dyslexia is diagnosed?";
+    if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic') || msg.includes('eye contact') || msg.includes('social communication')) {
+      reply = "**ASD (Autism Spectrum Disorder):**\n* ASD is characterised by persistent differences in social communication, restricted interests, and repetitive/stereotyped behaviours.\n* The AQ-10 is a validated 10-item screening tool - a score of 6+ suggests autism traits warranting formal assessment.\n* **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech-language therapy, and occupational therapy.\n* Early diagnosis (before age 3) leads to significantly better outcomes.\n* NeuroScan AI analyses facial expressions, eye contact, gaze patterns, and movement for ASD biomarkers.\n\n! *Screening guidance only - consult a qualified developmental paediatrician for formal diagnosis.*";
+    } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit') || msg.includes('inattention') || msg.includes('impulsiv')) {
+      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n* ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n* Three subtypes: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n* **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n* NeuroScan's ADHD screening analyses movement patterns, task-switching, and attention biomarkers from video.\n\n! *Screening guidance only - consult a qualified developmental paediatrician for formal diagnosis.*";
+    } else if (msg.includes('dyslexia') || msg.includes('reading') || msg.includes('phonolog') || msg.includes('spelling') || msg.includes('literacy')) {
+      reply = "**Dyslexia (Specific Reading Disorder):**\n* Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, despite normal intelligence.\n* Core deficit: phonological processing - difficulty connecting letters to sounds (the alphabetic principle).\n* **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention - explicit, multisensory reading instruction.\n* Dyslexia is neurobiological, NOT related to vision problems or low intelligence.\n* NeuroScan analyses reading-related phonemic patterns and articulation biomarkers for dyslexia screening.\n\n! *Screening guidance only - consult a qualified educational psychologist for formal diagnosis.*";
+    } else if (msg.includes('stutter') || msg.includes('fluency') || msg.includes('stammer') || msg.includes('disfluency') || msg.includes('speech block') || msg.includes('repetition')) {
+      reply = "**Stuttering / Fluency Disorder:**\n* Stuttering is a speech fluency disorder affecting ~1% of people, characterised by repetitions (b-b-ball), prolongations (ssssun), and silent blocks.\n* Onset typically between ages 2-4 years; males affected 3:1 over females.\n* 60-80% of children recover naturally before adolescence - early intervention is key.\n* **Evidence-based treatments:**\n  - Lidcombe Programme (under 6) - parent-delivered operant therapy\n  - Fluency Shaping Therapy (older children/adults) - controlled breathing, easy onsets\n  - CBT for speaking anxiety and avoidance behaviours\n* NeuroScan's stuttering screening analyses disfluency rate, pause patterns, and speech rhythm from audio.\n\n! *Screening guidance only - consult a certified Speech-Language Pathologist (SLP) for formal diagnosis.*";
+    } else if (msg.includes('ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('phoneme') || msg.includes('intelligib') || msg.includes('pronunciation')) {
+      reply = "**Speech Sound Disorder (SSD):**\n* SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, making speech hard to understand.\n* Common patterns: substitutions (w for r), omissions (dropping final sounds), and distortions.\n* **Evidence-based treatments:**\n  - Traditional Articulation Therapy - target sound practice at phoneme, word, sentence levels\n  - Phonological Intervention (Metaphon/Cycles) - targets pattern errors\n  - Nuffield Dyspraxia Programme - for motor speech planning difficulties\n* Always rule out hearing loss first - audiological evaluation is essential before starting therapy.\n* NeuroScan analyses phoneme accuracy, articulation errors, and speech intelligibility from audio recordings.\n\n! *Screening guidance only - consult a certified Speech-Language Pathologist (SLP) for formal diagnosis.*";
     } else if (msg.includes('speech') || msg.includes('language') || msg.includes('talking') || msg.includes('words')) {
       reply = "**Speech & Language Development:**\n* Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n* If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n* **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n* NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
     } else if (msg.includes('therap') || msg.includes('treatment') || msg.includes('help') || msg.includes('intervention')) {
-      reply = "**Evidence-Based Therapy Options:**\n* **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD and ID - most evidence-based.\n* **SLT (Speech-Language Therapy):** For Stuttering, speech delay, stuttering, and autism-related communication.\n* **OT (Occupational Therapy):** For sensory processing, fine motor skills, and daily living skills.\n* **CBIT:** Best treatment for tics and Tourette Syndrome.\n* **Structured Literacy:** For dyslexia - phonics-based, multisensory reading instruction.\n* **Parent Training:** Highly effective for ADHD and ASD - teaches behavioural strategies.\n\nWhich specific therapy or disorder would you like more information about?";
+      reply = "**Evidence-Based Therapy Options for NeuroScan's 5 Disorders:**\n* **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD - most evidence-based early intervention.\n* **SLT (Speech-Language Therapy):** For Stuttering, SSD, and autism-related communication difficulties.\n* **Fluency Shaping / Lidcombe Programme:** Gold-standard for Stuttering - reduces disfluency and speaking anxiety.\n* **Articulation / Phonological Therapy:** For SSD - systematic practice of target sounds with a certified SLP.\n* **Structured Literacy (Orton-Gillingham):** For Dyslexia - explicit multisensory reading instruction.\n* **Behavioural Parent Training & CBT:** For ADHD - improves executive function, attention, and emotional regulation.\n* **Occupational Therapy:** For sensory processing and fine motor skills across multiple disorders.\n\n! *Screening guidance only - consult a qualified specialist for formal diagnosis and therapy planning.*";
     } else if (msg.includes('result') || msg.includes('score') || msg.includes('probability') || msg.includes('percent') || msg.includes('%')) {
       reply = "**Understanding Your NeuroScan Results:**\n* Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers - they are **screening indicators, not diagnoses**.\n* **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n* **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n* **Low Risk (<50%):** Traits present but not strongly predictive - continue monitoring milestones.\n* Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
     } else if (msg.includes('shap') || msg.includes('model') || msg.includes('machine learning') || msg.includes('ai') || msg.includes('ml')) {
       reply = "**NeuroScan AI Machine Learning Models:**\n* **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n* **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n* **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n* **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
-    } else if (msg.includes('stutter') || msg.includes('fluency') || msg.includes('stammer') || msg.includes('disfluency')) {
-      reply = "### Stuttering / Fluency Disorder\n\n" +
-        "**What is stuttering?**\n" +
-        "Stuttering is a speech fluency disorder affecting ~1 in 100 people, characterised by repetitions (b-b-ball), prolongations (ssssun), and blocks (silent pauses).\n\n" +
-        "**Evidence-based treatment:**\n" +
-        "* **Fluency Shaping Therapy** - controlled breathing, easy onsets, smooth speech\n" +
-        "* **Lidcombe Programme** - for children under 6, parent-delivered operant therapy\n" +
-        "* **CBT** - for anxiety and speaking avoidance in adolescents/adults\n\n" +
-        "**Key facts:** Onset typically 2-4 years; male 3:1 ratio; 60-80% of children recover naturally before adolescence.\n\n" +
-        "! *Screening only - consult a certified Speech-Language Pathologist (SLP).*";
-    } else if (msg.includes(' ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('phoneme') || msg.includes('intelligib')) {
-      reply = "### Speech Sound Disorder (SSD)\n\n" +
-        "**What is SSD?**\n" +
-        "SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, resulting in errors that make speech hard to understand.\n\n" +
-        "**Signs:**\n" +
-        "* Consistent substitution of sounds (w for r, f for th)\n" +
-        "* Speech under 50% intelligible to strangers after age 3\n" +
-        "* Persists beyond typical developmental timelines\n\n" +
-        "**Treatment:** Articulation therapy (traditional) or phonological intervention (Metaphon/Cycles approach) by a certified SLP. GFTA-3 is the gold-standard assessment tool.\n\n" +
-        "! *Always rule out hearing loss first - consult an SLP and audiologist.*";
     } else {
       reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, Stuttering, and SSD.\n\nI can help you with:\n* **Disorder information** - symptoms, causes, and diagnostic criteria\n* **Screening results** - interpreting your NeuroScan probability scores\n* **Therapy options** - evidence-based interventions for each condition\n* **NeuroScan tools** - how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
     }

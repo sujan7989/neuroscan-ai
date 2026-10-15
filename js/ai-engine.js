@@ -1,8 +1,7 @@
 /* ================================================================
    AI ENGINE — Multi-Disorder Ensemble Prediction System
    NeuroScan Advanced | v3.0
-   Disorders: ASD, ADHD, Dyslexia, Social Anxiety, Speech Delay,
-              Intellectual Disability, Sensory Processing Disorder
+   Disorders: ASD, ADHD, Dyslexia, Stuttering, SSD
    ================================================================ */
 
 // ── DISORDER DEFINITIONS ────────────────────────────────────────
