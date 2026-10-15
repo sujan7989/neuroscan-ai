@@ -368,7 +368,7 @@
       <div class="chat-topbar-avatar">👨‍⚕️</div>
       <div class="chat-topbar-info">
         <h3>Dr. NeuroScan AI</h3>
-        <p>Pediatric Neurodevelopment Specialist · Powered by Google Gemini</p>
+        <p>Pediatric Neurodevelopment Specialist · NeuroScan AI</p>
       </div>
       <div class="chat-topbar-actions">
         <button class="topbar-btn" id="explainReportBtn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,106,79,.12);color:var(--primary);border-color:var(--primary);font-weight:700" title="Explain current fused assessment report with RAG citations">📄 Explain My Report</button>
@@ -435,7 +435,7 @@
         <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Ask about ASD, ADHD, Dyslexia, Stuttering, SSD or therapy options…"></textarea>
         <button class="chat-send-btn" id="sendBtn" title="Send message">➤</button>
       </div>
-      <div class="input-hint">Press Enter to send · Shift+Enter for new line · Powered by Google Gemini 2.0 Flash</div>
+      <div class="input-hint">Press Enter to send · Shift+Enter for new line · Powered by NeuroScan AI</div>
     </div>
   </div>
 </div>
@@ -530,46 +530,13 @@ function renderAllMessages() {
 function showWelcome() {
   const welcomeMsg = {
     role: 'assistant',
-    content: `Hello! I'm **Dr. NeuroScan AI**, your pediatric neurodevelopment clinical specialist and evidence-grounded RAG assistant. 🧠
-
-All responses are synthesized in real-time from our **Curated Clinical Evidence Base**:
-• **NICE CG170 & NG87 Guidelines**: Evidence-based recognition and diagnostic pathways
-• **American Academy of Pediatrics (AAP 2020)**: Pediatric surveillance & early intervention protocols
-• **DSM-5-TR & ICD-10 Criteria**: Gold-standard clinical diagnostic classification
-• **Lancet Neurology 2024 Consensus**: Multimodal acoustic, motor, and cognitive biomarkers
-
-*You can speak with 🎙️ voice input, ask questions in English, தமிழ் or हिंदी, click **📄 Explain My Report** in the topbar to review your results, or use the **📋 Case Builder**.*`,
-    sourcesUsed: 3,
-    evidenceLevel: 'High (Level 1A)',
-    sources: [
-      {
-        title: 'NICE CG170: Autism spectrum disorder in under 19s',
-        organization: 'National Institute for Health and Care Excellence (NICE)',
-        year: 2023,
-        level: 'Level 1A',
-        excerpt: 'Multidisciplinary diagnostic assessment protocol covering social communication, adaptive skills, and speech-language profiling.'
-      },
-      {
-        title: 'AAP Clinical Practice Guideline for ASD Identification & Management',
-        organization: 'American Academy of Pediatrics',
-        year: 2020,
-        level: 'Level 1A',
-        excerpt: 'Immediate initiation of early developmental intervention services without awaiting full medical confirmation.'
-      },
-      {
-        title: 'Multimodal Machine Learning & Acoustic Biomarkers in Neurodevelopment',
-        organization: 'Lancet Neurology Consensus Group',
-        year: 2024,
-        level: 'Level 1B',
-        excerpt: 'Late-fusion pipelines combining vocal pause latency and cognitive batteries significantly outperform unimodal questionnaires.'
-      }
-    ],
+    content: "Hello! I am **Dr. NeuroScan AI**, your clinical assistant for neurodevelopmental conditions.\n\nI specialise in 5 disorders and can answer your questions about:\n* **ASD** (Autism) - symptoms, causes, diagnosis, ABA therapy, early signs\n* **ADHD** - attention, hyperactivity, medication, school support\n* **Dyslexia** - reading difficulty, Orton-Gillingham, accommodations\n* **Stuttering** - disfluency, Lidcombe Programme, fluency therapy\n* **SSD** - articulation errors, phoneme therapy, intelligibility\n\nAlso ask about:\n* How to read your NeuroScan results\n* Hospitals and specialists in India\n* How disorders compare or overlap\n* What parents can do at home\n\nType your question and I will give you a detailed answer.",
     followups: [
-      "Explain My Assessment Report",
-      "Early signs of Autism in toddlers",
-      "Differences between ADHD and Autism",
-      "When to consult a Speech Therapist?",
-      "How to request an IEP or school evaluation?"
+      "What is autism and how is it diagnosed?",
+      "Differences between ASD and ADHD",
+      "ADHD medication for children",
+      "Stuttering therapy Lidcombe Programme",
+      "How to interpret my NeuroScan results"
     ]
   };
   appendMessage(welcomeMsg, true);
@@ -603,8 +570,7 @@ window.sendMessage = async function(overrideText = null) {
       signal: controller.signal,
       body: JSON.stringify({
         messages: conversationHistory.slice(-6),
-        language: currentLang,
-        patientContext: activePatientContext
+        language: currentLang
       }),
     }).finally(() => clearTimeout(clientTimer));
 
@@ -641,9 +607,11 @@ window.sendMessage = async function(overrideText = null) {
     });
   }
 
-  isTyping = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('chatInput').focus();
+  } finally {
+    isTyping = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('chatInput').focus();
+  }
 };
 
 window.explainLatestAssessment = function() {
@@ -688,19 +656,28 @@ window.explainLatestAssessment = function() {
 
 function generateSmartFollowups(userText, botReply) {
   const t = (userText + ' ' + botReply).toLowerCase();
-  if (t.includes('report') || t.includes('explain') || t.includes('score')) {
-    return ["What do the SHAP attributions mean?", "What are the next clinical steps?", "Explain early intervention under AAP 2020"];
+  if (t.includes('autism') || t.includes('asd')) {
+    if (t.includes('cause')) return ["ASD symptoms", "How is ASD diagnosed?", "ABA therapy for autism"];
+    if (t.includes('therap') || t.includes('aba')) return ["ASD medication", "School support for autism", "Parent tips for ASD"];
+    return ["What causes autism?", "How is ASD diagnosed?", "ABA therapy explained", "Early signs of autism by age"];
   }
-  if (t.includes('speech') || t.includes('word') || t.includes('talk')) {
-    return ["What home exercises help speech delay?", "Speech delay vs autism markers", "How to find a certified SLP?"];
+  if (t.includes('adhd')) {
+    if (t.includes('medic') || t.includes('ritalin')) return ["ADHD therapy without medication", "ADHD school support IEP", "Parent guide for ADHD"];
+    return ["ADHD medication methylphenidate", "ADHD school accommodations IEP", "Parent guide for ADHD", "What causes ADHD?"];
   }
-  if (t.includes('adhd') || t.includes('hyper') || t.includes('focus')) {
-    return ["Best classroom accommodations for ADHD", "Executive function routine tips", "Behavioral therapy vs medication"];
+  if (t.includes('dyslexia') || t.includes('reading')) {
+    return ["Orton-Gillingham therapy", "Dyslexia school accommodations", "Assistive technology for dyslexia", "Parent tips for dyslexia"];
   }
-  if (t.includes('sensory') || t.includes('texture') || t.includes('sound')) {
-    return ["Creating a calming sensory diet", "How to manage sensory meltdowns", "Occupational therapy sensory equipment"];
+  if (t.includes('stutter') || t.includes('fluency') || t.includes('disfluency')) {
+    return ["Lidcombe Programme explained", "Stuttering therapy for school-age", "What parents should not say to child who stutters"];
   }
-  return ["What are next clinical steps?", "Explain early intervention therapy", "How does the AQ-10 screening work?"];
+  if (t.includes('ssd') || t.includes('speech sound') || t.includes('articulation')) {
+    return ["Articulation therapy explained", "SSD age norms when to seek help", "Cycles approach phonological disorder"];
+  }
+  if (t.includes('result') || t.includes('score') || t.includes('probability')) {
+    return ["What does High Risk mean?", "What to do after High Risk result", "How accurate is NeuroScan screening?"];
+  }
+  return ["What is autism?", "ADHD symptoms in children", "Dyslexia reading treatment", "Stutter therapy options", "Diff between ASD and ADHD"];
 }
 
 function appendMessage(msg, isWelcome = false, index = null) {

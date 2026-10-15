@@ -1390,15 +1390,15 @@ app.post('/api/doctor-chat', async (req, res) => {
       const isDiag = q.includes('diagnos')||q.includes('test')||q.includes('assess')||q.includes('evaluat')||q.includes('screen')||q.includes('confirm')||q.includes('check');
       const isAge  = q.includes('age')||q.includes('year old')||q.includes('child')||q.includes('toddler')||q.includes('adult')||q.includes('early sign')||q.includes('milestone')||q.includes('baby')||q.includes('infant');
       const isSchool=q.includes('school')||q.includes('class')||q.includes('teach')||q.includes('study')||q.includes('learn')||q.includes('iep')||q.includes('education')||q.includes('academ')||q.includes('exam');
-      const isComp = q.includes('differ')||q.includes(' vs ')||q.includes('versus')||q.includes('compare')||q.includes('overlap')||q.includes('together')||q.includes('both')||q.includes('same time');
+      const isComp = q.includes('diff')||q.includes('differ')||q.includes(' vs ')||q.includes('versus')||q.includes('compare')||q.includes('overlap')||q.includes('together')||q.includes('both')||q.includes('same time');
       const isRes  = q.includes('result')||q.includes('score')||q.includes('probability')||q.includes('percent')||q.includes('% ')||q.includes('risk level')||q.includes('high risk')||q.includes('confidence');
       const isPar  = q.includes('parent')||q.includes('mother')||q.includes('father')||q.includes('home')||q.includes('daily routine')||q.includes('what can i do')||q.includes('family')||q.includes('tips for');
       const isHosp = q.includes('hospital')||q.includes('specialist')||q.includes('clinic')||q.includes('nimhans')||q.includes('aiims')||q.includes('india')||q.includes('refer')||q.includes('consult')||q.includes('where');
       const isNS   = q.includes('neuroscan')||q.includes('this app')||q.includes('platform')||q.includes('how does')||q.includes('how accurate')||q.includes('upload')||q.includes('questionnaire');
       // Route to answer
       if (isNS) reply = DB.neuroscan;
+      else if (isComp) reply = DB.compare;
       else if (isRes&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.results;
-      else if (isComp&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.compare;
       else if (isTher&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.therapy_all;
       else if (isHosp&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.hospitals_all;
       else if (isASD)  reply = isCause?DB.asd.cause:isMed?DB.asd.med:isDiag?DB.asd.diag:isAge?DB.asd.age:isSchool?DB.asd.school:isPar?DB.asd.parent:(isTher||isSym)?DB.asd.therapy:isHosp?DB.asd.hospital:DB.asd.overview;
