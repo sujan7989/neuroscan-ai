@@ -804,12 +804,12 @@
       removeBotTyping();
       botHistory.push({
         role: 'assistant',
-        content: "NeuroScan AI Assistant is currently active. For comprehensive assessments, try the **Take Assessment** tab or consult **Dr. NeuroScan AI**!"
+        content: "Something went wrong. Please try your question again. You can ask about ASD, ADHD, Dyslexia, Stuttering, or SSD."
       });
       renderBotMessages();
+    } finally {
+      isBotTyping = false;
     }
-
-    isBotTyping = false;
   }
 
   sendBtn.addEventListener('click', () => handleSend());

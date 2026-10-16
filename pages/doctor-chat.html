@@ -440,588 +440,368 @@
   </div>
 </div>
 
+
+<!-- Auth import (module) - isolated so failure doesnt crash chat -->
 <script type="module">
-import { saveChatMessage, getChatHistory, onAuthChange, auth } from '../js/mongodb.js';
+try {
+  const m = await import('../js/mongodb.js');
+  window._saveChatMsg = m.saveChatMessage;
+  window._getChatHistory = m.getChatHistory;
+  window._onAuthChange = m.onAuthChange;
+  window._auth = m.auth;
+  if (m.onAuthChange) {
+    m.onAuthChange(async user => {
+      if (user && window._loadHistory) window._loadHistory(user.uid);
+    });
+  }
+} catch(e) { console.warn('Auth module load failed:', e.message); }
+</script>
 
-let conversationHistory = [];
-let currentLang = 'en';
-let isTyping = false;
-let activePatientContext = null;
-let speechRecognition = null;
-let isRecordingVoice = false;
-let currentUtterance = null;
+<!-- Main chat logic - plain script so it ALWAYS runs -->
+<script>
+(function() {
+'use strict';
 
-// ── ASSIGN ALL WINDOW FUNCTIONS IMMEDIATELY ──────────────────────────────
-// These MUST be on window before any inline HTML handler fires (module
-// scripts execute after HTML is parsed but inline handlers fire on interaction).
-window.handleKey = function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
+var conversationHistory = [];
+var currentLang = 'en';
+var isTyping = false;
+
+// ── KNOWLEDGE BASE (inline so no fetch needed) ─────────────────────────
+var KB = {
+  greeting: "Hello! I am **Dr. NeuroScan AI**, your clinical assistant for neurodevelopmental conditions.\n\nI can answer questions about:\n* **ASD** — symptoms, causes, ABA therapy, early signs, diagnosis\n* **ADHD** — attention, hyperactivity, medication, school support\n* **Dyslexia** — reading difficulty, Orton-Gillingham, accommodations\n* **Stuttering** — disfluency, Lidcombe Programme, fluency therapy\n* **SSD** — articulation errors, phoneme therapy, intelligibility\n\nYou can also ask about hospitals in India, how to read your NeuroScan results, or how disorders compare.\n\nType your question below!",
+  fallback: "Thank you for your question. Please ask me about:\n* **ASD** (autism) — symptoms, causes, therapy, diagnosis\n* **ADHD** — attention, medication, school support\n* **Dyslexia** — reading, Orton-Gillingham, accommodations\n* **Stuttering** — Lidcombe Programme, fluency therapy\n* **SSD** — articulation, phoneme therapy\n\nYou can also ask about hospitals in India, screening results, or how disorders compare.\n\n! *Screening guidance only — consult a qualified healthcare professional for formal diagnosis.*"
 };
+
+// ── SEND TO SERVER ──────────────────────────────────────────────────────
+async function callAPI(userText) {
+  var resp = await fetch('/api/doctor-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: conversationHistory.slice(-6),
+      language: currentLang
+    })
+  });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  var data = await resp.json();
+  return data.reply || KB.fallback;
+}
+
+// ── SEND MESSAGE ────────────────────────────────────────────────────────
+window.sendMessage = async function(overrideText) {
+  var input = document.getElementById('chatInput');
+  var text = (overrideText !== undefined && overrideText !== null)
+    ? String(overrideText).trim()
+    : (input ? input.value.trim() : '');
+  if (!text || isTyping) return;
+
+  if (!overrideText && input) {
+    input.value = '';
+    input.style.height = 'auto';
+  }
+
+  var sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) sendBtn.disabled = true;
+  isTyping = true;
+
+  appendMessage({ role: 'user', content: text });
+  conversationHistory.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    var reply = await callAPI(text);
+    removeTyping();
+    var followups = getFollowups(text, reply);
+    appendMessage({ role: 'assistant', content: reply, followups: followups });
+    conversationHistory.push({ role: 'assistant', content: reply });
+    // Save to DB if auth available
+    try {
+      var user = window._auth && window._auth.currentUser;
+      if (user && window._saveChatMsg) {
+        window._saveChatMsg(user.uid, 'user', text);
+        window._saveChatMsg(user.uid, 'assistant', reply);
+      }
+    } catch(e) {}
+  } catch(err) {
+    removeTyping();
+    appendMessage({ role: 'assistant', content: 'Sorry, something went wrong. Please try again.\n\nYou can ask me about ASD, ADHD, Dyslexia, Stuttering, or SSD.' });
+  } finally {
+    isTyping = false;
+    if (sendBtn) sendBtn.disabled = false;
+    if (input) input.focus();
+  }
+};
+
+// ── FOLLOWUP SUGGESTIONS ────────────────────────────────────────────────
+function getFollowups(q, reply) {
+  var t = (q + ' ' + reply).toLowerCase();
+  if (t.includes('autism') || t.includes('asd')) {
+    return ['What causes autism?', 'How is ASD diagnosed?', 'ABA therapy explained', 'Early signs of autism in toddlers'];
+  }
+  if (t.includes('adhd')) {
+    return ['ADHD medication methylphenidate', 'ADHD school support IEP', 'Parent tips for ADHD at home'];
+  }
+  if (t.includes('dyslexia') || t.includes('reading')) {
+    return ['Orton-Gillingham therapy', 'Dyslexia school accommodations', 'Parent tips for dyslexia'];
+  }
+  if (t.includes('stutter') || t.includes('fluency') || t.includes('disfluency')) {
+    return ['Lidcombe Programme explained', 'Stuttering therapy for school-age', 'What parents should not say to a child who stutters'];
+  }
+  if (t.includes('ssd') || t.includes('articulation') || t.includes('speech sound')) {
+    return ['SSD therapy options', 'Age norms for speech sounds', 'How is SSD diagnosed?'];
+  }
+  if (t.includes('result') || t.includes('score') || t.includes('probability')) {
+    return ['What does High Risk mean?', 'What to do after a High Risk result'];
+  }
+  return ['What is autism?', 'ADHD symptoms in children', 'Dyslexia reading treatment', 'Stutter therapy options', 'Diff between ASD and ADHD'];
+}
+
+// ── RENDER HELPERS ──────────────────────────────────────────────────────
+function fmt(text) {
+  if (!text) return '';
+  var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  var lines = s.split('\n');
+  var out = []; var inList = false;
+  lines.forEach(function(rawLine) {
+    var line = rawLine.trim();
+    if (/^[*\-•]\s/.test(line)) {
+      if (!inList) { out.push('<ul style="margin:6px 0;padding-left:20px">'); inList = true; }
+      out.push('<li>' + line.replace(/^[*\-•]\s*/, '') + '</li>');
+    } else {
+      if (inList) { out.push('</ul>'); inList = false; }
+      if (line === '') out.push('<div style="height:5px"></div>');
+      else out.push('<p style="margin:3px 0">' + line + '</p>');
+    }
+  });
+  if (inList) out.push('</ul>');
+  return out.join('');
+}
+
+function appendMessage(msg) {
+  var container = document.getElementById('chatMessages');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'msg ' + msg.role;
+  var time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  var avatar = msg.role === 'assistant' ? '\u{1F468}\u200D\u2695\uFE0F' : '\u{1F464}';
+  var chips = '';
+  if (msg.followups && msg.followups.length) {
+    chips = '<div class="followup-chips">' + msg.followups.map(function(f) {
+      return '<div class="followup-chip" onclick="window.sendMessage(this.textContent.trim())">' + f + '</div>';
+    }).join('') + '</div>';
+  }
+  div.innerHTML =
+    '<div class="msg-avatar">' + avatar + '</div>' +
+    '<div style="max-width:100%">' +
+    '<div class="msg-bubble">' + fmt(msg.content) + '</div>' +
+    chips +
+    '<div class="msg-time">' + time + '</div>' +
+    '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  var container = document.getElementById('chatMessages');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'typing-bubble'; div.id = 'typingIndicator';
+  div.innerHTML = '<div class="msg-avatar" style="background:linear-gradient(135deg,#2d6a4f,#52b788);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center">\u{1F468}\u200D\u2695\uFE0F</div><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  var el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+// ── LOAD HISTORY ────────────────────────────────────────────────────────
+window._loadHistory = async function(uid) {
+  try {
+    if (!window._getChatHistory) return;
+    var history = await window._getChatHistory(uid, 20);
+    if (!history || !history.length) return;
+    conversationHistory = history.map(function(h) { return { role: h.role, content: h.text }; });
+    var container = document.getElementById('chatMessages');
+    if (container) container.innerHTML = '';
+    conversationHistory.forEach(function(m) { appendMessage(m); });
+  } catch(e) {}
+};
+
+// ── VOICE MIC ───────────────────────────────────────────────────────────
+window.toggleVoiceInput = function() {
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) { alert('Voice input is not supported in this browser. Please use Chrome.'); return; }
+  var micBtn = document.getElementById('voiceMicBtn');
+  if (window._isRecording) {
+    if (window._srec) window._srec.stop();
+    window._isRecording = false;
+    if (micBtn) micBtn.classList.remove('listening');
+    return;
+  }
+  var sr = new SpeechRec();
+  sr.continuous = false; sr.interimResults = true;
+  sr.lang = currentLang === 'ta' ? 'ta-IN' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
+  sr.onstart = function() { window._isRecording = true; if (micBtn) micBtn.classList.add('listening'); };
+  sr.onresult = function(e) {
+    var t = Array.from(e.results).map(function(r) { return r[0].transcript; }).join('');
+    var inp = document.getElementById('chatInput');
+    if (inp) { inp.value = t; inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 120) + 'px'; }
+  };
+  sr.onend = function() { window._isRecording = false; if (micBtn) micBtn.classList.remove('listening'); };
+  sr.onerror = function() { window._isRecording = false; if (micBtn) micBtn.classList.remove('listening'); };
+  window._srec = sr;
+  sr.start();
+};
+
+// ── LANG SWITCH ──────────────────────────────────────────────────────────
+window.setLang = function(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+};
+
+// ── MISC ─────────────────────────────────────────────────────────────────
+window.clearChat = function() {
+  if (!confirm('Clear the entire conversation?')) return;
+  conversationHistory = [];
+  var c = document.getElementById('chatMessages');
+  if (c) c.innerHTML = '';
+  showWelcome();
+};
+
+window.exportChat = function() {
+  var text = conversationHistory.map(function(m) { return '[' + m.role.toUpperCase() + ']\n' + m.content; }).join('\n---\n');
+  var blob = new Blob(['NeuroScan AI Chat Export\n' + new Date().toLocaleString() + '\n\n' + text], { type: 'text/plain' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'NeuroScan_Chat_' + new Date().toISOString().split('T')[0] + '.txt';
+  a.click();
+};
+
 window.autoResize = function(el) {
   if (!el) return;
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 };
-window.setLang = (lang, btn) => setLang(lang, btn);
-window.sendSuggested = (el) => sendSuggested(el);
-window.clearChat = () => clearChat();
-window.exportChat = () => exportChat();
-window.toggleCaseBuilder = () => toggleCaseBuilder();
-window.selectAge = (btn) => selectAge(btn);
-window.toggleChip = (btn) => toggleChip(btn);
-window.submitCaseBuilder = () => submitCaseBuilder();
-window.toggleVoiceInput = () => toggleVoiceInput();
-window.speakMessage = (id) => speakMessage(id);
-window.copyMessageText = (id, btn) => copyMessageText(id, btn);
-window.applyAssessmentContext = () => applyAssessmentContext();
-window.dismissContext = () => dismissContext();
-window.explainLatestAssessment = () => explainLatestAssessment();
-// sendMessage is defined below and overwritten after definition
 
-// Check for recent assessment data in storage
-try {
-  const lastScore = localStorage.getItem('neuroscan_last_result') || sessionStorage.getItem('neuroscan_last_result');
-  if (lastScore) {
-    const parsed = JSON.parse(lastScore);
-    const scoreVal = parsed.aqScore ?? parsed.score ?? (parsed.probability ? Math.round(parsed.probability * 100) + '%' : null);
-    if (scoreVal) {
-      activePatientContext = {
-        age: parsed.age || 'Child',
-        gender: parsed.gender || 'Not specified',
-        scores: parsed,
-        primaryConcern: parsed.riskLevel ? `Risk level: ${parsed.riskLevel}` : 'Neurodevelopmental screening'
-      };
-      const banner = document.getElementById('patientContextBanner');
-      const bannerText = document.getElementById('patientContextText');
-      if (banner && bannerText) {
-        bannerText.innerHTML = `💡 Recent assessment detected: <strong>${parsed.assessment_type || 'AQ-10'} (${parsed.riskLevel || 'Evaluated'}, ${scoreVal})</strong>. Include in Dr. NeuroScan context?`;
-        banner.style.display = 'flex';
-      }
-    }
-  }
-} catch(e) {}
+window.handleKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
+};
 
-// Initialize welcome message immediately so the interface is never blank
-showWelcome();
+window.sendSuggested = function(el) {
+  window.sendMessage(el.textContent.trim());
+};
 
-// Load history on auth
-onAuthChange(async user => {
-  if (user) {
-    try {
-      const history = await getChatHistory(user.uid, 30);
-      if (history && history.length > 0) {
-        conversationHistory = history.map(h => ({ role: h.role, content: h.text }));
-        renderAllMessages();
-        return;
-      }
-    } catch(e) {}
-  }
-});
+window.toggleCaseBuilder = function() {
+  var p = document.getElementById('caseBuilderPanel');
+  if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+};
 
-function renderAllMessages() {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  container.innerHTML = '';
-  conversationHistory.forEach((msg, idx) => {
-    appendMessage(msg, false, idx);
-  });
-}
+window.selectAge = function(btn) {
+  document.querySelectorAll('#ageChips .builder-chip').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+};
 
-function showWelcome() {
-  const welcomeMsg = {
-    role: 'assistant',
-    content: "Hello! I am **Dr. NeuroScan AI**, your clinical assistant for neurodevelopmental conditions.\n\nI specialise in 5 disorders and can answer your questions about:\n* **ASD** (Autism) - symptoms, causes, diagnosis, ABA therapy, early signs\n* **ADHD** - attention, hyperactivity, medication, school support\n* **Dyslexia** - reading difficulty, Orton-Gillingham, accommodations\n* **Stuttering** - disfluency, Lidcombe Programme, fluency therapy\n* **SSD** - articulation errors, phoneme therapy, intelligibility\n\nAlso ask about:\n* How to read your NeuroScan results\n* Hospitals and specialists in India\n* How disorders compare or overlap\n* What parents can do at home\n\nType your question and I will give you a detailed answer.",
-    followups: [
-      "What is autism and how is it diagnosed?",
-      "Differences between ASD and ADHD",
-      "ADHD medication for children",
-      "Stuttering therapy Lidcombe Programme",
-      "How to interpret my NeuroScan results"
-    ]
-  };
-  appendMessage(welcomeMsg, true);
-}
+window.toggleChip = function(btn) { btn.classList.toggle('active'); };
 
-window.sendMessage = async function(overrideText = null) {
-  const input = document.getElementById('chatInput');
-  const text = (overrideText !== null ? overrideText : input.value).trim();
-  if (!text || isTyping) return;
+window.submitCaseBuilder = function() {
+  var age = document.querySelector('#ageChips .builder-chip.active');
+  var ageText = age ? age.dataset.age : 'a child';
+  var syms = Array.from(document.querySelectorAll('#symptomChips .builder-chip.active')).map(function(b) { return b.textContent.trim(); });
+  if (!syms.length) { alert('Please select at least one observed trait.'); return; }
+  window.toggleCaseBuilder();
+  window.sendMessage('I need help for ' + ageText + ' who shows these behaviours: ' + syms.join(', ') + '. What neurodevelopmental conditions could this be and what should I do?');
+};
 
-  if (overrideText === null) {
-    input.value = '';
-    input.style.height = 'auto';
-  }
-  document.getElementById('sendBtn').disabled = true;
+window.speakMessage = function(id) {
+  var el = document.getElementById(id);
+  if (!el || !window.speechSynthesis) return;
+  if (window.speechSynthesis.speaking) { window.speechSynthesis.cancel(); return; }
+  var u = new SpeechSynthesisUtterance(el.innerText);
+  u.rate = 1.0; u.lang = 'en-US';
+  window.speechSynthesis.speak(u);
+};
 
-  const userMsg = { role: 'user', content: text };
-  appendMessage(userMsg);
-  conversationHistory.push(userMsg);
+window.copyMessageText = function(id, btn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(function() {
+    if (btn) { var old = btn.innerHTML; btn.innerHTML = 'Copied!'; setTimeout(function() { btn.innerHTML = old; }, 1500); }
+  }).catch(function(){});
+};
 
-  showTypingIndicator();
-  isTyping = true;
+window.applyAssessmentContext = function() {
+  var banner = document.getElementById('patientContextBanner');
+  if (banner) banner.style.display = 'none';
+  window.sendMessage('Please explain my NeuroScan assessment results and what they mean for my child.');
+};
 
-  try {
-    const controller = new AbortController();
-    const clientTimer = setTimeout(() => controller.abort(), 25000);
-
-    const response = await fetch('/api/doctor-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        messages: conversationHistory.slice(-6),
-        language: currentLang
-      }),
-    }).finally(() => clearTimeout(clientTimer));
-
-    const data = await response.json();
-    const reply = data.reply || 'I am here to assist with developmental inquiries. What specific concerns are you noticing?';
-
-    removeTypingIndicator();
-    const assistantMsg = { 
-      role: 'assistant', 
-      content: reply,
-      sourcesUsed: data.sourcesUsed || 0,
-      evidenceLevel: data.evidenceLevel || 'High (Level 1A)',
-      sources: data.sources || [],
-      followups: generateSmartFollowups(text, reply)
-    };
-    appendMessage(assistantMsg);
-    conversationHistory.push(assistantMsg);
-
-    // Save to database
-    try {
-      const user = auth && auth.currentUser;
-      if (user) {
-        await saveChatMessage(user.uid, userMsg.role, userMsg.content);
-        await saveChatMessage(user.uid, assistantMsg.role, assistantMsg.content);
-      }
-    } catch(e) {}
-
-  } catch(err) {
-    removeTypingIndicator();
-    appendMessage({
-      role: 'assistant',
-      content: 'I\'m currently re-routing your request. NeuroScan AI offers multi-disorder guidance for ASD, ADHD, Speech Delays, and Dyslexia. Please try submitting your inquiry again.',
-      followups: ["What are standard speech milestones?", "What is an AQ-10 screening?"]
-    });
-  }
-
-  } finally {
-    isTyping = false;
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('chatInput').focus();
-  }
+window.dismissContext = function() {
+  var banner = document.getElementById('patientContextBanner');
+  if (banner) banner.style.display = 'none';
 };
 
 window.explainLatestAssessment = function() {
-  let assessmentContext = null;
-  try {
-    const rawLast = localStorage.getItem('neuroscan_last_result') || sessionStorage.getItem('neuroscan_last_result');
-    if (rawLast) {
-      assessmentContext = JSON.parse(rawLast);
-    } else {
-      const allSess = localStorage.getItem('neuroscan_assessment_sessions');
-      if (allSess) {
-        const parsedAll = JSON.parse(allSess);
-        const keys = Object.keys(parsedAll);
-        if (keys.length > 0) {
-          assessmentContext = parsedAll[keys[keys.length - 1]];
-        }
-      }
-    }
-  } catch (e) {}
-
-  if (!assessmentContext) {
-    assessmentContext = {
-      riskLevel: 'Moderate',
-      riskEstimate: '76%',
-      disorder: 'Autism Spectrum Traits',
-      summary: 'Multimodal assessment combining AQ-10 (score 7/10), speech pause frequency (8.5/min), and cognitive working memory span (4 items).'
-    };
-  }
-
-  activePatientContext = {
-    age: assessmentContext.demographics?.age || assessmentContext.age || 'Pediatric (8 yrs)',
-    gender: assessmentContext.demographics?.gender || assessmentContext.gender || 'Not specified',
-    scores: assessmentContext.prediction || assessmentContext,
-    riskEstimate: assessmentContext.prediction?.riskEstimate ? `${assessmentContext.prediction.riskEstimate}%` : '76%',
-    primaryConcern: 'Comprehensive Multimodal Assessment Report Explanation'
-  };
-
-  const promptText = "Please provide an evidence-based clinical explanation of my latest NeuroScan Multimodal Assessment Report, breaking down the fused risk, uncertainty interval, SHAP biomarker drivers, and recommended next clinical steps.";
-  document.getElementById('chatInput').value = promptText;
-  window.sendMessage(promptText);
+  window.sendMessage('Please explain my latest NeuroScan assessment results and recommend next steps.');
 };
 
-function generateSmartFollowups(userText, botReply) {
-  const t = (userText + ' ' + botReply).toLowerCase();
-  if (t.includes('autism') || t.includes('asd')) {
-    if (t.includes('cause')) return ["ASD symptoms", "How is ASD diagnosed?", "ABA therapy for autism"];
-    if (t.includes('therap') || t.includes('aba')) return ["ASD medication", "School support for autism", "Parent tips for ASD"];
-    return ["What causes autism?", "How is ASD diagnosed?", "ABA therapy explained", "Early signs of autism by age"];
-  }
-  if (t.includes('adhd')) {
-    if (t.includes('medic') || t.includes('ritalin')) return ["ADHD therapy without medication", "ADHD school support IEP", "Parent guide for ADHD"];
-    return ["ADHD medication methylphenidate", "ADHD school accommodations IEP", "Parent guide for ADHD", "What causes ADHD?"];
-  }
-  if (t.includes('dyslexia') || t.includes('reading')) {
-    return ["Orton-Gillingham therapy", "Dyslexia school accommodations", "Assistive technology for dyslexia", "Parent tips for dyslexia"];
-  }
-  if (t.includes('stutter') || t.includes('fluency') || t.includes('disfluency')) {
-    return ["Lidcombe Programme explained", "Stuttering therapy for school-age", "What parents should not say to child who stutters"];
-  }
-  if (t.includes('ssd') || t.includes('speech sound') || t.includes('articulation')) {
-    return ["Articulation therapy explained", "SSD age norms when to seek help", "Cycles approach phonological disorder"];
-  }
-  if (t.includes('result') || t.includes('score') || t.includes('probability')) {
-    return ["What does High Risk mean?", "What to do after High Risk result", "How accurate is NeuroScan screening?"];
-  }
-  return ["What is autism?", "ADHD symptoms in children", "Dyslexia reading treatment", "Stutter therapy options", "Diff between ASD and ADHD"];
-}
-
-function appendMessage(msg, isWelcome = false, index = null) {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = `msg ${msg.role}`;
-
-  const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  const avatarEmoji = msg.role === 'assistant' ? '👨‍⚕️' : '👤';
-  const msgId = 'msg-' + (index !== null ? index : Date.now() + '-' + Math.floor(Math.random()*1000));
-
-  let actionButtons = '';
-  if (msg.role === 'assistant') {
-    actionButtons = `
-      <div class="msg-actions">
-        <button class="msg-action-btn" title="Read aloud" onclick="speakMessage('${msgId}')">
-          <span id="${msgId}-icon">🔊</span> Read
-        </button>
-        <button class="msg-action-btn" title="Copy text" onclick="copyMessageText('${msgId}', this)">
-          📋 Copy
-        </button>
-      </div>
-    `;
-  }
-
-  // RAG Evidence Sources Block
-  let ragHtml = '';
-  if (msg.role === 'assistant' && msg.sources && msg.sources.length > 0) {
-    ragHtml = `
-      <div class="rag-evidence-container">
-        <div class="rag-header-row">
-          <span class="rag-badge">📚 Sources Used: ${msg.sourcesUsed || msg.sources.length}</span>
-          <span class="rag-evidence-level">⭐ Evidence Level: ${msg.evidenceLevel || 'High (Level 1A)'}</span>
-        </div>
-        <div style="font-weight:700;color:#15803d;margin-bottom:4px;font-size:.73rem">Relevant Guidelines & Evidence Base:</div>
-        ${msg.sources.map((s, idx) => `
-          <div class="rag-source-item">
-            <div class="rag-source-title">📄 ${s.title} (${s.organization || 'Clinical Consensus'}, ${s.year || '2023'})</div>
-            <div class="rag-source-excerpt">"${s.excerpt || ''}"</div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  let followupsHtml = '';
-  if (msg.followups && msg.followups.length > 0) {
-    followupsHtml = `
-      <div class="followup-chips">
-        ${msg.followups.map(f => `<div class="followup-chip" onclick="sendSuggested(this)">${f}</div>`).join('')}
-      </div>
-    `;
-  }
-
-  div.innerHTML = `
-    <div class="msg-avatar">${avatarEmoji}</div>
-    <div style="max-width:100%">
-      <div class="msg-bubble" id="${msgId}">${formatMessage(msg.content)}</div>
-      ${ragHtml}
-      ${actionButtons}
-      ${followupsHtml}
-      <div class="msg-time">${time}</div>
-    </div>
-  `;
-
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-function formatMessage(text) {
-  if (!text) return '';
-  let safe = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  safe = safe.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-  const lines = safe.split('\n');
-  let inList = false;
-  const out = [];
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
-      if (!inList) {
-        out.push('<ul style="margin:6px 0;padding-left:20px">');
-        inList = true;
-      }
-      out.push(`<li>${line.replace(/^[•\-\*]\s*/, '')}</li>`);
-    } else {
-      if (inList) {
-        out.push('</ul>');
-        inList = false;
-      }
-      if (line === '') {
-        out.push('<div style="height:6px"></div>');
-      } else {
-        out.push(`<p style="margin:4px 0">${line}</p>`);
-      }
-    }
-  }
-  if (inList) out.push('</ul>');
-  return out.join('');
-}
-
-function showTypingIndicator() {
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
-  const div = document.createElement('div');
-  div.className = 'typing-bubble'; div.id = 'typingIndicator';
-  div.innerHTML = `
-    <div class="msg-avatar" style="background:linear-gradient(135deg,#2d6a4f,#52b788);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center">👨‍⚕️</div>
-    <div class="typing-dots">
-      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-    </div>
-  `;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-}
-
-function removeTypingIndicator() {
-  document.getElementById('typingIndicator')?.remove();
-}
-
-function setLang(lang, btn) {
-  currentLang = lang;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const langNames = { en: 'English', ta: 'Tamil (தமிழ்)', hi: 'Hindi (हिंदी)' };
+// ── SHOW WELCOME ─────────────────────────────────────────────────────────
+function showWelcome() {
   appendMessage({
     role: 'assistant',
-    content: `Language switched to **${langNames[lang] || lang}**. Feel free to continue asking your questions!`
+    content: "Hello! I am **Dr. NeuroScan AI**, your clinical assistant for neurodevelopmental conditions.\n\nI can answer questions about:\n* **ASD** (Autism) — symptoms, causes, ABA therapy, early signs, diagnosis\n* **ADHD** — attention, hyperactivity, medication, school support, parent tips\n* **Dyslexia** — reading difficulty, Orton-Gillingham, school accommodations\n* **Stuttering** — disfluency, Lidcombe Programme, fluency therapy\n* **SSD** — articulation errors, phoneme therapy, intelligibility norms\n\nAlso ask about: hospitals in India, how to read NeuroScan results, disorder comparisons, parent home strategies.\n\nWhat would you like to know?",
+    followups: [
+      'What is autism and how is it diagnosed?',
+      'Differences between ASD and ADHD',
+      'ADHD medication for children',
+      'Stuttering therapy Lidcombe Programme',
+      'How to interpret my NeuroScan results'
+    ]
   });
 }
 
-function sendSuggested(el) {
-  const q = el.textContent.trim();
-  window.sendMessage(q);
+// ── WIRE INPUT ON DOM READY ───────────────────────────────────────────────
+function wireInputs() {
+  var chatInput = document.getElementById('chatInput');
+  var sendBtn   = document.getElementById('sendBtn');
+  var micBtn    = document.getElementById('voiceMicBtn');
+  var explainBtn= document.getElementById('explainReportBtn');
+
+  if (chatInput) {
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.sendMessage(); }
+    });
+    chatInput.addEventListener('input', function() {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+    });
+  }
+  if (sendBtn)    sendBtn.addEventListener('click', function() { window.sendMessage(); });
+  if (micBtn)     micBtn.addEventListener('click', function() { window.toggleVoiceInput(); });
+  if (explainBtn) explainBtn.addEventListener('click', function() { window.explainLatestAssessment(); });
 }
 
-function clearChat() {
-  if (!confirm('Clear the entire conversation?')) return;
-  conversationHistory = [];
-  const container = document.getElementById('chatMessages');
-  if (container) container.innerHTML = '';
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
+// Run immediately if DOM already ready, otherwise wait
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { wireInputs(); showWelcome(); });
+} else {
+  wireInputs();
   showWelcome();
 }
 
-function exportChat() {
-  const msgs = conversationHistory.map(m =>
-    `[${m.role.toUpperCase()}]\n${m.content}\n`
-  ).join('\n---\n');
-  const blob = new Blob([`NeuroScan AI Clinical Consultation Export\n${'='.repeat(44)}\nDate: ${new Date().toLocaleString()}\n\n${msgs}`], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `NeuroScan_Doctor_Consult_${new Date().toISOString().split('T')[0]}.txt`;
-  a.click();
+// Also remove any footer that shared.js may inject
+function removeFooters() {
+  document.querySelectorAll('footer, .footer, #footer-ph').forEach(function(f) { f.remove(); });
 }
+removeFooters();
+setTimeout(removeFooters, 200);
+setTimeout(removeFooters, 800);
 
-// ── INTERACTIVE VOICE RECOGNITION (SPEECH-TO-TEXT) ────────────
-function toggleVoiceInput() {
-  const micBtn = document.getElementById('voiceMicBtn');
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRec) {
-    alert('Voice speech recognition is not supported in this browser. Please use Google Chrome or Edge.');
-    return;
-  }
-
-  if (isRecordingVoice) {
-    if (speechRecognition) speechRecognition.stop();
-    isRecordingVoice = false;
-    micBtn.classList.remove('listening');
-    return;
-  }
-
-  try {
-    speechRecognition = new SpeechRec();
-    speechRecognition.continuous = false;
-    speechRecognition.interimResults = true;
-    speechRecognition.lang = currentLang === 'ta' ? 'ta-IN' : currentLang === 'hi' ? 'hi-IN' : 'en-US';
-
-    speechRecognition.onstart = () => {
-      isRecordingVoice = true;
-      micBtn.classList.add('listening');
-      document.getElementById('chatInput').placeholder = 'Listening to your voice… speak now…';
-    };
-
-    speechRecognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map(r => r[0].transcript)
-        .join('');
-      document.getElementById('chatInput').value = transcript;
-      window.autoResize(document.getElementById('chatInput'));
-    };
-
-    speechRecognition.onerror = (e) => {
-      console.warn('Speech recognition error:', e.error);
-      micBtn.classList.remove('listening');
-      isRecordingVoice = false;
-      document.getElementById('chatInput').placeholder = "Ask Dr. NeuroScan about autism, ADHD, speech milestones…";
-    };
-
-    speechRecognition.onend = () => {
-      micBtn.classList.remove('listening');
-      isRecordingVoice = false;
-      document.getElementById('chatInput').placeholder = "Ask Dr. NeuroScan about autism, ADHD, speech milestones…";
-      const val = document.getElementById('chatInput').value.trim();
-      if (val.length > 5) {
-        // Automatically send voice query or allow user to edit
-      }
-    };
-
-    speechRecognition.start();
-  } catch (err) {
-    console.error('Voice recognition initiation error:', err);
-  }
-}
-
-// ── TEXT-TO-SPEECH (READ ALOUD) ───────────────────────────────
-function speakMessage(msgId) {
-  if (!('speechSynthesis' in window)) {
-    alert('Text-to-speech audio is not supported in your browser.');
-    return;
-  }
-
-  const el = document.getElementById(msgId);
-  const icon = document.getElementById(`${msgId}-icon`);
-  if (!el) return;
-
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    if (icon) icon.textContent = '🔊';
-    return;
-  }
-
-  const rawText = el.innerText.replace(/⚠️.*$/s, '').trim();
-  const utterance = new SpeechSynthesisUtterance(rawText);
-  utterance.rate = 1.0;
-  utterance.pitch = 1.0;
-
-  if (currentLang === 'ta') utterance.lang = 'ta-IN';
-  else if (currentLang === 'hi') utterance.lang = 'hi-IN';
-  else utterance.lang = 'en-US';
-
-  utterance.onstart = () => {
-    if (icon) icon.textContent = '⏹️';
-  };
-  utterance.onend = () => {
-    if (icon) icon.textContent = '🔊';
-  };
-  utterance.onerror = () => {
-    if (icon) icon.textContent = '🔊';
-  };
-
-  window.speechSynthesis.speak(utterance);
-}
-
-function copyMessageText(msgId, btnElement = null) {
-  const el = document.getElementById(msgId);
-  if (!el) return;
-  navigator.clipboard.writeText(el.innerText).then(() => {
-    const btn = btnElement || (typeof event !== 'undefined' ? event.currentTarget : null);
-    if (btn) {
-      const oldText = btn.innerHTML;
-      btn.innerHTML = '✓ Copied';
-      setTimeout(() => { btn.innerHTML = oldText; }, 1800);
-    }
-  }).catch(() => {});
-}
-
-// ── CASE BUILDER LOGIC ────────────────────────────────────────
-function toggleCaseBuilder() {
-  const panel = document.getElementById('caseBuilderPanel');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-}
-
-function selectAge(btn) {
-  document.querySelectorAll('#ageChips .builder-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function toggleChip(btn) {
-  btn.classList.toggle('active');
-}
-
-function submitCaseBuilder() {
-  const activeAge = document.querySelector('#ageChips .builder-chip.active')?.dataset.age || 'Child (4-7 yrs)';
-  const selectedSymptoms = Array.from(document.querySelectorAll('#symptomChips .builder-chip.active'))
-    .map(b => b.textContent.trim());
-
-  if (selectedSymptoms.length === 0) {
-    alert('Please select at least 1 or 2 observed traits to construct the clinical inquiry.');
-    return;
-  }
-
-  const prompt = `I am seeking developmental clinical consultation for a ${activeAge}. We have observed the following behaviors:\n- ${selectedSymptoms.join('\n- ')}\n\nCould you provide a detailed evaluation of what neurodevelopmental conditions (such as ASD, ADHD, or Speech Delays) might be relevant, what standardized screening tools to request, and what evidence-based steps we should take?`;
-
-  toggleCaseBuilder();
-  window.sendMessage(prompt);
-}
-
-function applyAssessmentContext() {
-  if (activePatientContext) {
-    const banner = document.getElementById('patientContextBanner');
-    if (banner) banner.style.display = 'none';
-    const contextPrompt = `Hello Dr. NeuroScan, could you review my child's recent assessment profile (${activePatientContext.primaryConcern}) and explain what therapies and accommodations are recommended based on these scores?`;
-    window.sendMessage(contextPrompt);
-  }
-}
-
-function dismissContext() {
-  const banner = document.getElementById('patientContextBanner');
-  if (banner) banner.style.display = 'none';
-}
-
-// ── Wire input elements via addEventListener (avoids inline handler + module scope mismatch) ──
-document.addEventListener('DOMContentLoaded', () => {
-  const chatInput  = document.getElementById('chatInput');
-  const sendBtn    = document.getElementById('sendBtn');
-  const micBtn     = document.getElementById('voiceMicBtn');
-  const explainBtn = document.getElementById('explainReportBtn');
-
-  if (chatInput) {
-    chatInput.addEventListener('keydown', e => window.handleKey(e));
-    chatInput.addEventListener('input',   () => window.autoResize(chatInput));
-  }
-  if (sendBtn)    sendBtn.addEventListener('click', () => window.sendMessage());
-  if (micBtn)     micBtn.addEventListener('click', () => toggleVoiceInput());
-  if (explainBtn) explainBtn.addEventListener('click', () => explainLatestAssessment());
-});
-
-// Defensive removal of any footer element in doctor-chat
-function removeAnyFooters() {
-  document.querySelectorAll('footer, .footer, #footer-ph').forEach(f => f.remove());
-}
-removeAnyFooters();
-document.addEventListener('DOMContentLoaded', removeAnyFooters);
-setTimeout(removeAnyFooters, 100);
-setTimeout(removeAnyFooters, 500);
+})();
 </script>
 </body>
 </html>

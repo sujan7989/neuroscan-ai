@@ -2071,98 +2071,52 @@ Return ONLY a valid JSON object strictly matching this schema (no markdown, no b
 
 app.post('/api/chat', async (req, res) => {
   try {
-    let { messages = [] } = req.body;
-    if (!Array.isArray(messages)) {
-      const single = req.body.message || req.body.prompt || req.body.text || '';
-      messages = single ? [{ role: 'user', content: single }] : [];
-    }
+    let userMsg = '';
+    if (req.body.message) { userMsg = String(req.body.message); }
+    else if (Array.isArray(req.body.messages)) {
+      const last = [...req.body.messages].reverse().find(m => m.role === 'user');
+      userMsg = last ? String(last.content || '') : '';
+    } else if (req.body.prompt || req.body.text) { userMsg = String(req.body.prompt || req.body.text); }
 
-    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content || '';
-    const cleanMsg = lastUserMsg.trim().toLowerCase();
-
-    // 1. Instant Greeting Fast-Path (< 5ms response)
-    if (/^(hi|hello|hey|start|help|greetings|who are you|what can you do)(\s+(assistant|there|bot|ai))?[\s!.]*$/i.test(cleanMsg)) {
-      return res.json({
-        reply: "Hello! I am **NeuroScan AI Assistant**.  \n\nI can help you with:\n* **AI Clinical Screening**: Interpreting AQ-10 and multi-disorder test results\n* **Machine Learning Transparency**: Explaining Random Forest, XGBoost & SHAP attributions\n* **Speech Biomarkers**: Understanding audio pitch, fluency, and articulation markers\n* **Guidance & Strategies**: Practical tips for home routines, sensory diets, and specialist referrals\n\nWhat would you like to explore today?",
-        role: 'assistant',
-        fast: true
-      });
-    }
-
-    // 2. High-speed In-Memory Cache Lookup (< 2ms)
-    const cacheKey = `chat_${cleanMsg}`;
-    const cachedReply = getCachedResponse(cacheKey);
-    if (cachedReply) {
-      return res.json({ reply: cachedReply, role: 'assistant', cached: true });
-    }
-
-    const ai = getGenAI();
-
-    if (ai) {
-      try {
-        const contents = buildGeminiContents(messages.slice(-5));
-
-        const replyText = await generateWithGeminiFallback(ai, contents, {
-          systemInstruction: `You are NeuroScan AI Assistant - a knowledgeable, empathetic, and concise clinical guide specialising in neurodevelopmental conditions.
-
-Your expertise covers:
-- ASD (Autism Spectrum Disorder): social communication, eye contact, repetitive behaviours, AQ-10 screening, ABA therapy
-- ADHD: inattention, hyperactivity, impulsivity, executive function, medication options
-- Dyslexia: phonological awareness, reading difficulties, structured literacy programmes
-- Stuttering (Fluency Disorder): disfluency, fluency shaping, Lidcombe programme, SEP-28k
-- SSD (Speech Sound Disorder): motor and vocal tics, CBIT therapy, co-occurring ADHD/OCD
-- Speech and Language: milestones, AAC, articulation disorders
-- Sensory Processing: sensory diets, OT, Ayres Sensory Integration
-- NeuroScan AI platform: AQ-10 assessment, multi-disorder ML battery (Random Forest, XGBoost, SHAP), media analysis, speech biomarkers
-
-RESPONSE RULES:
-1. Always answer based on the user's specific question - never give a generic reply.
-2. If the user asks about a specific disorder, provide detailed, accurate information about that disorder.
-3. If the user asks about a test result or probability score, explain what it means clinically.
-4. Format with clean markdown bullets and bold key terms. Keep responses under 300 words.
-5. End with 1-2 relevant follow-up questions the user might want to ask.
-6. Never diagnose - always clarify this is educational screening information only.`,
-          temperature: 0.6,
-          maxOutputTokens: 450
-        }, 15000);
-
-        if (replyText) {
-          setCachedResponse(cacheKey, replyText);
-          return res.json({ reply: replyText, role: 'assistant' });
-        }
-      } catch (geminiError) {
-        console.warn('Gemini chat API cascaded to fast intelligent fallback:', geminiError.message);
-      }
-    }
-
-    /* Intelligent keyword-based fallback when Gemini is unavailable */
+    const q = userMsg.trim().toLowerCase();
+    const DB = DOCTOR_KB;
     let reply = '';
-    const msg = cleanMsg;
 
-    if (msg.includes('asd') || msg.includes('autism') || msg.includes('autistic') || msg.includes('eye contact') || msg.includes('social communication')) {
-      reply = "**ASD (Autism Spectrum Disorder):**\n* ASD is characterised by persistent differences in social communication, restricted interests, and repetitive/stereotyped behaviours.\n* The AQ-10 is a validated 10-item screening tool - a score of 6+ suggests autism traits warranting formal assessment.\n* **Key interventions:** ABA (Applied Behaviour Analysis), EIBI (Early Intensive Behavioural Intervention), speech-language therapy, and occupational therapy.\n* Early diagnosis (before age 3) leads to significantly better outcomes.\n* NeuroScan AI analyses facial expressions, eye contact, gaze patterns, and movement for ASD biomarkers.\n\n! *Screening guidance only - consult a qualified developmental paediatrician for formal diagnosis.*";
-    } else if (msg.includes('adhd') || msg.includes('hyperactiv') || msg.includes('attention deficit') || msg.includes('inattention') || msg.includes('impulsiv')) {
-      reply = "**ADHD (Attention Deficit Hyperactivity Disorder):**\n* ADHD affects 5-7% of children and involves persistent inattention, hyperactivity, and/or impulsivity that impairs daily functioning.\n* Three subtypes: Predominantly Inattentive, Predominantly Hyperactive-Impulsive, and Combined.\n* **Evidence-based interventions:** Behavioural therapy (first-line for under-6), parent training, structured routines, and medication (methylphenidate, amphetamines) for school-age children.\n* NeuroScan's ADHD screening analyses movement patterns, task-switching, and attention biomarkers from video.\n\n! *Screening guidance only - consult a qualified developmental paediatrician for formal diagnosis.*";
-    } else if (msg.includes('dyslexia') || msg.includes('reading') || msg.includes('phonolog') || msg.includes('spelling') || msg.includes('literacy')) {
-      reply = "**Dyslexia (Specific Reading Disorder):**\n* Dyslexia is a specific learning difficulty affecting accurate and fluent word reading and spelling, despite normal intelligence.\n* Core deficit: phonological processing - difficulty connecting letters to sounds (the alphabetic principle).\n* **Structured Literacy (Orton-Gillingham approach)** is the gold-standard intervention - explicit, multisensory reading instruction.\n* Dyslexia is neurobiological, NOT related to vision problems or low intelligence.\n* NeuroScan analyses reading-related phonemic patterns and articulation biomarkers for dyslexia screening.\n\n! *Screening guidance only - consult a qualified educational psychologist for formal diagnosis.*";
-    } else if (msg.includes('stutter') || msg.includes('fluency') || msg.includes('stammer') || msg.includes('disfluency') || msg.includes('speech block') || msg.includes('repetition')) {
-      reply = "**Stuttering / Fluency Disorder:**\n* Stuttering is a speech fluency disorder affecting ~1% of people, characterised by repetitions (b-b-ball), prolongations (ssssun), and silent blocks.\n* Onset typically between ages 2-4 years; males affected 3:1 over females.\n* 60-80% of children recover naturally before adolescence - early intervention is key.\n* **Evidence-based treatments:**\n  - Lidcombe Programme (under 6) - parent-delivered operant therapy\n  - Fluency Shaping Therapy (older children/adults) - controlled breathing, easy onsets\n  - CBT for speaking anxiety and avoidance behaviours\n* NeuroScan's stuttering screening analyses disfluency rate, pause patterns, and speech rhythm from audio.\n\n! *Screening guidance only - consult a certified Speech-Language Pathologist (SLP) for formal diagnosis.*";
-    } else if (msg.includes('ssd') || msg.includes('speech sound') || msg.includes('articulation') || msg.includes('phoneme') || msg.includes('intelligib') || msg.includes('pronunciation')) {
-      reply = "**Speech Sound Disorder (SSD):**\n* SSD affects ~1 in 12 children and involves difficulty accurately producing speech sounds, making speech hard to understand.\n* Common patterns: substitutions (w for r), omissions (dropping final sounds), and distortions.\n* **Evidence-based treatments:**\n  - Traditional Articulation Therapy - target sound practice at phoneme, word, sentence levels\n  - Phonological Intervention (Metaphon/Cycles) - targets pattern errors\n  - Nuffield Dyspraxia Programme - for motor speech planning difficulties\n* Always rule out hearing loss first - audiological evaluation is essential before starting therapy.\n* NeuroScan analyses phoneme accuracy, articulation errors, and speech intelligibility from audio recordings.\n\n! *Screening guidance only - consult a certified Speech-Language Pathologist (SLP) for formal diagnosis.*";
-    } else if (msg.includes('speech') || msg.includes('language') || msg.includes('talking') || msg.includes('words')) {
-      reply = "**Speech & Language Development:**\n* Key milestones: 12 months (first words), 24 months (2-word phrases), 36 months (3-word sentences).\n* If a child is not meeting these milestones, early speech-language therapy is strongly recommended.\n* **Speech-Language Pathologists (SLPs)** can assess and treat articulation, language, fluency, and voice disorders.\n* NeuroScan's audio analysis measures prosody, speech rate, pause frequency, and phonemic clarity.\n\nWould you like milestone charts or information about AAC (Augmentative and Alternative Communication)?";
-    } else if (msg.includes('therap') || msg.includes('treatment') || msg.includes('help') || msg.includes('intervention')) {
-      reply = "**Evidence-Based Therapy Options for NeuroScan's 5 Disorders:**\n* **ABA (Applied Behaviour Analysis):** Structured behavioural therapy for ASD - most evidence-based early intervention.\n* **SLT (Speech-Language Therapy):** For Stuttering, SSD, and autism-related communication difficulties.\n* **Fluency Shaping / Lidcombe Programme:** Gold-standard for Stuttering - reduces disfluency and speaking anxiety.\n* **Articulation / Phonological Therapy:** For SSD - systematic practice of target sounds with a certified SLP.\n* **Structured Literacy (Orton-Gillingham):** For Dyslexia - explicit multisensory reading instruction.\n* **Behavioural Parent Training & CBT:** For ADHD - improves executive function, attention, and emotional regulation.\n* **Occupational Therapy:** For sensory processing and fine motor skills across multiple disorders.\n\n! *Screening guidance only - consult a qualified specialist for formal diagnosis and therapy planning.*";
-    } else if (msg.includes('result') || msg.includes('score') || msg.includes('probability') || msg.includes('percent') || msg.includes('%')) {
-      reply = "**Understanding Your NeuroScan Results:**\n* Probability scores (e.g. 72% ASD) indicate how strongly the AI detected relevant biomarkers - they are **screening indicators, not diagnoses**.\n* **High Risk (>70%):** Recommend seeking a formal assessment from a developmental paediatrician or neuropsychologist.\n* **Moderate Risk (50-70%):** Consider a detailed evaluation; monitor behavioural patterns.\n* **Low Risk (<50%):** Traits present but not strongly predictive - continue monitoring milestones.\n* Results are based on our ensemble ML models (Random Forest + XGBoost + Logistic Regression) with SHAP explanations.\n\nWould you like help understanding a specific result or disorder score?";
-    } else if (msg.includes('shap') || msg.includes('model') || msg.includes('machine learning') || msg.includes('ai') || msg.includes('ml')) {
-      reply = "**NeuroScan AI Machine Learning Models:**\n* **Ensemble of 3 models:** Random Forest (40%), XGBoost/Gradient Boosting (40%), Logistic Regression (20%).\n* **SHAP (SHapley Additive exPlanations):** Shows the exact contribution of each behavioural feature to the final prediction score.\n* **Trained on:** 989 real UCI ASD screening records (age/sex stratified) plus validated clinical cohort data.\n* **Media analysis:** Computer vision analyses facial expressions, eye contact, gaze patterns, and motor movements from images and video.\n\nWould you like to understand how to interpret SHAP values or the difference between the three models?";
+    if (!q || /^(hi+|hello|hey|good\s*(morning|afternoon|evening)|help|start|who are you|what can you do)[\s!.?]*$/i.test(q)) {
+      reply = DB.greeting;
     } else {
-      reply = "Thank you for your question. I am NeuroScan AI Assistant, specialising in neurodevelopmental conditions including ASD, ADHD, Dyslexia, Stuttering, and SSD.\n\nI can help you with:\n* **Disorder information** - symptoms, causes, and diagnostic criteria\n* **Screening results** - interpreting your NeuroScan probability scores\n* **Therapy options** - evidence-based interventions for each condition\n* **NeuroScan tools** - how to use our assessment, media analysis, and speech analysis features\n\nPlease feel free to ask a more specific question and I will provide detailed guidance.";
+      const isASD  = q.includes('asd')||q.includes('autism')||q.includes('autistic')||q.includes('stimming')||q.includes('eye contact')||q.includes('social communication')||q.includes('repetitive behav')||q.includes('spectrum');
+      const isADHD = q.includes('adhd')||q.includes('hyperactiv')||q.includes('attention deficit')||q.includes('inattention')||q.includes('impulsiv')||q.includes('attention span')||q.includes('concentration');
+      const isDYS  = q.includes('dyslexia')||q.includes('reading difficult')||q.includes('phonolog')||q.includes('spelling')||q.includes('letter reversal')||q.includes('reading disorder')||q.includes('literacy problem');
+      const isSTU  = q.includes('stutter')||q.includes('stammer')||q.includes('disfluency')||q.includes('speech block')||q.includes('fluency disorder')||(q.includes('fluency')&&!q.includes('reading fluency'));
+      const isSSD  = q.includes('ssd')||q.includes('speech sound')||q.includes('articulation')||q.includes('phoneme')||q.includes('intelligib')||q.includes('speech error')||q.includes('sound disorder')||(q.includes('pronunciation')&&!q.includes('mispronunci'));
+      const isSym  = q.includes('symptom')||q.includes('sign')||q.includes('what is')||q.includes('what are')||q.includes('how do i know')||q.includes('identify')||q.includes('look like');
+      const isCause= q.includes('cause')||q.includes('why')||q.includes('reason')||q.includes('genetic')||q.includes('brain')||q.includes('inherit')||q.includes('risk factor');
+      const isTher = q.includes('therap')||q.includes('treatment')||q.includes('treat')||q.includes('intervention')||q.includes('cure')||q.includes('improve')||q.includes('recover')||q.includes('manage')||q.includes('help');
+      const isMed  = q.includes('medic')||q.includes('drug')||q.includes('tablet')||q.includes('ritalin')||q.includes('methylphenidate')||q.includes('atomoxetine')||q.includes('pill')||q.includes('prescri');
+      const isDiag = q.includes('diagnos')||q.includes('test')||q.includes('assess')||q.includes('evaluat')||q.includes('screen')||q.includes('confirm');
+      const isAge  = q.includes('age')||q.includes('year old')||q.includes('toddler')||q.includes('adult')||q.includes('early sign')||q.includes('milestone')||q.includes('baby')||q.includes('infant')||q.includes('child');
+      const isSchool=q.includes('school')||q.includes('class')||q.includes('teach')||q.includes('study')||q.includes('learn')||q.includes('iep')||q.includes('education')||q.includes('academ')||q.includes('exam');
+      const isComp = q.includes('diff')||q.includes('differ')||q.includes(' vs ')||q.includes('versus')||q.includes('compare')||q.includes('overlap')||q.includes('both')||q.includes('same time');
+      const isRes  = q.includes('result')||q.includes('score')||q.includes('probability')||q.includes('percent')||q.includes('risk level')||q.includes('high risk')||q.includes('confidence');
+      const isPar  = q.includes('parent')||q.includes('mother')||q.includes('father')||q.includes('home')||q.includes('daily routine')||q.includes('what can i do')||q.includes('family')||q.includes('tips for');
+      const isHosp = q.includes('hospital')||q.includes('specialist')||q.includes('clinic')||q.includes('nimhans')||q.includes('aiims')||q.includes('india')||q.includes('refer')||q.includes('consult')||q.includes('where');
+      const isNS   = q.includes('neuroscan')||q.includes('this app')||q.includes('platform')||q.includes('how does')||q.includes('how accurate')||q.includes('upload')||q.includes('questionnaire');
+
+      if (isNS) reply = DB.neuroscan;
+      else if (isComp) reply = DB.compare;
+      else if (isRes&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.results;
+      else if (isTher&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.therapy_all;
+      else if (isHosp&&!isASD&&!isADHD&&!isDYS&&!isSTU&&!isSSD) reply = DB.hospitals_all;
+      else if (isASD)  reply = isCause?DB.asd.cause:isMed?DB.asd.med:isDiag?DB.asd.diag:isAge?DB.asd.age:isSchool?DB.asd.school:isPar?DB.asd.parent:(isTher||isSym)?DB.asd.therapy:isHosp?DB.asd.hospital:DB.asd.overview;
+      else if (isADHD) reply = isCause?DB.adhd.cause:isMed?DB.adhd.med:isDiag?DB.adhd.diag:isAge?DB.adhd.age:isSchool?DB.adhd.school:isPar?DB.adhd.parent:(isTher||isSym)?DB.adhd.therapy:isHosp?DB.adhd.hospital:DB.adhd.overview;
+      else if (isDYS)  reply = isCause?DB.dys.cause:isDiag?DB.dys.diag:isAge?DB.dys.age:isSchool?DB.dys.school:isPar?DB.dys.parent:(isTher||isSym)?DB.dys.therapy:isHosp?DB.dys.hospital:DB.dys.overview;
+      else if (isSTU)  reply = isCause?DB.stu.cause:isDiag?DB.stu.diag:isAge?DB.stu.age:isPar?DB.stu.parent:(isTher||isSym)?DB.stu.therapy:isHosp?DB.stu.hospital:DB.stu.overview;
+      else if (isSSD)  reply = isCause?DB.ssd.cause:isDiag?DB.ssd.diag:isAge?DB.ssd.age:isPar?DB.ssd.parent:(isTher||isSym)?DB.ssd.therapy:isHosp?DB.ssd.hospital:DB.ssd.overview;
+      else reply = DB.fallback;
     }
 
-    setCachedResponse(cacheKey, reply);
-    res.json({ reply, role: 'assistant', fallback: true });
+    return res.json({ reply, role: 'assistant', fast: true });
   } catch (err) {
     console.error('Chat route error:', err);
     res.status(500).json({ error: 'Chat failed', details: err.message });
