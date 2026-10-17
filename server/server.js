@@ -318,12 +318,12 @@ app.get('/api/health', async (_req, res) => {
   if (mongoDbInstance && !isUsingFallbackStore) {
     try {
       await mongoDbInstance.command({ ping: 1 });
-      return res.json({ status: 'ok', db: 'mongodb', dbName: DB_NAME, timestamp: new Date().toISOString(), version: '8837240' });
+      return res.json({ status: 'ok', db: 'mongodb', dbName: DB_NAME, timestamp: new Date().toISOString(), version: 'a16adb5' });
     } catch (e) {
-      return res.json({ status: 'ok', db: 'memory-fallback', message: e.message, timestamp: new Date().toISOString(), version: '8837240' });
+      return res.json({ status: 'ok', db: 'memory-fallback', message: e.message, timestamp: new Date().toISOString(), version: 'a16adb5' });
     }
   }
-  res.json({ status: 'ok', db: 'in-memory', timestamp: new Date().toISOString(), version: '8837240' });
+  res.json({ status: 'ok', db: 'in-memory', timestamp: new Date().toISOString(), version: 'a16adb5' });
 });
 
 // -- AUTH VERIFY -----------------------------------------------
