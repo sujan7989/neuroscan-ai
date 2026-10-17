@@ -1,0 +1,12 @@
+{
+  "features": [
+    "hog_144d"
+  ],
+  "type": "handwriting_HOG_image",
+  "n_images": 18000,
+  "image_size": "64x64",
+  "classes": {
+    "0": "Normal",
+    "1": "Dyslexic(Reversal+Corrected)"
+  }
+}

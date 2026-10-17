@@ -1,0 +1,17 @@
+{
+  "features": [
+    "arm_flapping",
+    "head_banging",
+    "head_shaking",
+    "spinning",
+    "body_rocking",
+    "jumping",
+    "hand_movements",
+    "facial_grimace",
+    "n_behaviors",
+    "has_repetitive",
+    "gaze_avoidance",
+    "social_isolation"
+  ],
+  "type": "behavioral_video_features"
+}

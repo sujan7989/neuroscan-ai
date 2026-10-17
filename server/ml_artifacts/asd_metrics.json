@@ -1,0 +1,21 @@
+{
+  "disorder": "asd",
+  "accuracy": 0.9469,
+  "auc": 0.9836,
+  "n_test": 226,
+  "feature_names": [
+    "arm_flapping",
+    "head_banging",
+    "head_shaking",
+    "spinning",
+    "body_rocking",
+    "jumping",
+    "hand_movements",
+    "facial_grimace",
+    "n_behaviors",
+    "has_repetitive",
+    "gaze_avoidance",
+    "social_isolation"
+  ],
+  "dataset": "SSBD+ XML + AAD Excel (202 videos) + UCI 936 records"
+}

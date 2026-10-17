@@ -1,0 +1,30 @@
+{
+  "features": [
+    "asrs_hyper_1",
+    "asrs_hyper_2",
+    "asrs_hyper_3",
+    "asrs_hyper_4",
+    "asrs_hyper_5",
+    "asrs_hyper_6",
+    "asrs_inatt_1",
+    "asrs_inatt_2",
+    "asrs_inatt_3",
+    "asrs_inatt_4",
+    "asrs_inatt_5",
+    "asrs_inatt_6",
+    "cpt_commission_tscore",
+    "cpt_detectability",
+    "cpt_omission_tscore",
+    "cpt_rt_mean_ms",
+    "cpt_rt_variability",
+    "conners_executive",
+    "conners_hyperactivity",
+    "conners_inattention",
+    "conners_learning",
+    "age",
+    "family_history_adhd",
+    "sleep_problems",
+    "school_performance_low"
+  ],
+  "type": "behavioral_cognitive_ASRS_CPT"
+}

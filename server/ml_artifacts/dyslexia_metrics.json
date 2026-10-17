@@ -1,0 +1,10 @@
+{
+  "disorder": "dyslexia",
+  "accuracy": 0.9639,
+  "auc": 0.9929,
+  "n_test": 3600,
+  "feature_names": [
+    "hog_144d_features"
+  ],
+  "dataset": "158K real handwriting images (Normal/Reversal/Corrected) - HOG 144-dim"
+}

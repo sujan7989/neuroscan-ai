@@ -1,0 +1,19 @@
+{
+  "features": [
+    "Prolongation",
+    "Block",
+    "SoundRep",
+    "WordRep",
+    "total_stutter_events",
+    "max_event_severity",
+    "n_event_types",
+    "has_block",
+    "has_prolongation",
+    "has_sound_rep",
+    "has_word_rep",
+    "interjection",
+    "natural_pause",
+    "unsure"
+  ],
+  "type": "SEP28k_stutter_event_annotations"
+}
