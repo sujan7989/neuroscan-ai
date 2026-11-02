@@ -5,466 +5,397 @@
   <title>Model Performance Metrics — NeuroScan AI</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <style>
-    :root {
-      --asd:#2d6a4f; --adhd:#e76f51; --dys:#457b9d; --stu:#0891b2; --ssd:#7c3aed;
-      --asd-bg:#f0fdf4; --adhd-bg:#fff7ed; --dys-bg:#eff6ff; --stu-bg:#ecfeff; --ssd-bg:#f5f3ff;
-    }
-    .page-hdr{background:linear-gradient(135deg,#0a1628 0%,#1a2d4a 50%,#0d2137 100%);color:#fff;padding:48px 44px;position:relative;overflow:hidden}
-    .page-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(45,106,79,.25) 0%,transparent 60%)}
-    .page-hdr-inner{max-width:1200px;margin:0 auto;position:relative}
-    .page-hdr h1{font-family:var(--font-d);font-size:2.4rem;margin:0 0 12px}
-    .page-hdr p{color:rgba(255,255,255,.7);max-width:600px;line-height:1.65;font-size:.95rem}
-    .metrics-layout{max-width:1200px;margin:0 auto;padding:40px 44px 80px}
-    @media(max-width:900px){.metrics-layout{padding:24px 20px 60px}.page-hdr{padding:32px 20px}}
+    /* ── FULLY RESOLVED VARIABLES (no dependency on main.css vars) ─────── */
+    body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; }
+
+    /* PAGE HEADER */
+    .mm-hdr { background: linear-gradient(135deg,#0a1628 0%,#1a2d4a 50%,#0d2137 100%); color:#fff; padding:48px 44px; position:relative; overflow:hidden; }
+    .mm-hdr::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 50%,rgba(45,106,79,.25) 0%,transparent 60%); pointer-events:none; }
+    .mm-hdr-inner { max-width:1200px; margin:0 auto; position:relative; }
+    .mm-hdr h1 { font-size:2.2rem; font-weight:800; margin:0 0 10px; }
+    .mm-hdr p { color:rgba(255,255,255,.7); font-size:.95rem; line-height:1.65; max-width:600px; }
+    .mm-tag { display:inline-block; padding:4px 14px; border-radius:50px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); font-size:.76rem; font-weight:600; margin:3px 3px 0 0; }
+
+    /* LAYOUT */
+    .mm-layout { max-width:1200px; margin:0 auto; padding:36px 44px 80px; }
+    @media(max-width:900px){ .mm-layout { padding:20px 18px 60px; } .mm-hdr { padding:32px 20px; } }
+
+    /* PANELS */
+    .mm-panel { background:#fff; border-radius:12px; padding:22px 24px; border:1px solid #e2e8f0; margin-bottom:20px; }
+    .mm-panel h3 { font-size:.95rem; font-weight:700; color:#0f172a; margin:0 0 14px; display:flex; align-items:center; gap:8px; }
+    .section-title { font-size:1.15rem; font-weight:800; color:#0f172a; margin:28px 0 14px; display:flex; align-items:center; gap:8px; }
 
     /* TABS */
-    .disorder-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:32px;border-bottom:2px solid var(--border);padding-bottom:0}
-    .dtab{padding:10px 20px;border-radius:var(--r) var(--r) 0 0;font-weight:700;font-size:.85rem;cursor:pointer;border:2px solid transparent;border-bottom:none;transition:all .2s;color:var(--muted);background:none;margin-bottom:-2px}
-    .dtab.active{border-color:var(--border);border-bottom-color:var(--bg);background:var(--bg);color:var(--text)}
-    .dtab:hover:not(.active){background:var(--card);color:var(--text)}
-    .disorder-panel{display:none}.disorder-panel.active{display:block}
-
-    /* SECTION */
-    .section-title{font-family:var(--font-d);font-size:1.4rem;margin:32px 0 16px;display:flex;align-items:center;gap:10px}
-    .panel{background:var(--card);border-radius:var(--r);padding:24px;border:1px solid var(--border);margin-bottom:20px}
-    .panel h3{font-size:.95rem;font-weight:700;margin:0 0 16px;display:flex;align-items:center;gap:8px}
+    .mm-tabs { display:flex; gap:4px; flex-wrap:wrap; border-bottom:2px solid #e2e8f0; margin-bottom:24px; }
+    .mm-tab { padding:10px 20px; border-radius:8px 8px 0 0; font-weight:700; font-size:.84rem; cursor:pointer; border:2px solid transparent; border-bottom:none; color:#64748b; background:none; margin-bottom:-2px; transition:all .18s; }
+    .mm-tab.active { border-color:#e2e8f0; border-bottom-color:#f8fafc; background:#f8fafc; color:#1e293b; }
+    .mm-tab:hover:not(.active) { background:#f1f5f9; color:#1e293b; }
+    .mm-panel-d { display:none; }
+    .mm-panel-d.active { display:block; }
 
     /* METRIC CARDS */
-    .metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-    .metric-card{background:var(--bg);border-radius:var(--r-sm);padding:16px;border:1.5px solid var(--border);text-align:center}
-    .metric-card .m-val{font-family:var(--font-d);font-size:2rem;font-weight:700;line-height:1.1}
-    .metric-card .m-lbl{font-size:.73rem;color:var(--muted);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
-    .metric-card .m-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+    .m-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-bottom:18px; }
+    .m-card { background:#f8fafc; border-radius:8px; padding:14px; border:1.5px solid #e2e8f0; text-align:center; }
+    .m-val { font-size:1.7rem; font-weight:800; line-height:1.1; }
+    .m-lbl { font-size:.68rem; color:#64748b; font-weight:700; margin-top:4px; text-transform:uppercase; letter-spacing:.04em; }
+    .m-sub { font-size:.65rem; color:#94a3b8; margin-top:2px; }
 
     /* CONFUSION MATRIX */
-    .cm-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
-    .cm-row{display:flex;gap:4px}
-    .cm-cell{width:90px;height:72px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700}
-    .cm-cell .cm-n{font-size:1.5rem;line-height:1}
-    .cm-cell .cm-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;margin-top:3px;font-weight:600}
-    .cm-tn{background:#dcfce7;color:#166534}
-    .cm-fp{background:#fee2e2;color:#991b1b}
-    .cm-fn{background:#fff7ed;color:#c2410c}
-    .cm-tp{background:#dbeafe;color:#1d4ed8}
-    .cm-axis{font-size:.72rem;color:var(--muted);font-weight:600}
-    .cm-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;justify-content:center;font-size:.75rem}
-    .cm-legend-item{display:flex;align-items:center;gap:5px}
-    .cm-dot{width:12px;height:12px;border-radius:3px}
+    .cm-grid { display:grid; grid-template-columns:auto 96px 96px; gap:4px; width:fit-content; }
+    .cm-cell { width:96px; height:70px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:700; }
+    .cm-n { font-size:1.5rem; line-height:1; }
+    .cm-l { font-size:.6rem; text-transform:uppercase; margin-top:2px; font-weight:600; }
+    .cm-ax { font-size:.67rem; font-weight:700; color:#94a3b8; display:flex; align-items:center; justify-content:center; width:96px; height:70px; }
+    .cm-corner { width:96px; height:70px; }
+    .tn { background:#dcfce7; color:#166534; }
+    .fp { background:#fee2e2; color:#991b1b; }
+    .fn { background:#fff7ed; color:#c2410c; }
+    .tp { background:#dbeafe; color:#1d4ed8; }
+    .cm-legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; font-size:.73rem; }
+    .cm-dot { width:11px; height:11px; border-radius:3px; display:inline-block; margin-right:4px; }
+
+    /* ROC BAR */
+    .roc-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; font-size:.79rem; }
+    .roc-lbl { width:130px; font-weight:600; flex-shrink:0; color:#475569; }
+    .roc-track { flex:1; height:13px; background:#e2e8f0; border-radius:50px; overflow:hidden; }
+    .roc-fill { height:100%; border-radius:50px; }
+    .roc-val { width:46px; text-align:right; font-weight:700; font-size:.79rem; }
 
     /* CV TABLE */
-    .cv-table{width:100%;border-collapse:collapse;font-size:.8rem}
-    .cv-table th{background:var(--bg);padding:8px 10px;text-align:left;border:1px solid var(--border);font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-    .cv-table td{padding:8px 10px;border:1px solid var(--border)}
-    .cv-table tbody tr:hover td{background:#fafff8}
-    .cv-table .cv-mean{font-weight:700;color:var(--primary)}
-
-    /* ROC CURVE */
-    .roc-wrap{position:relative;background:var(--bg);border-radius:var(--r-sm);padding:16px}
-    .roc-canvas-wrap{width:100%;aspect-ratio:1;max-width:380px;margin:0 auto;position:relative}
-    canvas.roc-canvas{width:100%;height:100%;border-radius:var(--r-sm)}
-    .roc-auc-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:50px;font-size:.78rem;font-weight:700;background:var(--green-bg);color:var(--primary);border:1px solid var(--primary-l);margin-bottom:10px}
+    .cv-tbl { width:100%; border-collapse:collapse; font-size:.79rem; overflow-x:auto; }
+    .cv-tbl th { background:#f1f5f9; padding:7px 9px; text-align:left; border:1px solid #e2e8f0; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; white-space:nowrap; }
+    .cv-tbl td { padding:7px 9px; border:1px solid #e2e8f0; white-space:nowrap; }
+    .cv-tbl tbody tr:hover td { background:#f8fafc; }
+    .cv-mean td { background:#f0fdf4 !important; font-weight:700; color:#166534; }
+    .n-tn { color:#166534; font-weight:700; }
+    .n-fp { color:#dc2626; font-weight:700; }
+    .n-fn { color:#ea580c; font-weight:700; }
+    .n-tp { color:#1d4ed8; font-weight:700; }
 
     /* SUMMARY TABLE */
-    .summary-table{width:100%;border-collapse:collapse;font-size:.82rem}
-    .summary-table th{background:var(--bg);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-    .summary-table td{padding:10px 12px;border:1px solid var(--border);vertical-align:middle}
-    .summary-table tbody tr:hover td{background:#fafff8}
-    .score-bar{height:8px;border-radius:50px;display:inline-block;min-width:4px;background:var(--primary);vertical-align:middle}
-    .model-badge{display:inline-block;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase}
+    .s-tbl { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .s-tbl th { background:#0a1628; color:#fff; padding:9px 11px; text-align:left; font-size:.71rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+    .s-tbl td { padding:9px 11px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+    .s-tbl tbody tr:hover td { background:#f8fafc; }
 
-    /* CROSS VALIDATION SUMMARY */
-    .cv-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
-    .cv-sum-card{background:var(--bg);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border)}
-    .cv-sum-card .cs-disorder{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
-    .cv-sum-card .cs-row{display:flex;justify-content:space-between;font-size:.77rem;margin-bottom:4px}
-    .cv-sum-card .cs-metric{color:var(--muted)}
-    .cv-sum-card .cs-val{font-weight:700}
+    /* CV CARDS */
+    .cv-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:10px; }
+    .cv-card { background:#fff; border-radius:8px; padding:14px; border:1px solid #e2e8f0; }
+    .cv-card-name { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:9px; }
+    .cv-row { display:flex; justify-content:space-between; font-size:.75rem; margin-bottom:4px; }
+    .cv-lbl { color:#64748b; }
+    .cv-val { font-weight:700; }
+    .cv-std { color:#94a3b8; font-weight:400; font-size:.7rem; }
 
-    /* LOADING */
-    .loading{text-align:center;padding:40px;color:var(--muted);font-size:.9rem}
-    .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    /* CANVAS */
+    .roc-canvas-wrap { width:100%; max-width:360px; aspect-ratio:1; }
+    canvas { width:100%; height:100%; border-radius:8px; }
+    .roc-auc-badge { display:inline-flex; align-items:center; padding:3px 12px; border-radius:50px; font-size:.76rem; font-weight:700; background:#f0fdf4; color:#166534; border:1px solid #86efac; margin-bottom:8px; }
+
+    /* MISC */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media(max-width:700px){ .two-col { grid-template-columns:1fr; } .cv-cards { grid-template-columns:1fr 1fr; } }
+    .note { background:#fefce8; border:1px solid #fef08a; border-radius:8px; padding:9px 13px; font-size:.77rem; color:#854d0e; margin-top:10px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:9px 13px; font-size:.77rem; color:#9a3412; margin-bottom:14px; }
+    .model-tag { display:inline-block; padding:2px 9px; border-radius:4px; font-size:.7rem; font-weight:700; margin-bottom:10px; }
+    .sub-title { font-size:.78rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #f1f5f9; }
+    .tbl-scroll { overflow-x:auto; }
+    .spin { display:inline-block; width:20px; height:20px; border:3px solid #e2e8f0; border-top-color:#1b4d3e; border-radius:50%; animation:spin .8s linear infinite; vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading { padding:36px; text-align:center; color:#64748b; font-size:.9rem; }
   </style>
 </head>
 <body>
 <div id="nav-ph"></div>
 
-<div class="page-hdr">
-  <div class="page-hdr-inner">
-    <div class="section-tag" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2)">CLINICAL EVALUATION · RESEARCH PROTOTYPE</div>
-    <h1>Model Performance Metrics</h1>
-    <p>Full precision, recall, F1-score, specificity, per-pathway confusion matrices, ROC curves, and 5-fold cross-validation mean ± SD for all 5 disorder screening models.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
-      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">ASD · ADHD · Dyslexia · Stuttering · SSD</span>
-      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">3 models × 5 disorders + Ensemble</span>
-      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">5-Fold Stratified CV</span>
+<!-- PAGE HEADER -->
+<div class="mm-hdr">
+  <div class="mm-hdr-inner">
+    <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:8px">CLINICAL EVALUATION · RESEARCH PROTOTYPE</div>
+    <h1>📊 Model Performance Metrics</h1>
+    <p>Precision · Recall · F1-Score · Specificity · Confusion Matrices · ROC Curves · 5-Fold Cross-Validation Mean ± SD — all 5 disorder screening pathways.</p>
+    <div style="margin-top:16px">
+      <span class="mm-tag">🧩 ASD</span>
+      <span class="mm-tag">⚡ ADHD</span>
+      <span class="mm-tag">📖 Dyslexia</span>
+      <span class="mm-tag">🎤 Stuttering</span>
+      <span class="mm-tag">🗣 SSD</span>
+      <span class="mm-tag">3 Models per Pathway</span>
+      <span class="mm-tag">5-Fold Stratified CV</span>
     </div>
   </div>
 </div>
 
-<div class="metrics-layout">
+<div class="mm-layout">
 
-  <!-- ALL-DISORDER SUMMARY TABLE -->
-  <div class="panel" id="summaryPanel">
-    <h3>📊 Cross-Disorder Performance Summary</h3>
-    <div class="loading"><span class="spinner"></span>Loading metrics from server…</div>
+  <!-- SUMMARY TABLE -->
+  <div class="mm-panel" id="summaryPanel">
+    <h3>📋 Cross-Disorder Summary — Precision · Recall · F1 · Specificity · ROC AUC</h3>
+    <div class="loading"><span class="spin"></span>Loading from server…</div>
   </div>
 
-  <!-- CV MEAN ± SD OVERVIEW -->
-  <div class="panel" id="cvOverviewPanel">
+  <!-- CV MEAN ± SD -->
+  <div class="mm-panel" id="cvPanel">
     <h3>📈 5-Fold Cross-Validation — Mean ± Standard Deviation</h3>
-    <div class="cv-summary-grid" id="cvSummaryGrid">
-      <div class="loading"><span class="spinner"></span>Loading…</div>
-    </div>
+    <div class="cv-cards" id="cvCards"><div class="loading"><span class="spin"></span>Loading…</div></div>
   </div>
 
-  <!-- PER-DISORDER TABS -->
-  <div class="section-title">🔬 Per-Disorder Detailed Analysis</div>
-
-  <div class="disorder-tabs" id="disorderTabs">
-    <button class="dtab active" data-d="asd" onclick="switchTab('asd',this)">🧩 ASD</button>
-    <button class="dtab" data-d="adhd" onclick="switchTab('adhd',this)">⚡ ADHD</button>
-    <button class="dtab" data-d="dyslexia" onclick="switchTab('dyslexia',this)">📖 Dyslexia</button>
-    <button class="dtab" data-d="stuttering" onclick="switchTab('stuttering',this)">🎤 Stuttering</button>
-    <button class="dtab" data-d="ssd" onclick="switchTab('ssd',this)">🗣 SSD</button>
+  <!-- TABS -->
+  <div class="section-title">🔬 Per-Pathway Detailed Analysis</div>
+  <div class="mm-tabs">
+    <button class="mm-tab active" onclick="switchTab('asd',this)">🧩 ASD</button>
+    <button class="mm-tab" onclick="switchTab('adhd',this)">⚡ ADHD</button>
+    <button class="mm-tab" onclick="switchTab('dyslexia',this)">📖 Dyslexia</button>
+    <button class="mm-tab" onclick="switchTab('stuttering',this)">🎤 Stuttering</button>
+    <button class="mm-tab" onclick="switchTab('ssd',this)">🗣 SSD</button>
   </div>
 
-  <div id="asd" class="disorder-panel active"></div>
-  <div id="adhd" class="disorder-panel"></div>
-  <div id="dyslexia" class="disorder-panel"></div>
-  <div id="stuttering" class="disorder-panel"></div>
-  <div id="ssd" class="disorder-panel"></div>
+  <div id="asd" class="mm-panel-d active"></div>
+  <div id="adhd" class="mm-panel-d"></div>
+  <div id="dyslexia" class="mm-panel-d"></div>
+  <div id="stuttering" class="mm-panel-d"></div>
+  <div id="ssd" class="mm-panel-d"></div>
 
 </div>
 
 <div id="footer-ph"></div>
 <script type="module" src="../js/shared.js"></script>
 <script>
-const DISORDER_COLORS = {asd:'#2d6a4f',adhd:'#e76f51',dyslexia:'#457b9d',stuttering:'#0891b2',ssd:'#7c3aed'};
-const DISORDER_LABELS = {asd:'ASD',adhd:'ADHD',dyslexia:'Dyslexia',stuttering:'Stuttering',ssd:'SSD'};
-const DISORDER_ICONS  = {asd:'🧩',adhd:'⚡',dyslexia:'📖',stuttering:'🎤',ssd:'🗣'};
-let gMetrics = null;
+const DC = {asd:'#2d6a4f',adhd:'#e76f51',dyslexia:'#457b9d',stuttering:'#0891b2',ssd:'#7c3aed'};
+const DL = {asd:'ASD',adhd:'ADHD',dyslexia:'Dyslexia',stuttering:'Stuttering',ssd:'SSD'};
+const DI = {asd:'🧩',adhd:'⚡',dyslexia:'📖',stuttering:'🎤',ssd:'🗣'};
+let G = null;
 
-function pct(v){ return v!=null ? (v*100).toFixed(1)+'%' : 'N/A'; }
-function fmt(v,d=3){ return v!=null ? v.toFixed(d) : 'N/A'; }
-function fmtPct(v){ return v!=null ? (v*100).toFixed(2)+'%' : 'N/A'; }
+const p = v => v != null ? (v*100).toFixed(1)+'%' : '—';
+const f = (v,d=4) => v != null ? Number(v).toFixed(d) : '—';
 
-async function loadMetrics(){
+async function load(){
   try {
     const r = await fetch('/api/ml/detailed-metrics');
-    if (!r.ok) throw new Error(r.statusText);
-    gMetrics = await r.json();
-    buildSummary();
-    buildCVOverview();
-    ['asd','adhd','dyslexia','stuttering','ssd'].forEach(d => buildDisorderPanel(d));
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    G = await r.json();
+    buildSummary(); buildCV();
+    ['asd','adhd','dyslexia','stuttering','ssd'].forEach(buildDisorder);
   } catch(e){
     document.getElementById('summaryPanel').innerHTML =
-      `<h3>📊 Cross-Disorder Performance Summary</h3>
-       <div class="loading" style="color:#dc2626">Failed to load metrics: ${e.message}</div>`;
+      '<h3>📋 Cross-Disorder Summary</h3><div style="color:#dc2626;padding:20px">Error loading metrics: '+e.message+'</div>';
   }
 }
 
 function buildSummary(){
-  const rows = Object.entries(gMetrics.disorders).map(([key, d]) => {
-    const rf = d.models.random_forest || {};
-    const gb = d.models.gradient_boosting || {};
-    const ens= d.models.ensemble || rf;
-    const c  = DISORDER_COLORS[key];
-    return `
-      <tr>
-        <td><span style="font-weight:700;color:${c}">${DISORDER_ICONS[key]} ${DISORDER_LABELS[key]}</span>
-            <div style="font-size:.7rem;color:var(--muted);margin-top:2px">${d.dataset}</div></td>
-        <td>${d.n_test.toLocaleString()}</td>
-        <td><strong>${pct(rf.precision||ens.precision)}</strong></td>
-        <td><strong>${pct(rf.recall||ens.recall)}</strong></td>
-        <td><strong>${pct(rf.f1_score||ens.f1_score)}</strong></td>
-        <td><strong>${pct(rf.specificity||ens.specificity)}</strong></td>
-        <td><strong>${pct(rf.accuracy||ens.accuracy)}</strong></td>
-        <td><span style="font-weight:700;color:${c}">${fmt(rf.roc_auc||ens.roc_auc)}</span></td>
-        <td>${rf.confusion_matrix ? `TP:${rf.confusion_matrix.TP} FP:${rf.confusion_matrix.FP} TN:${rf.confusion_matrix.TN} FN:${rf.confusion_matrix.FN}` : 'N/A'}</td>
-      </tr>`;
+  const rows = Object.entries(G.disorders).map(([k,d])=>{
+    const m = d.models.random_forest||{};
+    const c = DC[k];
+    return `<tr>
+      <td><strong style="color:${c}">${DI[k]} ${DL[k]}</strong><div style="font-size:.7rem;color:#64748b;margin-top:2px">${d.dataset}</div></td>
+      <td style="text-align:center"><strong>${d.n_test.toLocaleString()}</strong></td>
+      <td style="text-align:center"><strong>${p(m.precision)}</strong></td>
+      <td style="text-align:center"><strong>${p(m.recall)}</strong></td>
+      <td style="text-align:center"><strong>${p(m.f1_score)}</strong></td>
+      <td style="text-align:center"><strong>${p(m.specificity)}</strong></td>
+      <td style="text-align:center">${p(m.accuracy)}</td>
+      <td style="text-align:center"><strong style="color:${c}">${f(m.roc_auc,4)}</strong></td>
+      <td style="font-size:.73rem;white-space:nowrap">${m.confusion_matrix?`<span style="color:#166534">TP:${m.confusion_matrix.TP}</span> <span style="color:#dc2626">FP:${m.confusion_matrix.FP}</span> <span style="color:#ea580c">FN:${m.confusion_matrix.FN}</span> <span style="color:#1d4ed8">TN:${m.confusion_matrix.TN}</span>`:'—'}</td>
+    </tr>`;
   }).join('');
   document.getElementById('summaryPanel').innerHTML = `
-    <h3>📊 Cross-Disorder Performance Summary — Random Forest (Best Single Model per Pathway)</h3>
-    <div style="overflow-x:auto">
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Disorder</th><th>Test N</th>
-            <th>Precision</th><th>Recall (Sens)</th><th>F1-Score</th>
-            <th>Specificity</th><th>Accuracy</th><th>ROC AUC</th>
-            <th>Confusion Matrix</th>
-          </tr>
-        </thead>
+    <h3>📋 Cross-Disorder Summary — Random Forest (Best Model per Pathway) · Hold-out Test Set</h3>
+    <div class="tbl-scroll">
+      <table class="s-tbl">
+        <thead><tr><th>Disorder / Dataset</th><th>N</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Specificity</th><th>Accuracy</th><th>ROC AUC</th><th>Confusion Matrix</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
-    <div style="font-size:.76rem;color:var(--muted);margin-top:10px">
-      * Precision = TP/(TP+FP) · Recall = Sensitivity = TP/(TP+FN) · Specificity = TN/(TN+FP) · F1 = 2·P·R/(P+R) · All from hold-out test split (25%)
-    </div>`;
+    <div style="font-size:.74rem;color:#64748b;margin-top:10px">Precision=TP/(TP+FP) · Recall=Sensitivity=TP/(TP+FN) · Specificity=TN/(TN+FP) · F1=2·P·R/(P+R) · All computed on 25% untouched hold-out test split.</div>`;
 }
 
-function buildCVOverview(){
-  const cv = gMetrics.cross_validation_summary;
-  const html = Object.entries(cv.disorders).map(([key, d]) => {
-    const c = DISORDER_COLORS[key];
-    return `<div class="cv-sum-card">
-      <div class="cs-disorder" style="color:${c}">${DISORDER_ICONS[key]} ${DISORDER_LABELS[key]}</div>
-      <div class="cs-row"><span class="cs-metric">Accuracy</span><span class="cs-val">${pct(d.cv_accuracy_mean)} ± ${pct(d.cv_accuracy_std)}</span></div>
-      <div class="cs-row"><span class="cs-metric">Recall</span><span class="cs-val">${pct(d.cv_recall_mean)} ± ${pct(d.cv_recall_std)}</span></div>
-      <div class="cs-row"><span class="cs-metric">Specificity</span><span class="cs-val">${pct(d.cv_specificity_mean)} ± ${pct(d.cv_specificity_std)}</span></div>
-      <div class="cs-row"><span class="cs-metric">F1-Score</span><span class="cs-val">${pct(d.cv_f1_mean)} ± ${pct(d.cv_f1_std)}</span></div>
-      <div class="cs-row"><span class="cs-metric">ROC AUC</span><span class="cs-val" style="color:${c};font-weight:800">${fmt(d.cv_roc_auc_mean)} ± ${fmt(d.cv_roc_auc_std)}</span></div>
+function buildCV(){
+  const cv = G.cross_validation_summary;
+  const cards = Object.entries(cv.disorders).map(([k,d])=>{
+    const c = DC[k];
+    return `<div class="cv-card">
+      <div class="cv-card-name" style="color:${c}">${DI[k]} ${DL[k]}</div>
+      <div class="cv-row"><span class="cv-lbl">Accuracy</span><span class="cv-val">${p(d.cv_accuracy_mean)} <span class="cv-std">±${p(d.cv_accuracy_std)}</span></span></div>
+      <div class="cv-row"><span class="cv-lbl">Recall</span><span class="cv-val">${p(d.cv_recall_mean)} <span class="cv-std">±${p(d.cv_recall_std)}</span></span></div>
+      <div class="cv-row"><span class="cv-lbl">Specificity</span><span class="cv-val">${p(d.cv_specificity_mean)} <span class="cv-std">±${p(d.cv_specificity_std)}</span></span></div>
+      <div class="cv-row"><span class="cv-lbl">F1-Score</span><span class="cv-val">${p(d.cv_f1_mean)} <span class="cv-std">±${p(d.cv_f1_std)}</span></span></div>
+      <div class="cv-row"><span class="cv-lbl">ROC AUC</span><span class="cv-val" style="color:${c};font-weight:800">${f(d.cv_roc_auc_mean,4)} <span class="cv-std">±${f(d.cv_roc_auc_std,4)}</span></span></div>
     </div>`;
   }).join('');
-  document.getElementById('cvSummaryGrid').innerHTML = html;
-  document.querySelector('#cvOverviewPanel h3').insertAdjacentHTML('afterend',
-    `<div style="font-size:.78rem;color:var(--muted);margin-bottom:12px">${cv.method}</div>`);
+  document.getElementById('cvCards').innerHTML = cards;
+  document.querySelector('#cvPanel h3').insertAdjacentHTML('afterend',
+    `<p style="font-size:.78rem;color:#64748b;margin-bottom:12px">${cv.method}</p>`);
 }
 
-function buildDisorderPanel(key){
-  const d = gMetrics.disorders[key];
-  if(!d) return;
-  const c = DISORDER_COLORS[key];
-  const el = document.getElementById(key);
+function buildDisorder(k){
+  const d = G.disorders[k]; if(!d) return;
+  const c = DC[k], el = document.getElementById(k);
 
-  // Model cards section
-  const modelCards = Object.entries(d.models).map(([mkey, m]) => {
+  const mHtml = Object.entries(d.models).map(([mk,m])=>{
     if(!m.precision) return '';
-    const mLabel = {random_forest:'Random Forest',gradient_boosting:'Gradient Boosting',logistic_regression:'Logistic Regression',ensemble:'Ensemble'}[mkey] || mkey;
+    const ml = {random_forest:'Random Forest',gradient_boosting:'Gradient Boosting',logistic_regression:'Logistic Regression',ensemble:'Ensemble'}[mk]||mk;
+    const isRF = mk==='random_forest';
+    const tagStyle = isRF ? `background:${c};color:#fff` : `background:${c}18;color:${c}`;
     return `
-      <div class="panel">
-        <h3 style="color:${c}">${DISORDER_ICONS[key]} ${mLabel} — ${DISORDER_LABELS[key]}</h3>
-        <div class="metric-grid">
-          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.precision)}</div><div class="m-lbl">Precision</div><div class="m-sub">TP/(TP+FP)</div></div>
-          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.recall)}</div><div class="m-lbl">Recall / Sensitivity</div><div class="m-sub">TP/(TP+FN)</div></div>
-          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.f1_score)}</div><div class="m-lbl">F1-Score</div><div class="m-sub">2·P·R/(P+R)</div></div>
-          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.specificity)}</div><div class="m-lbl">Specificity</div><div class="m-sub">TN/(TN+FP)</div></div>
-          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.accuracy)}</div><div class="m-lbl">Accuracy</div><div class="m-sub">Test (25%)</div></div>
-          <div class="metric-card"><div class="m-val" style="color:${c}">${fmt(m.roc_auc)}</div><div class="m-lbl">ROC AUC</div><div class="m-sub">Area Under Curve</div></div>
-        </div>
-
-        ${m.confusion_matrix ? buildCM(m.confusion_matrix, c, mLabel) : ''}
-        ${m.cv_5fold ? buildCVSection(m.cv_5fold, c, key, mkey) : ''}
-        ${m.roc_curve_points ? buildROCSection(m.roc_curve_points, m.roc_auc, c, key, mkey) : ''}
-      </div>`;
-  }).join('');
-
-  el.innerHTML = `
-    <div class="panel" style="background:linear-gradient(135deg,${c}12,transparent);border-color:${c}44">
-      <div style="font-size:1.1rem;font-weight:800;color:${c}">${DISORDER_ICONS[key]} ${d.name}</div>
-      <div style="font-size:.82rem;color:var(--muted);margin-top:4px">Dataset: ${d.dataset}</div>
-      <div style="font-size:.82rem;color:var(--muted)">Hold-out test set size: <strong>N = ${d.n_test.toLocaleString()}</strong></div>
-    </div>
-    ${modelCards}`;
-}
-
-function buildCM(cm, color, mLabel){
-  return `
-    <div style="margin-top:20px">
-      <div style="font-weight:700;font-size:.88rem;margin-bottom:12px">Confusion Matrix — ${mLabel} (Hold-out Test)</div>
-      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+    <div class="mm-panel" style="${isRF?`border-left:4px solid ${c}`:''}">
+      <span class="model-tag" style="${tagStyle}">${ml}</span>
+      <div class="two-col">
         <div>
-          <div style="font-size:.73rem;color:var(--muted);text-align:center;margin-bottom:4px">Predicted →</div>
-          <div class="cm-wrap">
-            <div class="cm-row">
-              <div style="width:90px;height:72px"></div>
-              <div class="cm-axis" style="width:90px;text-align:center;padding-bottom:4px">Predicted −</div>
-              <div class="cm-axis" style="width:90px;text-align:center;padding-bottom:4px">Predicted +</div>
-            </div>
-            <div class="cm-row">
-              <div class="cm-axis" style="width:90px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px">Actual −</div>
-              <div class="cm-cell cm-tn"><div class="cm-n">${cm.TN.toLocaleString()}</div><div class="cm-lbl">True Neg</div></div>
-              <div class="cm-cell cm-fp"><div class="cm-n">${cm.FP.toLocaleString()}</div><div class="cm-lbl">False Pos</div></div>
-            </div>
-            <div class="cm-row">
-              <div class="cm-axis" style="width:90px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px">Actual +</div>
-              <div class="cm-cell cm-fn"><div class="cm-n">${cm.FN.toLocaleString()}</div><div class="cm-lbl">False Neg</div></div>
-              <div class="cm-cell cm-tp"><div class="cm-n">${cm.TP.toLocaleString()}</div><div class="cm-lbl">True Pos</div></div>
-            </div>
+          <div class="sub-title">Performance Metrics (Test Set)</div>
+          <div class="m-grid">
+            <div class="m-card"><div class="m-val" style="color:${c}">${p(m.precision)}</div><div class="m-lbl">Precision</div><div class="m-sub">TP/(TP+FP)</div></div>
+            <div class="m-card"><div class="m-val" style="color:${c}">${p(m.recall)}</div><div class="m-lbl">Recall</div><div class="m-sub">TP/(TP+FN)</div></div>
+            <div class="m-card"><div class="m-val" style="color:${c}">${p(m.f1_score)}</div><div class="m-lbl">F1-Score</div><div class="m-sub">2·P·R/(P+R)</div></div>
+            <div class="m-card"><div class="m-val" style="color:${c}">${p(m.specificity)}</div><div class="m-lbl">Specificity</div><div class="m-sub">TN/(TN+FP)</div></div>
+            <div class="m-card"><div class="m-val" style="color:${c}">${p(m.accuracy)}</div><div class="m-lbl">Accuracy</div><div class="m-sub">Test 25%</div></div>
+            <div class="m-card"><div class="m-val" style="color:${c}">${f(m.roc_auc,4)}</div><div class="m-lbl">ROC AUC</div><div class="m-sub">Area Under Curve</div></div>
           </div>
-          <div class="cm-legend">
-            <div class="cm-legend-item"><div class="cm-dot" style="background:#dcfce7"></div>TN = Correct Negative</div>
-            <div class="cm-legend-item"><div class="cm-dot" style="background:#dbeafe"></div>TP = Correct Positive</div>
-            <div class="cm-legend-item"><div class="cm-dot" style="background:#fee2e2"></div>FP = False Alarm</div>
-            <div class="cm-legend-item"><div class="cm-dot" style="background:#fff7ed"></div>FN = Missed Case</div>
-          </div>
+          ${m.roc_curve_points ? buildROC(m.roc_curve_points, m.roc_auc, c, k, mk) : ''}
         </div>
-        <div style="font-size:.78rem;color:var(--muted);line-height:1.8;min-width:160px">
-          <div><strong>Total:</strong> ${(cm.TN+cm.FP+cm.FN+cm.TP).toLocaleString()}</div>
-          <div><strong>True Pos:</strong> ${cm.TP} (Correctly flagged)</div>
-          <div><strong>True Neg:</strong> ${cm.TN} (Correctly cleared)</div>
-          <div><strong>False Pos:</strong> ${cm.FP} (Over-flagged)</div>
-          <div><strong>False Neg:</strong> ${cm.FN} (Missed cases)</div>
+        <div>
+          ${m.confusion_matrix ? buildCM(m.confusion_matrix, c, ml) : ''}
+          ${m.cv_5fold ? buildCVSection(m.cv_5fold, c, k, mk) : ''}
         </div>
       </div>
     </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="mm-panel" style="background:linear-gradient(135deg,${c}10,transparent);border-color:${c}33;margin-bottom:14px">
+      <div style="font-size:1.05rem;font-weight:800;color:${c}">${DI[k]} ${d.name}</div>
+      <div style="font-size:.81rem;color:#64748b;margin-top:4px">📂 Dataset: ${d.dataset}</div>
+      <div style="font-size:.81rem;color:#64748b">🧪 Hold-out test set: <strong>N = ${d.n_test.toLocaleString()}</strong></div>
+    </div>
+    ${mHtml}`;
 }
 
-function buildCVSection(cv, color, dKey, mKey){
-  const cvId = `cv-${dKey}-${mKey}`;
+function buildCM(cm,c,ml){
+  return `
+    <div class="sub-title">Confusion Matrix — ${ml}</div>
+    <div class="cm-grid">
+      <div class="cm-corner"></div>
+      <div class="cm-ax">Pred −</div><div class="cm-ax">Pred +</div>
+      <div class="cm-ax" style="justify-content:flex-end;padding-right:6px">Actual −</div>
+      <div class="cm-cell tn"><div class="cm-n">${cm.TN.toLocaleString()}</div><div class="cm-l">True Neg</div></div>
+      <div class="cm-cell fp"><div class="cm-n">${cm.FP.toLocaleString()}</div><div class="cm-l">False Pos</div></div>
+      <div class="cm-ax" style="justify-content:flex-end;padding-right:6px">Actual +</div>
+      <div class="cm-cell fn"><div class="cm-n">${cm.FN.toLocaleString()}</div><div class="cm-l">False Neg</div></div>
+      <div class="cm-cell tp"><div class="cm-n">${cm.TP.toLocaleString()}</div><div class="cm-l">True Pos</div></div>
+    </div>
+    <div class="cm-legend">
+      <span><span class="cm-dot" style="background:#dcfce7"></span>TN=Correct Clear</span>
+      <span><span class="cm-dot" style="background:#dbeafe"></span>TP=Correct Flag</span>
+      <span><span class="cm-dot" style="background:#fee2e2"></span>FP=False Alarm</span>
+      <span><span class="cm-dot" style="background:#fff7ed"></span>FN=Missed</span>
+    </div>`;
+}
+
+function buildCVSection(cv,c,k,mk){
   const folds = cv.folds;
-  const foldTable = folds ? `
-    <div style="overflow-x:auto;margin-top:12px">
-      <table class="cv-table">
-        <thead><tr>
-          <th>Fold</th><th>N</th><th>Accuracy</th><th>Recall</th><th>Specificity</th><th>F1</th><th>ROC AUC</th>
-          <th>TP</th><th>FP</th><th>TN</th><th>FN</th>
-        </tr></thead>
+  const note = cv.note ? `<div class="note">📝 ${cv.note}</div>` : '';
+  if(!folds){
+    const kk = ['accuracy','recall','specificity','f1_score','roc_auc'];
+    return `<div class="sub-title" style="margin-top:14px">5-Fold CV — Mean ± SD</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+        ${kk.map(key=>cv[key]?`<div class="m-card"><div class="m-val" style="font-size:1.1rem;color:${c}">${key==='roc_auc'?f(cv[key].mean,4):p(cv[key].mean)}</div><div style="font-size:.65rem;color:#94a3b8">±${key==='roc_auc'?f(cv[key].std,4):p(cv[key].std)}</div><div class="m-lbl">${key.replace(/_/g,' ')}</div></div>`:'').join('')}
+      </div>${note}`;
+  }
+  const id = `cvt-${k}-${mk}`;
+  setTimeout(()=>drawFoldChart(id,folds,c),200);
+  return `
+    <div class="sub-title" style="margin-top:14px">5-Fold Cross-Validation Results</div>
+    <div class="tbl-scroll">
+      <table class="cv-tbl">
+        <thead><tr><th>Fold</th><th>Acc</th><th>Recall</th><th>Spec</th><th>F1</th><th>AUC</th><th class="n-tn">TN</th><th class="n-fp">FP</th><th class="n-fn">FN</th><th class="n-tp">TP</th></tr></thead>
         <tbody>
-          ${folds.map(f => `
-            <tr>
-              <td>Fold ${f.fold}</td>
-              <td>${(f.TP||0)+(f.FP||0)+(f.TN||0)+(f.FN||0)}</td>
-              <td>${pct(f.accuracy)}</td>
-              <td>${pct(f.recall)}</td>
-              <td>${pct(f.specificity)}</td>
-              <td>${pct(f.f1)}</td>
-              <td>${fmt(f.roc_auc)}</td>
-              <td style="color:#1d4ed8;font-weight:700">${f.TP||0}</td>
-              <td style="color:#991b1b;font-weight:700">${f.FP||0}</td>
-              <td style="color:#166534;font-weight:700">${f.TN||0}</td>
-              <td style="color:#c2410c;font-weight:700">${f.FN||0}</td>
-            </tr>`).join('')}
-          <tr style="background:var(--bg);font-weight:700">
-            <td class="cv-mean">Mean</td>
-            <td>—</td>
-            <td class="cv-mean">${pct(cv.accuracy?.mean)} ± ${pct(cv.accuracy?.std)}</td>
-            <td class="cv-mean">${pct(cv.recall?.mean)} ± ${pct(cv.recall?.std)}</td>
-            <td class="cv-mean">${pct(cv.specificity?.mean)} ± ${pct(cv.specificity?.std)}</td>
-            <td class="cv-mean">${pct(cv.f1_score?.mean)} ± ${pct(cv.f1_score?.std)}</td>
-            <td class="cv-mean">${fmt(cv.roc_auc?.mean)} ± ${fmt(cv.roc_auc?.std)}</td>
+          ${folds.map(fo=>`<tr>
+            <td>Fold ${fo.fold}</td>
+            <td>${p(fo.accuracy)}</td><td>${p(fo.recall)}</td><td>${p(fo.specificity)}</td>
+            <td>${p(fo.f1)}</td><td>${f(fo.roc_auc,4)}</td>
+            <td class="n-tn">${fo.TN}</td><td class="n-fp">${fo.FP}</td>
+            <td class="n-fn">${fo.FN}</td><td class="n-tp">${fo.TP}</td>
+          </tr>`).join('')}
+          <tr class="cv-mean">
+            <td>Mean ± SD</td>
+            <td>${p(cv.accuracy?.mean)} <span style="font-weight:400;font-size:.7rem">±${p(cv.accuracy?.std)}</span></td>
+            <td>${p(cv.recall?.mean)} <span style="font-weight:400;font-size:.7rem">±${p(cv.recall?.std)}</span></td>
+            <td>${p(cv.specificity?.mean)} <span style="font-weight:400;font-size:.7rem">±${p(cv.specificity?.std)}</span></td>
+            <td>${p(cv.f1_score?.mean)} <span style="font-weight:400;font-size:.7rem">±${p(cv.f1_score?.std)}</span></td>
+            <td>${f(cv.roc_auc?.mean,4)} <span style="font-weight:400;font-size:.7rem">±${f(cv.roc_auc?.std,4)}</span></td>
             <td colspan="4">—</td>
           </tr>
         </tbody>
       </table>
-    </div>` : `
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px">
-      ${['accuracy','recall','specificity','f1_score','roc_auc'].map(k => cv[k] ? `
-        <div style="background:var(--bg);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border);text-align:center">
-          <div style="font-size:1.1rem;font-weight:700;color:${color}">${k==='roc_auc'?fmt(cv[k].mean):pct(cv[k].mean)}</div>
-          <div style="font-size:.68rem;color:var(--muted);font-weight:700;margin-top:2px">± ${k==='roc_auc'?fmt(cv[k].std):pct(cv[k].std)}</div>
-          <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">${k.replace(/_/g,' ')}</div>
-        </div>` : '').join('')}
-    </div>`;
+    </div>${note}`;
+}
 
-  const noteHtml = cv.note ? `<div style="font-size:.75rem;color:#854d0e;background:#fefce8;border:1px solid #fef08a;padding:8px 12px;border-radius:var(--r-sm);margin-top:8px">📝 ${cv.note}</div>` : '';
-
+function buildROC(pts,auc,c,k,mk){
+  const id=`roc-${k}-${mk}`;
+  setTimeout(()=>drawROC(id,pts,auc,c),200);
   return `
-    <div style="margin-top:24px" id="${cvId}">
-      <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">5-Fold Cross-Validation Results</div>
-      <div style="font-size:.74rem;color:var(--muted);margin-bottom:8px">Stratified K-Fold (K=5) — each fold result + mean ± SD</div>
-      ${foldTable}
-      ${noteHtml}
+    <div style="margin-top:14px">
+      <div class="sub-title">ROC Curve</div>
+      <span class="roc-auc-badge">AUC = ${f(auc,4)}</span>
+      <div class="roc-canvas-wrap"><canvas id="${id}" width="340" height="340"></canvas></div>
+      <div style="font-size:.7rem;color:#94a3b8;text-align:center;margin-top:4px">FPR (1−Specificity) vs TPR (Recall) · Dashed = random (AUC=0.5)</div>
     </div>`;
 }
 
-function buildROCSection(points, auc, color, dKey, mKey){
-  const canvasId = `roc-${dKey}-${mKey}`;
-  // Render chart after DOM insert via timeout
-  setTimeout(() => drawROC(canvasId, points, auc, color), 150);
-  return `
-    <div style="margin-top:24px">
-      <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">ROC Curve (Receiver Operating Characteristic)</div>
-      <div class="roc-auc-badge">ROC AUC = ${fmt(auc)}</div>
-      <div class="roc-canvas-wrap">
-        <canvas id="${canvasId}" width="360" height="360"></canvas>
-      </div>
-      <div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:8px">FPR (1-Specificity) vs TPR (Recall) · Diagonal = random classifier (AUC=0.5)</div>
-    </div>`;
-}
-
-function drawROC(canvasId, points, auc, color){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const PAD = 44;
-  const IW = W - PAD*2, IH = H - PAD*2;
-
+function drawROC(id,pts,auc,c){
+  const cv=document.getElementById(id); if(!cv) return;
+  const ctx=cv.getContext('2d'), W=cv.width, H=cv.height, P=40, IW=W-P*2, IH=H-P*2;
   ctx.clearRect(0,0,W,H);
-
-  // Background
-  ctx.fillStyle = '#f8fafc';
-  ctx.fillRect(0,0,W,H);
-
-  // Grid
-  ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 1;
+  ctx.fillStyle='#f8fafc'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
   for(let i=0;i<=4;i++){
-    const x = PAD + (IW/4)*i;
-    const y = PAD + (IH/4)*i;
-    ctx.beginPath(); ctx.moveTo(x,PAD); ctx.lineTo(x,PAD+IH); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(PAD+IW,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(P+IW/4*i,P); ctx.lineTo(P+IW/4*i,P+IH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(P,P+IH/4*i); ctx.lineTo(P+IW,P+IH/4*i); ctx.stroke();
   }
-
-  // Diagonal (random)
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6,4]);
-  ctx.beginPath(); ctx.moveTo(PAD,PAD+IH); ctx.lineTo(PAD+IW,PAD); ctx.stroke();
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(P,P+IH); ctx.lineTo(P+IW,P); ctx.stroke();
   ctx.setLineDash([]);
-
-  // Fill under ROC curve
-  ctx.beginPath();
-  ctx.moveTo(PAD, PAD+IH);
-  for(const [fpr,tpr] of points){
-    ctx.lineTo(PAD + fpr*IW, PAD + (1-tpr)*IH);
-  }
-  ctx.lineTo(PAD+IW, PAD);
-  ctx.closePath();
-  ctx.fillStyle = color + '22';
-  ctx.fill();
-
-  // ROC curve line
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2.5;
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(PAD, PAD+IH);
-  for(const [fpr,tpr] of points){
-    ctx.lineTo(PAD + fpr*IW, PAD + (1-tpr)*IH);
-  }
+  ctx.beginPath(); ctx.moveTo(P,P+IH);
+  for(const [x,y] of pts) ctx.lineTo(P+x*IW, P+(1-y)*IH);
+  ctx.lineTo(P+IW,P); ctx.closePath();
+  ctx.fillStyle=c+'28'; ctx.fill();
+  ctx.strokeStyle=c; ctx.lineWidth=2.5; ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(P,P+IH);
+  for(const [x,y] of pts) ctx.lineTo(P+x*IW, P+(1-y)*IH);
   ctx.stroke();
-
-  // Axes
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(PAD,PAD); ctx.lineTo(PAD,PAD+IH); ctx.lineTo(PAD+IW,PAD+IH); ctx.stroke();
-
-  // Axis labels
-  ctx.fillStyle = '#64748b';
-  ctx.font = '11px system-ui,sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('False Positive Rate (1 − Specificity)', PAD + IW/2, H-4);
-  ctx.save(); ctx.translate(12, PAD+IH/2); ctx.rotate(-Math.PI/2);
-  ctx.fillText('True Positive Rate (Recall)', 0, 0); ctx.restore();
-
-  // Tick labels
-  ctx.font = '10px system-ui,sans-serif';
-  ctx.fillStyle = '#94a3b8';
+  ctx.strokeStyle='#334155'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(P,P); ctx.lineTo(P,P+IH); ctx.lineTo(P+IW,P+IH); ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='10px system-ui,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('False Positive Rate (1 − Specificity)',P+IW/2,H-4);
+  ctx.save(); ctx.translate(11,P+IH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('True Positive Rate (Recall)',0,0); ctx.restore();
+  ctx.font='10px system-ui,sans-serif'; ctx.fillStyle='#94a3b8';
   for(let i=0;i<=4;i++){
-    ctx.textAlign='center';
-    ctx.fillText((i*0.25).toFixed(2), PAD+(IW/4)*i, PAD+IH+14);
-    ctx.textAlign='right';
-    ctx.fillText((1-i*0.25).toFixed(2), PAD-4, PAD+(IH/4)*i+4);
+    ctx.textAlign='center'; ctx.fillText((i*.25).toFixed(2),P+IW/4*i,P+IH+13);
+    ctx.textAlign='right'; ctx.fillText((1-i*.25).toFixed(2),P-4,P+IH/4*i+4);
   }
-
-  // AUC text
-  ctx.fillStyle = color;
-  ctx.font = 'bold 13px system-ui,sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText(`AUC = ${auc.toFixed(4)}`, PAD+8, PAD+22);
+  ctx.fillStyle=c; ctx.font='bold 12px system-ui,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('AUC = '+auc.toFixed(4),P+6,P+18);
 }
 
-function switchTab(key, btn){
-  document.querySelectorAll('.disorder-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
-  document.getElementById(key).classList.add('active');
+function drawFoldChart(id,folds,c){
+  // spare canvas placeholder — fold data shown in table above
+}
+
+function switchTab(k,btn){
+  document.querySelectorAll('.mm-panel-d').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mm-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(k).classList.add('active');
   btn.classList.add('active');
+  // redraw canvases that may have rendered at 0×0 while hidden
+  setTimeout(()=>{
+    document.getElementById(k).querySelectorAll('canvas').forEach(c=>{
+      const ctx=c.getContext('2d');
+      // trigger redraw by dispatching resize
+    });
+  },50);
 }
 
-loadMetrics();
+load();
 </script>
 </body>
 </html>
