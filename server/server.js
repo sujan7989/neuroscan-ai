@@ -840,6 +840,24 @@ app.get('/api/ml/metrics', async (_req, res) => {
   }
 });
 
+// GET /api/ml/detailed-metrics - Full precision/recall/F1/specificity/ROC/CV mean±SD per disorder
+app.get('/api/ml/detailed-metrics', async (_req, res) => {
+  try {
+    const candidates = [
+      path.resolve(__dirname, 'ml_artifacts/detailed_metrics.json'),
+      path.resolve(__dirname, '../ml/artifacts/detailed_metrics.json'),
+    ];
+    const metricsPath = candidates.find(p => fs.existsSync(p));
+    if (!metricsPath) {
+      return res.status(404).json({ error: 'Detailed metrics file not found' });
+    }
+    const data = JSON.parse(fs.readFileSync(metricsPath, 'utf-8').replace(/^\uFEFF/, ''));
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to retrieve detailed metrics', details: e.message });
+  }
+});
+
 // POST /api/ml/retrain - Retrain models on dataset (Admin / Pipeline only)
 app.post('/api/ml/retrain', async (req, res) => {
   const adminKey = req.headers['x-admin-key'] || req.headers['authorization'];

@@ -12,14 +12,20 @@ addition of features should be audited for similar target-derivation leakage.
 
 import numpy as np
 
-# Canonical feature names expected by the model (14 features: 10 questionnaire items + 4 demographics)
-# Target-derived features (such as aq10_sum or result) are excluded to prevent target leakage.
+# Canonical feature names: 22 features (10 AQ-10 + 4 demographics + 8 SSBD video behavioral)
+# SSBD video behavioral features from Rajagopalan et al. 2013 (ICCV) correlations.
 AQ_FEATURES = [f"A{i}_Score" for i in range(1, 11)]
-
+VIDEO_FEATURE_NAMES = [
+    'arm_flapping', 'head_banging', 'spinning', 'rocking',
+    'gaze_avoidance', 'echolalia', 'hypo_gaze', 'social_isolate'
+]
 MODEL_FEATURE_NAMES = [
     'A1_Score', 'A2_Score', 'A3_Score', 'A4_Score', 'A5_Score',
     'A6_Score', 'A7_Score', 'A8_Score', 'A9_Score', 'A10_Score',
-    'age', 'gender_num', 'jaundice_num', 'austim_num'
+    'age', 'gender_num', 'jaundice_num', 'austim_num',
+    # SSBD-derived video behavioral features (0=absent, 1=mild, 2=marked)
+    'arm_flapping', 'head_banging', 'spinning', 'rocking',
+    'gaze_avoidance', 'echolalia', 'hypo_gaze', 'social_isolate'
 ]
 
 def parse_binary(val):
@@ -84,6 +90,11 @@ def transform_sample(sample_dict):
     # Family history of ASD / austim (1 = yes, 0 = no)
     raw_family = sample_dict.get('austim', sample_dict.get('family', sample_dict.get('family_history', 0)))
     features['austim_num'] = parse_binary(raw_family)
+
+    # Video behavioral features — default to 0 if not provided
+    # When called from media analysis, these are supplied by client-side canvas metrics
+    for vf in VIDEO_FEATURE_NAMES:
+        features[vf] = int(round(max(0, min(2, float(sample_dict.get(vf, 0))))))
 
     # Ordered feature vector
     vector = [features[col] for col in MODEL_FEATURE_NAMES]

@@ -1,21 +1,19 @@
 {
-  "disorder": "stuttering",
   "features": [
-    "disfluency_rate",
-    "repetition_per_100w",
-    "block_freq_per_100w",
-    "speech_rate_wpm",
-    "phonation_ratio",
-    "jitter_pct",
-    "shimmer_db",
-    "stutter_severity",
-    "anxiety_speaking",
-    "family_history_stutter",
-    "onset_childhood"
+    "Prolongation",
+    "Block",
+    "SoundRep",
+    "WordRep",
+    "total_stutter_events",
+    "max_event_severity",
+    "n_event_types",
+    "has_block",
+    "has_prolongation",
+    "has_sound_rep",
+    "has_word_rep",
+    "interjection",
+    "natural_pause",
+    "unsure"
   ],
-  "n_features": 11,
-  "test_auc": 1.0,
-  "test_accuracy": 1.0,
-  "positive_mean_prob": 0.9997,
-  "calibration": "isotonic"
+  "type": "SEP28k_stutter_event_annotations"
 }

@@ -57,7 +57,23 @@ window.APP = { user: null, userDoc: null };
       <li><a class="nav-link" href="${root}pages/chat.html">🤖 AI Assistant</a></li>
       <li><a class="nav-link" href="${root}pages/media-analysis.html">📤 Upload &amp; Detect</a></li>
       <li><a class="nav-link" href="${root}pages/dashboard.html">📊 Dashboard</a></li>
-    </ul>
+      <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="${root}pages/dataset.html">🔬 Research</a>
+        <div class="nav-dropdown-menu">
+          <a class="nav-dropdown-item" href="${root}pages/dataset.html">
+            <div>
+              <strong>🔬 Dataset Explorer</strong>
+              <span class="sub-desc">Browse UCI ASD &amp; multi-disorder datasets</span>
+            </div>
+          </a>
+          <a class="nav-dropdown-item" href="${root}pages/model-metrics.html">
+            <div>
+              <strong>📊 Model Metrics</strong>
+              <span class="sub-desc">Precision, Recall, F1, ROC curves &amp; CV</span>
+            </div>
+          </a>
+        </div>
+      </li>
     <div class="nav-actions" id="navAuthArea">
       <button class="btn btn-outline btn-sm" onclick="window.location.href='${root}pages/auth.html'">Sign In</button>
       <button class="btn btn-primary btn-sm" onclick="window.location.href='${root}pages/assess.html'">Start Assessment</button>
@@ -94,6 +110,10 @@ window.APP = { user: null, userDoc: null };
     <a href="${root}pages/learning-profile.html">📊 Learning Ability Profile</a>
     <a href="${root}pages/learning-program.html">🎯 8-Week Training Program</a>
     <a href="${root}pages/learning-progress.html">📈 Longitudinal Progress &amp; Reports</a>
+
+    <div class="drawer-section-title">Research &amp; Data</div>
+    <a href="${root}pages/dataset.html">🔬 Dataset Explorer</a>
+    <a href="${root}pages/model-metrics.html">📊 Model Performance Metrics</a>
 
     <div class="drawer-section-title">User Account</div>
     <a href="${root}pages/dashboard.html">📊 Clinical &amp; Learning Dashboard</a>
@@ -145,6 +165,8 @@ window.APP = { user: null, userDoc: null };
           <li><a href="${root}pages/history.html">Assessment History</a></li>
           <li><a href="${root}pages/profile.html">User Profile</a></li>
           <li><a href="${root}pages/about.html">Methodology &amp; Research</a></li>
+          <li><a href="${root}pages/dataset.html">Dataset Explorer</a></li>
+          <li><a href="${root}pages/model-metrics.html">Model Performance Metrics</a></li>
         </ul>
       </div>
     </div>

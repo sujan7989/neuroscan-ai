@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Model Performance Metrics — NeuroScan AI</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <style>
+    :root {
+      --asd:#2d6a4f; --adhd:#e76f51; --dys:#457b9d; --stu:#0891b2; --ssd:#7c3aed;
+      --asd-bg:#f0fdf4; --adhd-bg:#fff7ed; --dys-bg:#eff6ff; --stu-bg:#ecfeff; --ssd-bg:#f5f3ff;
+    }
+    .page-hdr{background:linear-gradient(135deg,#0a1628 0%,#1a2d4a 50%,#0d2137 100%);color:#fff;padding:48px 44px;position:relative;overflow:hidden}
+    .page-hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(45,106,79,.25) 0%,transparent 60%)}
+    .page-hdr-inner{max-width:1200px;margin:0 auto;position:relative}
+    .page-hdr h1{font-family:var(--font-d);font-size:2.4rem;margin:0 0 12px}
+    .page-hdr p{color:rgba(255,255,255,.7);max-width:600px;line-height:1.65;font-size:.95rem}
+    .metrics-layout{max-width:1200px;margin:0 auto;padding:40px 44px 80px}
+    @media(max-width:900px){.metrics-layout{padding:24px 20px 60px}.page-hdr{padding:32px 20px}}
+
+    /* TABS */
+    .disorder-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:32px;border-bottom:2px solid var(--border);padding-bottom:0}
+    .dtab{padding:10px 20px;border-radius:var(--r) var(--r) 0 0;font-weight:700;font-size:.85rem;cursor:pointer;border:2px solid transparent;border-bottom:none;transition:all .2s;color:var(--muted);background:none;margin-bottom:-2px}
+    .dtab.active{border-color:var(--border);border-bottom-color:var(--bg);background:var(--bg);color:var(--text)}
+    .dtab:hover:not(.active){background:var(--card);color:var(--text)}
+    .disorder-panel{display:none}.disorder-panel.active{display:block}
+
+    /* SECTION */
+    .section-title{font-family:var(--font-d);font-size:1.4rem;margin:32px 0 16px;display:flex;align-items:center;gap:10px}
+    .panel{background:var(--card);border-radius:var(--r);padding:24px;border:1px solid var(--border);margin-bottom:20px}
+    .panel h3{font-size:.95rem;font-weight:700;margin:0 0 16px;display:flex;align-items:center;gap:8px}
+
+    /* METRIC CARDS */
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+    .metric-card{background:var(--bg);border-radius:var(--r-sm);padding:16px;border:1.5px solid var(--border);text-align:center}
+    .metric-card .m-val{font-family:var(--font-d);font-size:2rem;font-weight:700;line-height:1.1}
+    .metric-card .m-lbl{font-size:.73rem;color:var(--muted);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+    .metric-card .m-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+
+    /* CONFUSION MATRIX */
+    .cm-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .cm-row{display:flex;gap:4px}
+    .cm-cell{width:90px;height:72px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700}
+    .cm-cell .cm-n{font-size:1.5rem;line-height:1}
+    .cm-cell .cm-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;margin-top:3px;font-weight:600}
+    .cm-tn{background:#dcfce7;color:#166534}
+    .cm-fp{background:#fee2e2;color:#991b1b}
+    .cm-fn{background:#fff7ed;color:#c2410c}
+    .cm-tp{background:#dbeafe;color:#1d4ed8}
+    .cm-axis{font-size:.72rem;color:var(--muted);font-weight:600}
+    .cm-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;justify-content:center;font-size:.75rem}
+    .cm-legend-item{display:flex;align-items:center;gap:5px}
+    .cm-dot{width:12px;height:12px;border-radius:3px}
+
+    /* CV TABLE */
+    .cv-table{width:100%;border-collapse:collapse;font-size:.8rem}
+    .cv-table th{background:var(--bg);padding:8px 10px;text-align:left;border:1px solid var(--border);font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+    .cv-table td{padding:8px 10px;border:1px solid var(--border)}
+    .cv-table tbody tr:hover td{background:#fafff8}
+    .cv-table .cv-mean{font-weight:700;color:var(--primary)}
+
+    /* ROC CURVE */
+    .roc-wrap{position:relative;background:var(--bg);border-radius:var(--r-sm);padding:16px}
+    .roc-canvas-wrap{width:100%;aspect-ratio:1;max-width:380px;margin:0 auto;position:relative}
+    canvas.roc-canvas{width:100%;height:100%;border-radius:var(--r-sm)}
+    .roc-auc-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:50px;font-size:.78rem;font-weight:700;background:var(--green-bg);color:var(--primary);border:1px solid var(--primary-l);margin-bottom:10px}
+
+    /* SUMMARY TABLE */
+    .summary-table{width:100%;border-collapse:collapse;font-size:.82rem}
+    .summary-table th{background:var(--bg);padding:10px 12px;text-align:left;border:1px solid var(--border);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+    .summary-table td{padding:10px 12px;border:1px solid var(--border);vertical-align:middle}
+    .summary-table tbody tr:hover td{background:#fafff8}
+    .score-bar{height:8px;border-radius:50px;display:inline-block;min-width:4px;background:var(--primary);vertical-align:middle}
+    .model-badge{display:inline-block;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:700;text-transform:uppercase}
+
+    /* CROSS VALIDATION SUMMARY */
+    .cv-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+    .cv-sum-card{background:var(--bg);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border)}
+    .cv-sum-card .cs-disorder{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+    .cv-sum-card .cs-row{display:flex;justify-content:space-between;font-size:.77rem;margin-bottom:4px}
+    .cv-sum-card .cs-metric{color:var(--muted)}
+    .cv-sum-card .cs-val{font-weight:700}
+
+    /* LOADING */
+    .loading{text-align:center;padding:40px;color:var(--muted);font-size:.9rem}
+    .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div id="nav-ph"></div>
+
+<div class="page-hdr">
+  <div class="page-hdr-inner">
+    <div class="section-tag" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2)">CLINICAL EVALUATION · RESEARCH PROTOTYPE</div>
+    <h1>Model Performance Metrics</h1>
+    <p>Full precision, recall, F1-score, specificity, per-pathway confusion matrices, ROC curves, and 5-fold cross-validation mean ± SD for all 5 disorder screening models.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">ASD · ADHD · Dyslexia · Stuttering · SSD</span>
+      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">3 models × 5 disorders + Ensemble</span>
+      <span style="padding:4px 12px;border-radius:50px;background:rgba(255,255,255,.1);font-size:.78rem;font-weight:600">5-Fold Stratified CV</span>
+    </div>
+  </div>
+</div>
+
+<div class="metrics-layout">
+
+  <!-- ALL-DISORDER SUMMARY TABLE -->
+  <div class="panel" id="summaryPanel">
+    <h3>📊 Cross-Disorder Performance Summary</h3>
+    <div class="loading"><span class="spinner"></span>Loading metrics from server…</div>
+  </div>
+
+  <!-- CV MEAN ± SD OVERVIEW -->
+  <div class="panel" id="cvOverviewPanel">
+    <h3>📈 5-Fold Cross-Validation — Mean ± Standard Deviation</h3>
+    <div class="cv-summary-grid" id="cvSummaryGrid">
+      <div class="loading"><span class="spinner"></span>Loading…</div>
+    </div>
+  </div>
+
+  <!-- PER-DISORDER TABS -->
+  <div class="section-title">🔬 Per-Disorder Detailed Analysis</div>
+
+  <div class="disorder-tabs" id="disorderTabs">
+    <button class="dtab active" data-d="asd" onclick="switchTab('asd',this)">🧩 ASD</button>
+    <button class="dtab" data-d="adhd" onclick="switchTab('adhd',this)">⚡ ADHD</button>
+    <button class="dtab" data-d="dyslexia" onclick="switchTab('dyslexia',this)">📖 Dyslexia</button>
+    <button class="dtab" data-d="stuttering" onclick="switchTab('stuttering',this)">🎤 Stuttering</button>
+    <button class="dtab" data-d="ssd" onclick="switchTab('ssd',this)">🗣 SSD</button>
+  </div>
+
+  <div id="asd" class="disorder-panel active"></div>
+  <div id="adhd" class="disorder-panel"></div>
+  <div id="dyslexia" class="disorder-panel"></div>
+  <div id="stuttering" class="disorder-panel"></div>
+  <div id="ssd" class="disorder-panel"></div>
+
+</div>
+
+<div id="footer-ph"></div>
+<script type="module" src="../js/shared.js"></script>
+<script>
+const DISORDER_COLORS = {asd:'#2d6a4f',adhd:'#e76f51',dyslexia:'#457b9d',stuttering:'#0891b2',ssd:'#7c3aed'};
+const DISORDER_LABELS = {asd:'ASD',adhd:'ADHD',dyslexia:'Dyslexia',stuttering:'Stuttering',ssd:'SSD'};
+const DISORDER_ICONS  = {asd:'🧩',adhd:'⚡',dyslexia:'📖',stuttering:'🎤',ssd:'🗣'};
+let gMetrics = null;
+
+function pct(v){ return v!=null ? (v*100).toFixed(1)+'%' : 'N/A'; }
+function fmt(v,d=3){ return v!=null ? v.toFixed(d) : 'N/A'; }
+function fmtPct(v){ return v!=null ? (v*100).toFixed(2)+'%' : 'N/A'; }
+
+async function loadMetrics(){
+  try {
+    const r = await fetch('/api/ml/detailed-metrics');
+    if (!r.ok) throw new Error(r.statusText);
+    gMetrics = await r.json();
+    buildSummary();
+    buildCVOverview();
+    ['asd','adhd','dyslexia','stuttering','ssd'].forEach(d => buildDisorderPanel(d));
+  } catch(e){
+    document.getElementById('summaryPanel').innerHTML =
+      `<h3>📊 Cross-Disorder Performance Summary</h3>
+       <div class="loading" style="color:#dc2626">Failed to load metrics: ${e.message}</div>`;
+  }
+}
+
+function buildSummary(){
+  const rows = Object.entries(gMetrics.disorders).map(([key, d]) => {
+    const rf = d.models.random_forest || {};
+    const gb = d.models.gradient_boosting || {};
+    const ens= d.models.ensemble || rf;
+    const c  = DISORDER_COLORS[key];
+    return `
+      <tr>
+        <td><span style="font-weight:700;color:${c}">${DISORDER_ICONS[key]} ${DISORDER_LABELS[key]}</span>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px">${d.dataset}</div></td>
+        <td>${d.n_test.toLocaleString()}</td>
+        <td><strong>${pct(rf.precision||ens.precision)}</strong></td>
+        <td><strong>${pct(rf.recall||ens.recall)}</strong></td>
+        <td><strong>${pct(rf.f1_score||ens.f1_score)}</strong></td>
+        <td><strong>${pct(rf.specificity||ens.specificity)}</strong></td>
+        <td><strong>${pct(rf.accuracy||ens.accuracy)}</strong></td>
+        <td><span style="font-weight:700;color:${c}">${fmt(rf.roc_auc||ens.roc_auc)}</span></td>
+        <td>${rf.confusion_matrix ? `TP:${rf.confusion_matrix.TP} FP:${rf.confusion_matrix.FP} TN:${rf.confusion_matrix.TN} FN:${rf.confusion_matrix.FN}` : 'N/A'}</td>
+      </tr>`;
+  }).join('');
+  document.getElementById('summaryPanel').innerHTML = `
+    <h3>📊 Cross-Disorder Performance Summary — Random Forest (Best Single Model per Pathway)</h3>
+    <div style="overflow-x:auto">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Disorder</th><th>Test N</th>
+            <th>Precision</th><th>Recall (Sens)</th><th>F1-Score</th>
+            <th>Specificity</th><th>Accuracy</th><th>ROC AUC</th>
+            <th>Confusion Matrix</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="font-size:.76rem;color:var(--muted);margin-top:10px">
+      * Precision = TP/(TP+FP) · Recall = Sensitivity = TP/(TP+FN) · Specificity = TN/(TN+FP) · F1 = 2·P·R/(P+R) · All from hold-out test split (25%)
+    </div>`;
+}
+
+function buildCVOverview(){
+  const cv = gMetrics.cross_validation_summary;
+  const html = Object.entries(cv.disorders).map(([key, d]) => {
+    const c = DISORDER_COLORS[key];
+    return `<div class="cv-sum-card">
+      <div class="cs-disorder" style="color:${c}">${DISORDER_ICONS[key]} ${DISORDER_LABELS[key]}</div>
+      <div class="cs-row"><span class="cs-metric">Accuracy</span><span class="cs-val">${pct(d.cv_accuracy_mean)} ± ${pct(d.cv_accuracy_std)}</span></div>
+      <div class="cs-row"><span class="cs-metric">Recall</span><span class="cs-val">${pct(d.cv_recall_mean)} ± ${pct(d.cv_recall_std)}</span></div>
+      <div class="cs-row"><span class="cs-metric">Specificity</span><span class="cs-val">${pct(d.cv_specificity_mean)} ± ${pct(d.cv_specificity_std)}</span></div>
+      <div class="cs-row"><span class="cs-metric">F1-Score</span><span class="cs-val">${pct(d.cv_f1_mean)} ± ${pct(d.cv_f1_std)}</span></div>
+      <div class="cs-row"><span class="cs-metric">ROC AUC</span><span class="cs-val" style="color:${c};font-weight:800">${fmt(d.cv_roc_auc_mean)} ± ${fmt(d.cv_roc_auc_std)}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('cvSummaryGrid').innerHTML = html;
+  document.querySelector('#cvOverviewPanel h3').insertAdjacentHTML('afterend',
+    `<div style="font-size:.78rem;color:var(--muted);margin-bottom:12px">${cv.method}</div>`);
+}
+
+function buildDisorderPanel(key){
+  const d = gMetrics.disorders[key];
+  if(!d) return;
+  const c = DISORDER_COLORS[key];
+  const el = document.getElementById(key);
+
+  // Model cards section
+  const modelCards = Object.entries(d.models).map(([mkey, m]) => {
+    if(!m.precision) return '';
+    const mLabel = {random_forest:'Random Forest',gradient_boosting:'Gradient Boosting',logistic_regression:'Logistic Regression',ensemble:'Ensemble'}[mkey] || mkey;
+    return `
+      <div class="panel">
+        <h3 style="color:${c}">${DISORDER_ICONS[key]} ${mLabel} — ${DISORDER_LABELS[key]}</h3>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.precision)}</div><div class="m-lbl">Precision</div><div class="m-sub">TP/(TP+FP)</div></div>
+          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.recall)}</div><div class="m-lbl">Recall / Sensitivity</div><div class="m-sub">TP/(TP+FN)</div></div>
+          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.f1_score)}</div><div class="m-lbl">F1-Score</div><div class="m-sub">2·P·R/(P+R)</div></div>
+          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.specificity)}</div><div class="m-lbl">Specificity</div><div class="m-sub">TN/(TN+FP)</div></div>
+          <div class="metric-card"><div class="m-val" style="color:${c}">${pct(m.accuracy)}</div><div class="m-lbl">Accuracy</div><div class="m-sub">Test (25%)</div></div>
+          <div class="metric-card"><div class="m-val" style="color:${c}">${fmt(m.roc_auc)}</div><div class="m-lbl">ROC AUC</div><div class="m-sub">Area Under Curve</div></div>
+        </div>
+
+        ${m.confusion_matrix ? buildCM(m.confusion_matrix, c, mLabel) : ''}
+        ${m.cv_5fold ? buildCVSection(m.cv_5fold, c, key, mkey) : ''}
+        ${m.roc_curve_points ? buildROCSection(m.roc_curve_points, m.roc_auc, c, key, mkey) : ''}
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="panel" style="background:linear-gradient(135deg,${c}12,transparent);border-color:${c}44">
+      <div style="font-size:1.1rem;font-weight:800;color:${c}">${DISORDER_ICONS[key]} ${d.name}</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-top:4px">Dataset: ${d.dataset}</div>
+      <div style="font-size:.82rem;color:var(--muted)">Hold-out test set size: <strong>N = ${d.n_test.toLocaleString()}</strong></div>
+    </div>
+    ${modelCards}`;
+}
+
+function buildCM(cm, color, mLabel){
+  return `
+    <div style="margin-top:20px">
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:12px">Confusion Matrix — ${mLabel} (Hold-out Test)</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+        <div>
+          <div style="font-size:.73rem;color:var(--muted);text-align:center;margin-bottom:4px">Predicted →</div>
+          <div class="cm-wrap">
+            <div class="cm-row">
+              <div style="width:90px;height:72px"></div>
+              <div class="cm-axis" style="width:90px;text-align:center;padding-bottom:4px">Predicted −</div>
+              <div class="cm-axis" style="width:90px;text-align:center;padding-bottom:4px">Predicted +</div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-axis" style="width:90px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px">Actual −</div>
+              <div class="cm-cell cm-tn"><div class="cm-n">${cm.TN.toLocaleString()}</div><div class="cm-lbl">True Neg</div></div>
+              <div class="cm-cell cm-fp"><div class="cm-n">${cm.FP.toLocaleString()}</div><div class="cm-lbl">False Pos</div></div>
+            </div>
+            <div class="cm-row">
+              <div class="cm-axis" style="width:90px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px">Actual +</div>
+              <div class="cm-cell cm-fn"><div class="cm-n">${cm.FN.toLocaleString()}</div><div class="cm-lbl">False Neg</div></div>
+              <div class="cm-cell cm-tp"><div class="cm-n">${cm.TP.toLocaleString()}</div><div class="cm-lbl">True Pos</div></div>
+            </div>
+          </div>
+          <div class="cm-legend">
+            <div class="cm-legend-item"><div class="cm-dot" style="background:#dcfce7"></div>TN = Correct Negative</div>
+            <div class="cm-legend-item"><div class="cm-dot" style="background:#dbeafe"></div>TP = Correct Positive</div>
+            <div class="cm-legend-item"><div class="cm-dot" style="background:#fee2e2"></div>FP = False Alarm</div>
+            <div class="cm-legend-item"><div class="cm-dot" style="background:#fff7ed"></div>FN = Missed Case</div>
+          </div>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);line-height:1.8;min-width:160px">
+          <div><strong>Total:</strong> ${(cm.TN+cm.FP+cm.FN+cm.TP).toLocaleString()}</div>
+          <div><strong>True Pos:</strong> ${cm.TP} (Correctly flagged)</div>
+          <div><strong>True Neg:</strong> ${cm.TN} (Correctly cleared)</div>
+          <div><strong>False Pos:</strong> ${cm.FP} (Over-flagged)</div>
+          <div><strong>False Neg:</strong> ${cm.FN} (Missed cases)</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildCVSection(cv, color, dKey, mKey){
+  const cvId = `cv-${dKey}-${mKey}`;
+  const folds = cv.folds;
+  const foldTable = folds ? `
+    <div style="overflow-x:auto;margin-top:12px">
+      <table class="cv-table">
+        <thead><tr>
+          <th>Fold</th><th>N</th><th>Accuracy</th><th>Recall</th><th>Specificity</th><th>F1</th><th>ROC AUC</th>
+          <th>TP</th><th>FP</th><th>TN</th><th>FN</th>
+        </tr></thead>
+        <tbody>
+          ${folds.map(f => `
+            <tr>
+              <td>Fold ${f.fold}</td>
+              <td>${(f.TP||0)+(f.FP||0)+(f.TN||0)+(f.FN||0)}</td>
+              <td>${pct(f.accuracy)}</td>
+              <td>${pct(f.recall)}</td>
+              <td>${pct(f.specificity)}</td>
+              <td>${pct(f.f1)}</td>
+              <td>${fmt(f.roc_auc)}</td>
+              <td style="color:#1d4ed8;font-weight:700">${f.TP||0}</td>
+              <td style="color:#991b1b;font-weight:700">${f.FP||0}</td>
+              <td style="color:#166534;font-weight:700">${f.TN||0}</td>
+              <td style="color:#c2410c;font-weight:700">${f.FN||0}</td>
+            </tr>`).join('')}
+          <tr style="background:var(--bg);font-weight:700">
+            <td class="cv-mean">Mean</td>
+            <td>—</td>
+            <td class="cv-mean">${pct(cv.accuracy?.mean)} ± ${pct(cv.accuracy?.std)}</td>
+            <td class="cv-mean">${pct(cv.recall?.mean)} ± ${pct(cv.recall?.std)}</td>
+            <td class="cv-mean">${pct(cv.specificity?.mean)} ± ${pct(cv.specificity?.std)}</td>
+            <td class="cv-mean">${pct(cv.f1_score?.mean)} ± ${pct(cv.f1_score?.std)}</td>
+            <td class="cv-mean">${fmt(cv.roc_auc?.mean)} ± ${fmt(cv.roc_auc?.std)}</td>
+            <td colspan="4">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>` : `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px">
+      ${['accuracy','recall','specificity','f1_score','roc_auc'].map(k => cv[k] ? `
+        <div style="background:var(--bg);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border);text-align:center">
+          <div style="font-size:1.1rem;font-weight:700;color:${color}">${k==='roc_auc'?fmt(cv[k].mean):pct(cv[k].mean)}</div>
+          <div style="font-size:.68rem;color:var(--muted);font-weight:700;margin-top:2px">± ${k==='roc_auc'?fmt(cv[k].std):pct(cv[k].std)}</div>
+          <div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">${k.replace(/_/g,' ')}</div>
+        </div>` : '').join('')}
+    </div>`;
+
+  const noteHtml = cv.note ? `<div style="font-size:.75rem;color:#854d0e;background:#fefce8;border:1px solid #fef08a;padding:8px 12px;border-radius:var(--r-sm);margin-top:8px">📝 ${cv.note}</div>` : '';
+
+  return `
+    <div style="margin-top:24px" id="${cvId}">
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">5-Fold Cross-Validation Results</div>
+      <div style="font-size:.74rem;color:var(--muted);margin-bottom:8px">Stratified K-Fold (K=5) — each fold result + mean ± SD</div>
+      ${foldTable}
+      ${noteHtml}
+    </div>`;
+}
+
+function buildROCSection(points, auc, color, dKey, mKey){
+  const canvasId = `roc-${dKey}-${mKey}`;
+  // Render chart after DOM insert via timeout
+  setTimeout(() => drawROC(canvasId, points, auc, color), 150);
+  return `
+    <div style="margin-top:24px">
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:4px">ROC Curve (Receiver Operating Characteristic)</div>
+      <div class="roc-auc-badge">ROC AUC = ${fmt(auc)}</div>
+      <div class="roc-canvas-wrap">
+        <canvas id="${canvasId}" width="360" height="360"></canvas>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:8px">FPR (1-Specificity) vs TPR (Recall) · Diagonal = random classifier (AUC=0.5)</div>
+    </div>`;
+}
+
+function drawROC(canvasId, points, auc, color){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = 44;
+  const IW = W - PAD*2, IH = H - PAD*2;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=4;i++){
+    const x = PAD + (IW/4)*i;
+    const y = PAD + (IH/4)*i;
+    ctx.beginPath(); ctx.moveTo(x,PAD); ctx.lineTo(x,PAD+IH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(PAD+IW,y); ctx.stroke();
+  }
+
+  // Diagonal (random)
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(PAD,PAD+IH); ctx.lineTo(PAD+IW,PAD); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Fill under ROC curve
+  ctx.beginPath();
+  ctx.moveTo(PAD, PAD+IH);
+  for(const [fpr,tpr] of points){
+    ctx.lineTo(PAD + fpr*IW, PAD + (1-tpr)*IH);
+  }
+  ctx.lineTo(PAD+IW, PAD);
+  ctx.closePath();
+  ctx.fillStyle = color + '22';
+  ctx.fill();
+
+  // ROC curve line
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(PAD, PAD+IH);
+  for(const [fpr,tpr] of points){
+    ctx.lineTo(PAD + fpr*IW, PAD + (1-tpr)*IH);
+  }
+  ctx.stroke();
+
+  // Axes
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(PAD,PAD); ctx.lineTo(PAD,PAD+IH); ctx.lineTo(PAD+IW,PAD+IH); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px system-ui,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('False Positive Rate (1 − Specificity)', PAD + IW/2, H-4);
+  ctx.save(); ctx.translate(12, PAD+IH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('True Positive Rate (Recall)', 0, 0); ctx.restore();
+
+  // Tick labels
+  ctx.font = '10px system-ui,sans-serif';
+  ctx.fillStyle = '#94a3b8';
+  for(let i=0;i<=4;i++){
+    ctx.textAlign='center';
+    ctx.fillText((i*0.25).toFixed(2), PAD+(IW/4)*i, PAD+IH+14);
+    ctx.textAlign='right';
+    ctx.fillText((1-i*0.25).toFixed(2), PAD-4, PAD+(IH/4)*i+4);
+  }
+
+  // AUC text
+  ctx.fillStyle = color;
+  ctx.font = 'bold 13px system-ui,sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`AUC = ${auc.toFixed(4)}`, PAD+8, PAD+22);
+}
+
+function switchTab(key, btn){
+  document.querySelectorAll('.disorder-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
+  document.getElementById(key).classList.add('active');
+  btn.classList.add('active');
+}
+
+loadMetrics();
+</script>
+</body>
+</html>

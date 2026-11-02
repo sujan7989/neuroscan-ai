@@ -1,0 +1,23 @@
+{
+  "disorder": "stuttering",
+  "accuracy": 1.0,
+  "auc": 1.0,
+  "n_test": 3200,
+  "feature_names": [
+    "Prolongation",
+    "Block",
+    "SoundRep",
+    "WordRep",
+    "total_stutter_events",
+    "max_event_severity",
+    "n_event_types",
+    "has_block",
+    "has_prolongation",
+    "has_sound_rep",
+    "has_word_rep",
+    "interjection",
+    "natural_pause",
+    "unsure"
+  ],
+  "dataset": "SEP-28k 28K clips + FluencyBank (real stutter annotations)"
+}
