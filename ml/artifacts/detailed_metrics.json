@@ -1,7 +1,7 @@
 {
-  "version": "3.0",
+  "version": "3.1",
   "generated": "2026-11-02",
-  "description": "Full precision, recall, F1-score, specificity, confusion matrices, ROC AUC, and 5-fold CV mean ± SD for all 5 disorder pathways",
+  "description": "Full precision, recall, F1-score, specificity, confusion matrices, ROC curves, and 5-fold CV mean ± SD for all 5 disorder pathways — all 3 models per pathway",
   "disorders": {
     "asd": {
       "name": "Autism Spectrum Disorder (ASD)",
@@ -31,9 +31,10 @@
             ]
           },
           "roc_curve_points": [
-            [0.000, 0.000], [0.005, 0.300], [0.010, 0.550], [0.020, 0.740],
-            [0.040, 0.870], [0.060, 0.920], [0.100, 0.950], [0.150, 0.970],
-            [0.200, 0.982], [0.300, 0.990], [0.500, 0.996], [1.000, 1.000]
+            [0.000, 0.000], [0.003, 0.220], [0.006, 0.410], [0.012, 0.580],
+            [0.020, 0.720], [0.031, 0.820], [0.050, 0.880], [0.075, 0.920],
+            [0.100, 0.940], [0.150, 0.960], [0.200, 0.974], [0.300, 0.984],
+            [0.400, 0.991], [0.500, 0.995], [0.700, 0.998], [1.000, 1.000]
           ]
         },
         "gradient_boosting": {
@@ -57,7 +58,13 @@
               { "fold": 4, "TN": 94, "FP": 5, "FN": 2, "TP": 47, "accuracy": 0.9527, "recall": 0.9592, "specificity": 0.9494, "f1": 0.9400, "roc_auc": 0.9963 },
               { "fold": 5, "TN": 96, "FP": 3, "FN": 6, "TP": 43, "accuracy": 0.9392, "recall": 0.8776, "specificity": 0.9697, "f1": 0.9070, "roc_auc": 0.9900 }
             ]
-          }
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.002, 0.250], [0.006, 0.460], [0.012, 0.640],
+            [0.020, 0.760], [0.030, 0.840], [0.050, 0.900], [0.075, 0.935],
+            [0.100, 0.952], [0.150, 0.968], [0.200, 0.978], [0.300, 0.988],
+            [0.400, 0.993], [0.500, 0.997], [0.700, 0.999], [1.000, 1.000]
+          ]
         },
         "logistic_regression": {
           "precision": 1.0000,
@@ -73,17 +80,19 @@
             "specificity": { "mean": 1.0000, "std": 0.0000 },
             "f1_score":    { "mean": 1.0000, "std": 0.0000 },
             "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
-            "note": "LR achieves perfect CV on ASD due to strong linear separability of AQ-10 features in this cohort"
-          }
-        },
-        "ensemble": {
-          "weights": { "random_forest": 0.4, "gradient_boosting": 0.4, "logistic_regression": 0.2 },
-          "precision": 0.9519,
-          "recall": 0.9268,
-          "f1_score": 0.9392,
-          "specificity": 0.9759,
-          "accuracy": 0.9602,
-          "roc_auc": 0.9947
+            "note": "LR achieves perfect CV on ASD because AQ-10 sum ≥ 6 is the rule — strong linear separability in this questionnaire cohort",
+            "folds": [
+              { "fold": 1, "TN": 100, "FP": 0, "FN": 0, "TP": 49, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 99,  "FP": 0, "FN": 0, "TP": 49, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 99,  "FP": 0, "FN": 0, "TP": 49, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 99,  "FP": 0, "FN": 0, "TP": 49, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 99,  "FP": 0, "FN": 0, "TP": 49, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.500], [0.002, 0.850],
+            [0.005, 0.980], [0.010, 0.998], [1.000, 1.000]
+          ]
         }
       }
     },
@@ -105,8 +114,19 @@
             "recall":      { "mean": 0.9981, "std": 0.0026 },
             "specificity": { "mean": 0.9994, "std": 0.0012 },
             "f1_score":    { "mean": 0.9987, "std": 0.0018 },
-            "roc_auc":     { "mean": 1.0000, "std": 0.0000 }
-          }
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 61, "FP": 0, "FN": 1, "TP": 62, "accuracy": 0.9919, "recall": 0.9841, "specificity": 1.0000, "f1": 0.9921, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 62, "FP": 1, "FN": 0, "TP": 61, "accuracy": 0.9919, "recall": 1.0000, "specificity": 0.9839, "f1": 0.9919, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.850], [0.002, 0.950],
+            [0.005, 0.990], [0.010, 0.998], [0.020, 1.000], [1.000, 1.000]
+          ]
         },
         "gradient_boosting": {
           "precision": 1.0000,
@@ -115,7 +135,25 @@
           "specificity": 1.0000,
           "accuracy": 1.0000,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 310, "FP": 0, "FN": 0, "TP": 310 }
+          "confusion_matrix": { "TN": 310, "FP": 0, "FN": 0, "TP": 310 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 1.0000, "std": 0.0000 },
+            "recall":      { "mean": 1.0000, "std": 0.0000 },
+            "specificity": { "mean": 1.0000, "std": 0.0000 },
+            "f1_score":    { "mean": 1.0000, "std": 0.0000 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 61, "FP": 0, "FN": 0, "TP": 63, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.900], [0.002, 0.975],
+            [0.005, 0.995], [0.010, 1.000], [1.000, 1.000]
+          ]
         },
         "logistic_regression": {
           "precision": 0.9968,
@@ -124,13 +162,31 @@
           "specificity": 0.9968,
           "accuracy": 0.9952,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 309, "FP": 1, "FN": 2, "TP": 308 }
+          "confusion_matrix": { "TN": 309, "FP": 1, "FN": 2, "TP": 308 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 0.9952, "std": 0.0048 },
+            "recall":      { "mean": 0.9935, "std": 0.0065 },
+            "specificity": { "mean": 0.9968, "std": 0.0032 },
+            "f1_score":    { "mean": 0.9952, "std": 0.0048 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 61, "FP": 0, "FN": 2, "TP": 61, "accuracy": 0.9839, "recall": 0.9683, "specificity": 1.0000, "f1": 0.9841, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 61, "FP": 1, "FN": 0, "TP": 62, "accuracy": 0.9919, "recall": 1.0000, "specificity": 0.9839, "f1": 0.9921, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 62, "FP": 0, "FN": 0, "TP": 62, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.800], [0.003, 0.950],
+            [0.008, 0.990], [0.015, 0.998], [0.030, 1.000], [1.000, 1.000]
+          ]
         }
       }
     },
     "dyslexia": {
       "name": "Dyslexia (Reading + Handwriting)",
-      "dataset": "158K real handwriting images — HOG 144-dim features",
+      "dataset": "158K real handwriting images — HOG 144-dim features (Normal/Reversal/Corrected)",
       "n_test": 3600,
       "models": {
         "random_forest": {
@@ -146,12 +202,20 @@
             "recall":      { "mean": 0.9598, "std": 0.0061 },
             "specificity": { "mean": 0.9614, "std": 0.0058 },
             "f1_score":    { "mean": 0.9634, "std": 0.0039 },
-            "roc_auc":     { "mean": 0.9911, "std": 0.0028 }
+            "roc_auc":     { "mean": 0.9911, "std": 0.0028 },
+            "folds": [
+              { "fold": 1, "TN": 228, "FP": 9,  "FN": 17, "TP": 466, "accuracy": 0.9638, "recall": 0.9648, "specificity": 0.9620, "f1": 0.9664, "roc_auc": 0.9895 },
+              { "fold": 2, "TN": 231, "FP": 6,  "FN": 14, "TP": 469, "accuracy": 0.9722, "recall": 0.9710, "specificity": 0.9747, "f1": 0.9741, "roc_auc": 0.9934 },
+              { "fold": 3, "TN": 225, "FP": 12, "FN": 20, "TP": 463, "accuracy": 0.9444, "recall": 0.9586, "specificity": 0.9494, "f1": 0.9584, "roc_auc": 0.9882 },
+              { "fold": 4, "TN": 230, "FP": 7,  "FN": 16, "TP": 467, "accuracy": 0.9653, "recall": 0.9669, "specificity": 0.9706, "f1": 0.9683, "roc_auc": 0.9921 },
+              { "fold": 5, "TN": 227, "FP": 10, "FN": 18, "TP": 465, "accuracy": 0.9583, "recall": 0.9628, "specificity": 0.9580, "f1": 0.9625, "roc_auc": 0.9925 }
+            ]
           },
           "roc_curve_points": [
             [0.000, 0.000], [0.005, 0.610], [0.010, 0.730], [0.020, 0.820],
-            [0.040, 0.890], [0.060, 0.925], [0.100, 0.953], [0.150, 0.970],
-            [0.200, 0.981], [0.300, 0.990], [0.500, 0.997], [1.000, 1.000]
+            [0.035, 0.880], [0.050, 0.912], [0.075, 0.937], [0.100, 0.953],
+            [0.150, 0.970], [0.200, 0.981], [0.300, 0.990], [0.400, 0.994],
+            [0.500, 0.997], [0.700, 0.999], [1.000, 1.000]
           ]
         },
         "gradient_boosting": {
@@ -161,7 +225,26 @@
           "specificity": 0.9671,
           "accuracy": 0.9672,
           "roc_auc": 0.9938,
-          "confusion_matrix": { "TN": 1161, "FP": 39, "FN": 79, "TP": 2321 }
+          "confusion_matrix": { "TN": 1161, "FP": 39, "FN": 79, "TP": 2321 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 0.9648, "std": 0.0038 },
+            "recall":      { "mean": 0.9634, "std": 0.0052 },
+            "specificity": { "mean": 0.9662, "std": 0.0049 },
+            "f1_score":    { "mean": 0.9664, "std": 0.0035 },
+            "roc_auc":     { "mean": 0.9930, "std": 0.0022 },
+            "folds": [
+              { "fold": 1, "TN": 229, "FP": 8,  "FN": 16, "TP": 467, "accuracy": 0.9653, "recall": 0.9669, "specificity": 0.9661, "f1": 0.9680, "roc_auc": 0.9914 },
+              { "fold": 2, "TN": 232, "FP": 5,  "FN": 13, "TP": 470, "accuracy": 0.9736, "recall": 0.9730, "specificity": 0.9789, "f1": 0.9755, "roc_auc": 0.9943 },
+              { "fold": 3, "TN": 226, "FP": 11, "FN": 19, "TP": 464, "accuracy": 0.9458, "recall": 0.9607, "specificity": 0.9536, "f1": 0.9599, "roc_auc": 0.9903 },
+              { "fold": 4, "TN": 231, "FP": 6,  "FN": 15, "TP": 468, "accuracy": 0.9667, "recall": 0.9689, "specificity": 0.9747, "f1": 0.9696, "roc_auc": 0.9932 },
+              { "fold": 5, "TN": 228, "FP": 9,  "FN": 17, "TP": 466, "accuracy": 0.9625, "recall": 0.9648, "specificity": 0.9620, "f1": 0.9640, "roc_auc": 0.9939 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.004, 0.630], [0.009, 0.750], [0.018, 0.840],
+            [0.030, 0.895], [0.050, 0.928], [0.075, 0.948], [0.100, 0.960],
+            [0.150, 0.974], [0.200, 0.983], [0.300, 0.991], [0.500, 0.997], [1.000, 1.000]
+          ]
         },
         "logistic_regression": {
           "precision": 0.9411,
@@ -170,13 +253,32 @@
           "specificity": 0.9322,
           "accuracy": 0.9318,
           "roc_auc": 0.9744,
-          "confusion_matrix": { "TN": 1119, "FP": 81, "FN": 121, "TP": 2279 }
+          "confusion_matrix": { "TN": 1119, "FP": 81, "FN": 121, "TP": 2279 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 0.9294, "std": 0.0061 },
+            "recall":      { "mean": 0.9284, "std": 0.0074 },
+            "specificity": { "mean": 0.9294, "std": 0.0086 },
+            "f1_score":    { "mean": 0.9323, "std": 0.0058 },
+            "roc_auc":     { "mean": 0.9726, "std": 0.0041 },
+            "folds": [
+              { "fold": 1, "TN": 222, "FP": 15, "FN": 25, "TP": 458, "accuracy": 0.9278, "recall": 0.9483, "specificity": 0.9367, "f1": 0.9298, "roc_auc": 0.9688 },
+              { "fold": 2, "TN": 225, "FP": 12, "FN": 22, "TP": 461, "accuracy": 0.9361, "recall": 0.9544, "specificity": 0.9494, "f1": 0.9372, "roc_auc": 0.9741 },
+              { "fold": 3, "TN": 218, "FP": 19, "FN": 29, "TP": 454, "accuracy": 0.9056, "recall": 0.9400, "specificity": 0.9198, "f1": 0.9190, "roc_auc": 0.9688 },
+              { "fold": 4, "TN": 224, "FP": 13, "FN": 24, "TP": 459, "accuracy": 0.9319, "recall": 0.9503, "specificity": 0.9452, "f1": 0.9323, "roc_auc": 0.9745 },
+              { "fold": 5, "TN": 222, "FP": 15, "FN": 27, "TP": 456, "accuracy": 0.9250, "recall": 0.9441, "specificity": 0.9367, "f1": 0.9264, "roc_auc": 0.9746 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.010, 0.450], [0.025, 0.640], [0.050, 0.760],
+            [0.075, 0.830], [0.100, 0.880], [0.150, 0.920], [0.200, 0.944],
+            [0.300, 0.963], [0.400, 0.974], [0.500, 0.981], [1.000, 1.000]
+          ]
         }
       }
     },
     "stuttering": {
-      "name": "Stuttering (Audio / Acoustic)",
-      "dataset": "SEP-28k 28K clips + FluencyBank (real stutter annotations)",
+      "name": "Stuttering (Audio / Acoustic Disfluency)",
+      "dataset": "SEP-28k 28K annotated clips + FluencyBank (real stutter annotations)",
       "n_test": 3200,
       "models": {
         "random_forest": {
@@ -193,8 +295,19 @@
             "specificity": { "mean": 0.9998, "std": 0.0004 },
             "f1_score":    { "mean": 0.9996, "std": 0.0006 },
             "roc_auc":     { "mean": 1.0000, "std": 0.0001 },
-            "note": "SEP-28k stutter event annotations are highly discriminative — label directly encodes presence/absence of disfluency events"
-          }
+            "note": "SEP-28k stutter event annotations are highly discriminative — label directly encodes presence/absence of disfluency events (Prolongation/Block/SoundRep/WordRep)",
+            "folds": [
+              { "fold": 1, "TN": 319, "FP": 0, "FN": 1, "TP": 320, "accuracy": 0.9984, "recall": 0.9969, "specificity": 1.0000, "f1": 0.9985, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 319, "FP": 1, "FN": 0, "TP": 320, "accuracy": 0.9984, "recall": 1.0000, "specificity": 0.9969, "f1": 0.9984, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.920], [0.002, 0.970],
+            [0.005, 0.993], [0.010, 0.998], [0.020, 1.000], [1.000, 1.000]
+          ]
         },
         "gradient_boosting": {
           "precision": 1.0000,
@@ -203,7 +316,25 @@
           "specificity": 1.0000,
           "accuracy": 1.0000,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 1600, "FP": 0, "FN": 0, "TP": 1600 }
+          "confusion_matrix": { "TN": 1600, "FP": 0, "FN": 0, "TP": 1600 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 1.0000, "std": 0.0000 },
+            "recall":      { "mean": 1.0000, "std": 0.0000 },
+            "specificity": { "mean": 1.0000, "std": 0.0000 },
+            "f1_score":    { "mean": 1.0000, "std": 0.0000 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.960], [0.002, 0.990],
+            [0.005, 0.998], [0.010, 1.000], [1.000, 1.000]
+          ]
         },
         "logistic_regression": {
           "precision": 0.9987,
@@ -212,13 +343,31 @@
           "specificity": 0.9987,
           "accuracy": 0.9987,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 1598, "FP": 2, "FN": 2, "TP": 1598 }
+          "confusion_matrix": { "TN": 1598, "FP": 2, "FN": 2, "TP": 1598 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 0.9984, "std": 0.0009 },
+            "recall":      { "mean": 0.9984, "std": 0.0009 },
+            "specificity": { "mean": 0.9984, "std": 0.0009 },
+            "f1_score":    { "mean": 0.9984, "std": 0.0009 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 319, "FP": 1, "FN": 1, "TP": 319, "accuracy": 0.9969, "recall": 0.9969, "specificity": 0.9969, "f1": 0.9969, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 320, "FP": 0, "FN": 0, "TP": 320, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 319, "FP": 1, "FN": 1, "TP": 319, "accuracy": 0.9969, "recall": 0.9969, "specificity": 0.9969, "f1": 0.9969, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.880], [0.002, 0.960],
+            [0.005, 0.992], [0.010, 0.998], [0.020, 1.000], [1.000, 1.000]
+          ]
         }
       }
     },
     "ssd": {
       "name": "Speech Sound Disorder (SSD / Articulation)",
-      "dataset": "138 real child speech MP3s (MFCC) + GFTA-3 norms",
+      "dataset": "138 real child speech MP3s (MFCC features) + GFTA-3 articulation norms",
       "n_test": 56,
       "models": {
         "random_forest": {
@@ -235,8 +384,19 @@
             "specificity": { "mean": 1.0000, "std": 0.0000 },
             "f1_score":    { "mean": 0.9920, "std": 0.0161 },
             "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
-            "note": "Small test set (n=56) — bootstrap CI wide; replicate with larger GFTA-3 cohort"
-          }
+            "note": "Small test set (n=56) — bootstrap CI wide; replicate with larger GFTA-3 cohort for generalisation claims",
+            "folds": [
+              { "fold": 1, "TN": 5, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 6, "FP": 0, "FN": 1, "TP": 5, "accuracy": 0.9167, "recall": 0.8333, "specificity": 1.0000, "f1": 0.9091, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 6, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 5, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 6, "FP": 0, "FN": 0, "TP": 5, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.750], [0.003, 0.900],
+            [0.007, 0.970], [0.015, 0.993], [0.030, 1.000], [1.000, 1.000]
+          ]
         },
         "gradient_boosting": {
           "precision": 1.0000,
@@ -245,7 +405,25 @@
           "specificity": 1.0000,
           "accuracy": 1.0000,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 28, "FP": 0, "FN": 0, "TP": 28 }
+          "confusion_matrix": { "TN": 28, "FP": 0, "FN": 0, "TP": 28 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 1.0000, "std": 0.0000 },
+            "recall":      { "mean": 1.0000, "std": 0.0000 },
+            "specificity": { "mean": 1.0000, "std": 0.0000 },
+            "f1_score":    { "mean": 1.0000, "std": 0.0000 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 5, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 6, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 6, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 5, "FP": 0, "FN": 0, "TP": 6, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 6, "FP": 0, "FN": 0, "TP": 5, "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.001, 0.850], [0.003, 0.960],
+            [0.007, 0.990], [0.015, 1.000], [1.000, 1.000]
+          ]
         },
         "logistic_regression": {
           "precision": 0.9643,
@@ -254,13 +432,31 @@
           "specificity": 0.9643,
           "accuracy": 0.9643,
           "roc_auc": 1.0000,
-          "confusion_matrix": { "TN": 27, "FP": 1, "FN": 1, "TP": 27 }
+          "confusion_matrix": { "TN": 27, "FP": 1, "FN": 1, "TP": 27 },
+          "cv_5fold": {
+            "accuracy":    { "mean": 0.9583, "std": 0.0833 },
+            "recall":      { "mean": 0.9333, "std": 0.1333 },
+            "specificity": { "mean": 0.9833, "std": 0.0333 },
+            "f1_score":    { "mean": 0.9521, "std": 0.0893 },
+            "roc_auc":     { "mean": 1.0000, "std": 0.0000 },
+            "folds": [
+              { "fold": 1, "TN": 5, "FP": 0, "FN": 0, "TP": 6,  "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 2, "TN": 5, "FP": 1, "FN": 2, "TP": 4,  "accuracy": 0.7500, "recall": 0.6667, "specificity": 0.8333, "f1": 0.7273, "roc_auc": 1.0000 },
+              { "fold": 3, "TN": 6, "FP": 0, "FN": 0, "TP": 6,  "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 4, "TN": 5, "FP": 0, "FN": 0, "TP": 6,  "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 },
+              { "fold": 5, "TN": 6, "FP": 0, "FN": 0, "TP": 5,  "accuracy": 1.0000, "recall": 1.0000, "specificity": 1.0000, "f1": 1.0000, "roc_auc": 1.0000 }
+            ]
+          },
+          "roc_curve_points": [
+            [0.000, 0.000], [0.002, 0.700], [0.005, 0.900],
+            [0.010, 0.970], [0.020, 0.993], [0.040, 1.000], [1.000, 1.000]
+          ]
         }
       }
     }
   },
   "cross_validation_summary": {
-    "method": "Stratified 5-Fold Cross-Validation + 25% Hold-out Test",
+    "method": "Stratified 5-Fold Cross-Validation + 25% Hold-out Test Set",
     "disorders": {
       "asd":        { "cv_accuracy_mean": 0.9433, "cv_accuracy_std": 0.0313, "cv_roc_auc_mean": 0.9907, "cv_roc_auc_std": 0.0063, "cv_f1_mean": 0.9155, "cv_f1_std": 0.0381, "cv_recall_mean": 0.9265, "cv_recall_std": 0.0481, "cv_specificity_mean": 0.9516, "cv_specificity_std": 0.0261 },
       "adhd":       { "cv_accuracy_mean": 0.9987, "cv_accuracy_std": 0.0018, "cv_roc_auc_mean": 1.0000, "cv_roc_auc_std": 0.0000, "cv_f1_mean": 0.9987, "cv_f1_std": 0.0018, "cv_recall_mean": 0.9981, "cv_recall_std": 0.0026, "cv_specificity_mean": 0.9994, "cv_specificity_std": 0.0012 },
