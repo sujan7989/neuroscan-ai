@@ -1,12 +1,24 @@
 {
   "features": [
-    "hog_144d"
+    "phonological_awareness",
+    "phonological_memory",
+    "rapid_naming_speed",
+    "word_reading_fluency",
+    "nonword_reading",
+    "letter_reversal",
+    "reading_avoidance",
+    "spelling_errors",
+    "slow_reading_rate",
+    "family_history_dyslexia",
+    "hw_pen_speed_mms",
+    "hw_stroke_consistency",
+    "hw_letter_reversal_rate",
+    "hw_line_deviation_mm",
+    "hw_spacing_variability",
+    "hw_erasure_per_word"
   ],
-  "type": "handwriting_HOG_image",
-  "n_images": 18000,
-  "image_size": "64x64",
-  "classes": {
-    "0": "Normal",
-    "1": "Dyslexic(Reversal+Corrected)"
-  }
+  "n_features": 16,
+  "disorder": "dyslexia",
+  "dataset_note": "IDA/Yale phonological + MDPI handwriting kinematics 3100 records",
+  "sklearn_version": "1.9.1"
 }

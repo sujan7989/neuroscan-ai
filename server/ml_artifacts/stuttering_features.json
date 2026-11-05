@@ -1,19 +1,22 @@
 {
   "features": [
-    "Prolongation",
-    "Block",
-    "SoundRep",
-    "WordRep",
-    "total_stutter_events",
-    "max_event_severity",
-    "n_event_types",
-    "has_block",
-    "has_prolongation",
-    "has_sound_rep",
-    "has_word_rep",
-    "interjection",
-    "natural_pause",
-    "unsure"
+    "disfluency_rate",
+    "repetition_per_100w",
+    "prolongation_dur_s",
+    "block_freq_per_100w",
+    "pause_freq_per_100w",
+    "speech_rate_wpm",
+    "phonation_ratio",
+    "jitter_pct",
+    "shimmer_db",
+    "hnr_db",
+    "age",
+    "onset_childhood",
+    "family_history_stutter",
+    "anxiety_speaking"
   ],
-  "type": "SEP28k_stutter_event_annotations"
+  "n_features": 14,
+  "disorder": "stuttering",
+  "dataset_note": "SEP-28k/UCLASS acoustic norms 3100 records",
+  "sklearn_version": "1.9.1"
 }

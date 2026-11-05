@@ -1,21 +1,62 @@
 {
   "disorder": "asd",
-  "accuracy": 0.9469,
-  "auc": 0.9836,
-  "n_test": 226,
-  "feature_names": [
-    "arm_flapping",
-    "head_banging",
-    "head_shaking",
-    "spinning",
-    "body_rocking",
-    "jumping",
-    "hand_movements",
-    "facial_grimace",
-    "n_behaviors",
-    "has_repetitive",
-    "gaze_avoidance",
-    "social_isolation"
-  ],
-  "dataset": "SSBD+ XML + AAD Excel (202 videos) + UCI 936 records"
+  "results": {
+    "lr": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 166,
+        "FP": 0,
+        "FN": 0,
+        "TP": 82
+      }
+    },
+    "rf": {
+      "cv_f1_mean": 0.9142,
+      "cv_f1_std": 0.0159,
+      "cv_auc_mean": 0.9918,
+      "cv_auc_std": 0.0016,
+      "accuracy": 0.9637,
+      "precision": 0.9506,
+      "recall": 0.939,
+      "f1": 0.9448,
+      "specificity": 0.9759,
+      "roc_auc": 0.9927,
+      "confusion_matrix": {
+        "TN": 162,
+        "FP": 4,
+        "FN": 5,
+        "TP": 77
+      }
+    },
+    "gb": {
+      "cv_f1_mean": 0.9356,
+      "cv_f1_std": 0.0297,
+      "cv_auc_mean": 0.9954,
+      "cv_auc_std": 0.0022,
+      "accuracy": 0.9798,
+      "precision": 0.9753,
+      "recall": 0.9634,
+      "f1": 0.9693,
+      "specificity": 0.988,
+      "roc_auc": 0.9965,
+      "confusion_matrix": {
+        "TN": 164,
+        "FP": 2,
+        "FN": 3,
+        "TP": 79
+      }
+    }
+  },
+  "n_test": 248,
+  "dataset_note": "UCI ASD Screening 989 real records (Adults+Children)",
+  "sklearn_version": "1.9.1"
 }

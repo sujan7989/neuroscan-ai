@@ -1,43 +1,62 @@
 {
   "disorder": "ssd",
-  "accuracy": 1.0,
-  "auc": 1.0,
-  "n_test": 56,
-  "feature_names": [
-    "mfcc_mean_0",
-    "mfcc_mean_1",
-    "mfcc_mean_2",
-    "mfcc_mean_3",
-    "mfcc_mean_4",
-    "mfcc_mean_5",
-    "mfcc_mean_6",
-    "mfcc_mean_7",
-    "mfcc_mean_8",
-    "mfcc_mean_9",
-    "mfcc_mean_10",
-    "mfcc_mean_11",
-    "mfcc_mean_12",
-    "mfcc_std_0",
-    "mfcc_std_1",
-    "mfcc_std_2",
-    "mfcc_std_3",
-    "mfcc_std_4",
-    "mfcc_std_5",
-    "mfcc_std_6",
-    "mfcc_std_7",
-    "mfcc_std_8",
-    "mfcc_std_9",
-    "mfcc_std_10",
-    "mfcc_std_11",
-    "mfcc_std_12",
-    "spec_centroid",
-    "spec_bandwidth",
-    "spec_rolloff",
-    "zcr",
-    "rms",
-    "f1",
-    "f2",
-    "jitter"
-  ],
-  "dataset": "138 real child speech MP3s (MFCC features) + GFTA-3 norms"
+  "results": {
+    "lr": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 554,
+        "FP": 0,
+        "FN": 0,
+        "TP": 221
+      }
+    },
+    "rf": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 554,
+        "FP": 0,
+        "FN": 0,
+        "TP": 221
+      }
+    },
+    "gb": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 554,
+        "FP": 0,
+        "FN": 0,
+        "TP": 221
+      }
+    }
+  },
+  "n_test": 775,
+  "dataset_note": "GFTA-3 DEAP articulation norms 3100 records",
+  "sklearn_version": "1.9.1"
 }

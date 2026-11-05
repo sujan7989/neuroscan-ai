@@ -1,23 +1,62 @@
 {
   "disorder": "stuttering",
-  "accuracy": 1.0,
-  "auc": 1.0,
-  "n_test": 3200,
-  "feature_names": [
-    "Prolongation",
-    "Block",
-    "SoundRep",
-    "WordRep",
-    "total_stutter_events",
-    "max_event_severity",
-    "n_event_types",
-    "has_block",
-    "has_prolongation",
-    "has_sound_rep",
-    "has_word_rep",
-    "interjection",
-    "natural_pause",
-    "unsure"
-  ],
-  "dataset": "SEP-28k 28K clips + FluencyBank (real stutter annotations)"
+  "results": {
+    "lr": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 543,
+        "FP": 0,
+        "FN": 0,
+        "TP": 232
+      }
+    },
+    "rf": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 543,
+        "FP": 0,
+        "FN": 0,
+        "TP": 232
+      }
+    },
+    "gb": {
+      "cv_f1_mean": 0.9971,
+      "cv_f1_std": 0.0035,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 543,
+        "FP": 0,
+        "FN": 0,
+        "TP": 232
+      }
+    }
+  },
+  "n_test": 775,
+  "dataset_note": "SEP-28k/UCLASS acoustic norms 3100 records",
+  "sklearn_version": "1.9.1"
 }

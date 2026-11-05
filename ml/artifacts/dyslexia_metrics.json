@@ -1,10 +1,62 @@
 {
   "disorder": "dyslexia",
-  "accuracy": 0.9639,
-  "auc": 0.9929,
-  "n_test": 3600,
-  "feature_names": [
-    "hog_144d_features"
-  ],
-  "dataset": "158K real handwriting images (Normal/Reversal/Corrected) - HOG 144-dim"
+  "results": {
+    "lr": {
+      "cv_f1_mean": 1.0,
+      "cv_f1_std": 0.0,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 620,
+        "FP": 0,
+        "FN": 0,
+        "TP": 155
+      }
+    },
+    "rf": {
+      "cv_f1_mean": 0.9989,
+      "cv_f1_std": 0.0022,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 620,
+        "FP": 0,
+        "FN": 0,
+        "TP": 155
+      }
+    },
+    "gb": {
+      "cv_f1_mean": 0.9957,
+      "cv_f1_std": 0.0053,
+      "cv_auc_mean": 1.0,
+      "cv_auc_std": 0.0,
+      "accuracy": 0.9987,
+      "precision": 1.0,
+      "recall": 0.9935,
+      "f1": 0.9968,
+      "specificity": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": {
+        "TN": 620,
+        "FP": 0,
+        "FN": 1,
+        "TP": 154
+      }
+    }
+  },
+  "n_test": 775,
+  "dataset_note": "IDA/Yale phonological + MDPI handwriting kinematics 3100 records",
+  "sklearn_version": "1.9.1"
 }

@@ -1,17 +1,30 @@
 {
   "features": [
+    "A1_Score",
+    "A2_Score",
+    "A3_Score",
+    "A4_Score",
+    "A5_Score",
+    "A6_Score",
+    "A7_Score",
+    "A8_Score",
+    "A9_Score",
+    "A10_Score",
+    "age",
+    "gender_num",
+    "jaundice_num",
+    "austim_num",
     "arm_flapping",
     "head_banging",
-    "head_shaking",
     "spinning",
-    "body_rocking",
-    "jumping",
-    "hand_movements",
-    "facial_grimace",
-    "n_behaviors",
-    "has_repetitive",
+    "rocking",
     "gaze_avoidance",
-    "social_isolation"
+    "echolalia",
+    "hypo_gaze",
+    "social_isolate"
   ],
-  "type": "behavioral_video_features"
+  "n_features": 22,
+  "disorder": "asd",
+  "dataset_note": "UCI ASD Screening 989 real records (Adults+Children)",
+  "sklearn_version": "1.9.1"
 }
