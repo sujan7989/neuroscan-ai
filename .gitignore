@@ -76,3 +76,8 @@ coverage/
 *.temp
 .cache/
 
+
+# Raw datasets — kept locally, not committed to git
+ml/data/datasets/
+ml/data/ssd_audio/
+ml/data/raw_datasets/
