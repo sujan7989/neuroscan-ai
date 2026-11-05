@@ -1,0 +1,43 @@
+# NeuroScan AI — Feature Extraction + Training Requirements
+# Install with: pip install -r feature_extraction/requirements.txt
+
+# Core ML
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
+scipy==1.13.1
+tqdm==4.66.4
+
+# XGBoost (optional but recommended)
+xgboost==2.0.3
+
+# Explainability
+shap==0.45.1
+
+# Image features — Dyslexia
+torch==2.3.1
+torchvision==0.18.1
+Pillow==10.3.0
+scikit-image==0.23.2
+
+# Audio features — Stuttering + SSD
+librosa==0.10.2
+soundfile==0.12.1
+resampy==0.4.3
+
+# wav2vec2 embeddings (optional — used when audio clips are available)
+transformers==4.41.2
+datasets==2.19.2
+huggingface-hub==0.23.2
+
+# Video/pose features — ASD (optional — used when video files are available)
+mediapipe==0.10.14
+opencv-python==4.10.0.84
+
+# Excel reading (AAD dataset)
+openpyxl==3.1.4
+
+# Plotting
+matplotlib==3.9.0
+seaborn==0.13.2
